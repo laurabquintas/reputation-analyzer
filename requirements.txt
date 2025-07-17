@@ -112,3 +112,4 @@ xdg==5
 xkit==0.0.0
 openpyxl==3.1.5
 selenium==4.21.0
+webdriver-manager==4.0.1
