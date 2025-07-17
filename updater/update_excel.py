@@ -20,11 +20,11 @@ def update_excel_rating(excel_path: str, hotel: str, source: str, rating: float)
 
     # Find the first empty column starting from column 3
     col = 3
-    while ws.cell(row=1, column=col).value:
+    while ws.cell(row=14, column=col).value:
         col += 1
 
     # Set date in header if new
-    if not ws.cell(row=1, column=col).value:
+    if not ws.cell(row=14, column=col).value:
         ws.cell(row=14, column=col).value = today
 
     # Set the rating
