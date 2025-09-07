@@ -1,0 +1,64 @@
+date_format: "%Y-%m-%d"
+
+websites:
+  - BOOKING
+  - TRIPADVISOR
+  - GOOGLE
+  - EXPEDIA
+  - HOLIDAYCHECK
+  - ZOOVER
+
+hotels:
+  - name: "ananea Castelo Suites"
+    aliases: ["ananea", "ananea castelo"]
+    booking_url: ""
+    tripadvisor_url: ""
+    google_place_id: ""
+    expedia_url: ""
+    holidaycheck_url: ""
+    zoover_url: ""
+
+  - name: "PortoBay Falésia"
+    aliases: []
+    booking_url: ""
+    tripadvisor_url: ""
+    google_place_id: ""
+    expedia_url: ""
+    holidaycheck_url: ""
+    zoover_url: ""
+
+  - name: "Regency Salgados Hotel & Spa"
+    aliases: []
+    booking_url: ""
+    tripadvisor_url: ""
+    google_place_id: ""
+    expedia_url: ""
+    holidaycheck_url: ""
+    zoover_url: ""
+
+  - name: "NAU São Rafael Atlântico"
+    aliases: []
+    booking_url: ""
+    tripadvisor_url: ""
+    google_place_id: ""
+    expedia_url: ""
+    holidaycheck_url: ""
+    zoover_url: ""
+
+  - name: "NAU Salgados Dunas Suites"
+    aliases: []
+    booking_url: ""
+    tripadvisor_url: ""
+    google_place_id: ""
+    expedia_url: ""
+    holidaycheck_url: ""
+    zoover_url: ""
+
+  - name: "Vidamar Resort Hotel Algarve"
+    aliases: []
+    booking_url: ""
+    tripadvisor_url: ""
+    google_place_id: ""
+    expedia_url: ""
+    holidaycheck_url: ""
+    zoover_url: ""
