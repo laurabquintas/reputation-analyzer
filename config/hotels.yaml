@@ -11,7 +11,7 @@ websites:
 hotels:
   - name: "ananea Castelo Suites"
     aliases: ["ananea", "ananea castelo"]
-    booking_url: ""
+    booking_url: "https://www.booking.com/hotel/pt/castelo-suites.en-gb.html"
     tripadvisor_url: ""
     google_place_id: ""
     expedia_url: ""
@@ -20,7 +20,7 @@ hotels:
 
   - name: "PortoBay Falésia"
     aliases: []
-    booking_url: ""
+    booking_url: "https://www.booking.com/hotel/pt/porto-bay-falesia.en-gb.html"
     tripadvisor_url: ""
     google_place_id: ""
     expedia_url: ""
@@ -29,7 +29,7 @@ hotels:
 
   - name: "Regency Salgados Hotel & Spa"
     aliases: []
-    booking_url: ""
+    booking_url: "https://www.booking.com/hotel/pt/regency-salgados-amp-spa.en-gb.html"
     tripadvisor_url: ""
     google_place_id: ""
     expedia_url: ""
@@ -38,7 +38,7 @@ hotels:
 
   - name: "NAU São Rafael Atlântico"
     aliases: []
-    booking_url: ""
+    booking_url: "https://www.booking.com/hotel/pt/sao-rafael-suites-all-inclusive.en-gb.html"
     tripadvisor_url: ""
     google_place_id: ""
     expedia_url: ""
@@ -47,7 +47,7 @@ hotels:
 
   - name: "NAU Salgados Dunas Suites"
     aliases: []
-    booking_url: ""
+    booking_url: "https://www.booking.com/hotel/pt/westin-salgados-beach-resort-algarve.en-gb.html"
     tripadvisor_url: ""
     google_place_id: ""
     expedia_url: ""
@@ -56,7 +56,7 @@ hotels:
 
   - name: "Vidamar Resort Hotel Algarve"
     aliases: []
-    booking_url: ""
+    booking_url: "https://www.booking.com/hotel/pt/vidamar-algarve-hotel.en-gb.html"
     tripadvisor_url: ""
     google_place_id: ""
     expedia_url: ""
