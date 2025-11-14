@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-booking_scraper.py
+holidaycheck_scraper.py
 
 Fetch Booking.com review scores for a fixed list of hotels and update a CSV
 with the following layout:
