@@ -72,7 +72,7 @@ EXPEDIA_URLS: Dict[str, str] = {
     "Regency Salgados Hotel & Spa" : "https://euro.expedia.net/Albufeira-Hotels-Regency-Salgados-Hotel-Spa.h67650702.Hotel-Information?pwaDialog=product-reviews",
     "NAU São Rafael Atlântico" : "https://euro.expedia.net/Albufeira-Hotels-Sao-Rafael-Suite-Hotel.h1210300.Hotel-Information?pwaDialogNested=PropertyDetailsReviewsBreakdownDialog",
     "NAU Salgados Dunas Suites" : "",
-    "Vidamar Resort Hotel Algarve " : "https://euro.expedia.net/Albufeira-Hotels-VidaMar-Resort-Hotel-Algarve.h5670748.Hotel-Information?pwaDialogNested=PropertyDetailsReviewsBreakdownDialog"
+    "Vidamar Resort Hotel Algarve" : "https://euro.expedia.net/Albufeira-Hotels-VidaMar-Resort-Hotel-Algarve.h5670748.Hotel-Information?pwaDialog=product-reviews"
 }
 
 # ------------------------ Scraper logic ---------------------------- #
@@ -112,10 +112,170 @@ def fetch_page(url: str, timeout: int, retries: int) -> Optional[str]:
                 return None
     return None
 
+
+def _safe_float(value: str | None) -> Optional[float]:
+    if value is None:
+        return None
+    try:
+        score = float(value)
+    except (TypeError, ValueError):
+        return None
+    if 0.0 <= score <= 10.0:
+        return score
+    return None
+
+
+def _extract_jsonld_score(soup: BeautifulSoup) -> Optional[float]:
+    """
+    Parse rating from JSON-LD blocks when available.
+    """
+    candidates: list[tuple[int, float]] = []
+
+    for tag in soup.find_all("script", type="application/ld+json"):
+        raw = (tag.string or "").strip()
+        if not raw:
+            continue
+
+        for m in re.finditer(
+            r'"aggregateRating"\s*:\s*\{(?P<body>[^{}]*?"ratingValue"\s*:\s*"?(?P<score>\d+(?:\.\d+)?)"?[^{}]*?)\}',
+            raw,
+            flags=re.IGNORECASE | re.DOTALL,
+        ):
+            score = _safe_float(m.group("score"))
+            if score is None:
+                continue
+
+            body = m.group("body")
+            rank = 0
+            if re.search(r'"bestRating"\s*:\s*"?(10|10\.0)"?', body, flags=re.IGNORECASE):
+                rank += 6
+            if re.search(r'"bestRating"\s*:\s*"?(5|5\.0)"?', body, flags=re.IGNORECASE):
+                rank -= 6
+            if re.search(r"review|ratingCount|reviewCount", body, flags=re.IGNORECASE):
+                rank += 3
+            if re.search(r"star|class|classification", body, flags=re.IGNORECASE):
+                rank -= 4
+
+            candidates.append((rank, score))
+
+    if not candidates:
+        return None
+
+    candidates.sort(key=lambda x: (x[0], x[1]), reverse=True)
+    return candidates[0][1]
+
+
+def _extract_semantic_div_score(soup: BeautifulSoup) -> Optional[float]:
+    """
+    Parse score from known Expedia score div classes.
+    """
+    for div in soup.find_all("div"):
+        classes = div.get("class", [])
+        if (
+            "uitk-text" in classes
+            and "uitk-type-900" in classes
+            and "uitk-text-default-theme" in classes
+        ):
+            score = _safe_float(div.get_text(strip=True))
+            if score is not None:
+                return score
+    return None
+
+
+def _extract_textual_score(page_text: str) -> Optional[float]:
+    """
+    Parse common text renderings such as:
+    - 8.6 out of 10
+    - 8.6/10
+    """
+    patterns = [
+        r"(\d+(?:\.\d+)?)\s+out of\s+10",
+        r"(\d+(?:\.\d+)?)/10",
+        r"guest rating[^0-9]{0,30}(\d+(?:\.\d+)?)",
+    ]
+    for pattern in patterns:
+        m = re.search(pattern, page_text, flags=re.IGNORECASE)
+        if not m:
+            continue
+        score = _safe_float(m.group(1))
+        if score is not None:
+            return score
+    return None
+
+
+def _extract_embedded_json_score(html: str) -> Optional[float]:
+    """
+    Parse score from embedded JS/JSON when visible text selectors fail.
+    """
+    patterns = [
+        r'"reviewScore(?:WithDescription)?"\s*:\s*"?(?P<score>\d+(?:\.\d+)?)"?',
+        r'"overall(?:Guest)?Rating"\s*:\s*"?(?P<score>\d+(?:\.\d+)?)"?',
+        r'"ratingValue"\s*:\s*"?(?P<score>\d+(?:\.\d+)?)"?',
+        r'\\"ratingValue\\"\s*:\s*\\"(?P<score>\d+(?:\.\d+)?)\\"',
+        r'\\\\"ratingValue\\\\"\s*:\s*\\\\"(?P<score>\d+(?:\.\d+)?)\\\\"',
+    ]
+
+    candidates = [
+        html,
+        html.replace('\\"', '"'),
+        html.replace("\\\\", "\\"),
+    ]
+    scored_matches: list[tuple[int, float]] = []
+    for candidate in candidates:
+        for pattern in patterns:
+            for m in re.finditer(pattern, candidate, flags=re.IGNORECASE):
+                score = _safe_float(m.group("score"))
+                if score is None:
+                    continue
+
+                start = max(0, m.start() - 180)
+                end = min(len(candidate), m.end() + 180)
+                context = candidate[start:end]
+
+                rank = 0
+                if re.search(r'bestRating"\s*:\s*"?(10|10\.0)"?', context, flags=re.IGNORECASE):
+                    rank += 6
+                if re.search(r'bestRating"\s*:\s*"?(5|5\.0)"?', context, flags=re.IGNORECASE):
+                    rank -= 6
+                if re.search(r"reviewScore|guestRating|review|out of 10|/10", context, flags=re.IGNORECASE):
+                    rank += 4
+                if re.search(r"star|property class|classification|hotel class", context, flags=re.IGNORECASE):
+                    rank -= 6
+
+                scored_matches.append((rank, score))
+
+    if not scored_matches:
+        return None
+
+    scored_matches.sort(key=lambda x: (x[0], x[1]), reverse=True)
+    return scored_matches[0][1]
+
+
+def debug_expedia_score_candidates(url: str, timeout: int = DEFAULT_TIMEOUT, retries: int = DEFAULT_RETRIES) -> dict:
+    """
+    Return candidate extraction results to help diagnose parser misses.
+    """
+    html = fetch_page(url, timeout=timeout, retries=retries)
+    if html is None:
+        return {"fetch_ok": False, "error": "Could not fetch page"}
+
+    soup = BeautifulSoup(html, "html.parser")
+    page_text = soup.get_text(" ", strip=True)
+    return {
+        "fetch_ok": True,
+        "jsonld_score": _extract_jsonld_score(soup),
+        "semantic_div_score": _extract_semantic_div_score(soup),
+        "textual_score": _extract_textual_score(page_text),
+        "embedded_json_score": _extract_embedded_json_score(html),
+        "contains_8_6": "8.6" in html or "8,6" in html,
+    }
+
+
 def get_expedia_score(
     url: str,
     timeout: int = DEFAULT_TIMEOUT,
-    retries: int = DEFAULT_RETRIES
+    retries: int = DEFAULT_RETRIES,
+    debug: bool = False,
 ) -> Optional[float]:
     """
     Extract Expedia guest rating (0–10) from the <div> containing the score.
@@ -127,41 +287,37 @@ def get_expedia_score(
         return None
 
     soup = BeautifulSoup(html, "html.parser")
+    page_text = soup.get_text(" ", strip=True)
 
-    # 1) Limit search to the Reviews section
+    # 1) Prefer JSON-LD when present
+    score = _extract_jsonld_score(soup)
+    if score is not None:
+        return score
+
+    # 2) Limit search to the Reviews section
     reviews_section = soup.find("section", id="Reviews")
     if not reviews_section:
         # fallback: whole page (in case markup changes)
         reviews_section = soup
 
-    # 2) Find the rating div inside that section
-    for div in reviews_section.find_all("div"):
-        classes = div.get("class", [])
-        if (
-            "uitk-text" in classes
-            and "uitk-type-900" in classes
-            and "uitk-text-default-theme" in classes
-        ):
-            txt = div.get_text(strip=True)
-            # only accept plain numbers like 8.6, 9, 7.8 etc.
-            if re.fullmatch(r"\d+(?:\.\d+)?", txt):
-                try:
-                    return float(txt)
-                except ValueError:
-                    pass
+    # 3) Semantic class-based score
+    score = _extract_semantic_div_score(reviews_section)
+    if score is not None:
+        return score
 
-    # 2. FALLBACK: regex for 8.8/10 or 8.8 Excellent
-    text = soup.get_text(" ", strip=True)
+    # 4) Textual fallback from page text
+    score = _extract_textual_score(page_text)
+    if score is not None:
+        return score
 
-    # Pattern: "8.8/10"
-    m = re.search(r"(\d+(\.\d+)?)\s+out of\s+10", text)
-    if m:
-        return float(m.group(1))
+    # 5) Embedded JSON fallback
+    score = _extract_embedded_json_score(html)
+    if score is not None:
+        return score
 
-    # Pattern: "8.8 Excellent"
-    m = re.search(r"(\d+(?:\.\d+)?)/10", text)
-    if m:
-        return float(m.group(1))
+    if debug:
+        details = debug_expedia_score_candidates(url, timeout=timeout, retries=retries)
+        print("   DEBUG: extraction candidates:", details)
 
     return None
 
@@ -249,6 +405,11 @@ def parse_args() -> argparse.Namespace:
         default=DEFAULT_RETRIES,
         help=f"Retries per hotel (default: {DEFAULT_RETRIES})",
     )
+    p.add_argument(
+        "--debug",
+        action="store_true",
+        help="Print parser candidate details when no score is found.",
+    )
     return p.parse_args()
 
 
@@ -273,6 +434,7 @@ def main():
             url,
             timeout=args.timeout,
             retries=args.retries,
+            debug=args.debug,
         )
         new_scores[hotel] = score
 
