@@ -46,6 +46,8 @@ jobs:
           pip install -r requirements.txt
 
       - name: Run weekly scraping
+        id: scrape
+        continue-on-error: true
         env:
           GOOGLE_MAPS_API_KEY: ${{ secrets.GOOGLE_MAPS_API_KEY }}
           GOOGLE_PLACES_API_KEY: ${{ secrets.GOOGLE_PLACES_API_KEY }}
@@ -62,6 +64,7 @@ jobs:
           if-no-files-found: warn
 
       - name: Commit updated CSV files
+        if: always()
         run: |
           if git diff --quiet -- data/*.csv; then
             echo "No CSV changes to commit."
@@ -73,3 +76,9 @@ jobs:
           git add data/*.csv
           git commit -m "chore(data): weekly score update $(date -u +%F)"
           git push
+
+      - name: Mark workflow failed if scraping failed
+        if: steps.scrape.outcome == 'failure'
+        run: |
+          echo "One or more site scrapers failed. CSV partial updates were still committed."
+          exit 1

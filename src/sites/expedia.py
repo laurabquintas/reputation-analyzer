@@ -102,6 +102,16 @@ def fetch_page(url: str, timeout: int, retries: int) -> Optional[str]:
         try:
             resp = requests.get(url, headers=HEADERS, timeout=timeout)
             resp.raise_for_status()
+            lowered = resp.text.lower()
+            blocked_markers = [
+                "captcha",
+                "access denied",
+                "bot detection",
+                "verify you are human",
+                "unusual traffic",
+            ]
+            if any(marker in lowered for marker in blocked_markers):
+                print(f"   WARN: possible anti-bot/challenge page for {url}")
             return resp.text
         except Exception as e:
             last_exc = e
@@ -318,6 +328,8 @@ def get_expedia_score(
     if debug:
         details = debug_expedia_score_candidates(url, timeout=timeout, retries=retries)
         print("   DEBUG: extraction candidates:", details)
+    else:
+        print("   WARN: no Expedia score pattern matched for this page.")
 
     return None
 
