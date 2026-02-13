@@ -1,35 +1,96 @@
-# Reputation Analyzer (Google Sheets)
+# Reputation Analyzer
 
-Automated, low-cost hotel reputation tracker.  
-- **One Google Sheet tab per website** (`BOOKING`, `TRIPADVISOR`, `GOOGLE`, `EXPEDIA`, `HOLIDAYCHECK`, `ZOOVER`)
-- **One column per run date** (e.g., `2025-09-07`, `2025-09-14`, …)
-- **Weekly GitHub Action** updates the sheet.
+Collects hotel ratings from multiple websites and stores weekly snapshots in CSV tables under `data/`.
 
-## 1) Setup (one time)
+## Current Flow
 
-1. **Google Cloud**
-   - Create a project → Enable **Google Sheets API**
-   - Create a **Service Account** → Create JSON key
-2. **Google Sheets**
-   - Create an empty sheet (e.g., “Reputation Tracker”)
-   - Share with the service account email (`…@…iam.gserviceaccount.com`) as **Editor**
-   - Copy the Sheet ID from URL
-3. **GitHub Secrets** (Repo → Settings → Secrets and variables → Actions)
-   - `GOOGLE_SERVICE_ACCOUNT_JSON` → entire JSON key content
-   - `GOOGLE_SHEET_ID` → the long ID in the sheet URL
-   - (optional) `GOOGLE_PLACES_API_KEY` for Google ratings
+1. Each site script in `src/sites/` scrapes or calls an API for all configured hotels.
+2. Each script updates one CSV in `data/`:
+   - `data/booking_scores.csv`
+   - `data/tripadvisor_scores.csv`
+   - `data/google_scores.csv`
+   - `data/expedia_scores.csv`
+   - `data/holidaycheck_scores.csv`
+3. `python -m src.run` orchestrates all site scripts, validates outputs, and emits warnings/errors.
+4. `.github/workflows/weekly.yml` runs weekly, executes tests, runs scrapers, and commits updated CSVs.
 
-## 2) Configure hotels
-
-Edit `config/hotels.yaml` with hotel names and (optionally) per-site URLs / IDs.
-
-## 3) Run locally
+## Local Setup
 
 ```bash
 python -m venv .venv
 source .venv/bin/activate  # Windows: .venv\Scripts\activate
 pip install -r requirements.txt
+```
 
-export GOOGLE_SERVICE_ACCOUNT_JSON='{"type": "..."}'
-export GOOGLE_SHEET_ID='YOUR_SHEET_ID'
+Set required API keys:
+
+```bash
+export GOOGLE_MAPS_API_KEY="your_google_key"
+export TRIPADVISOR_API_KEY="your_tripadvisor_key"
+```
+
+Run all sites:
+
+```bash
 python -m src.run
+```
+
+Run specific sites:
+
+```bash
+python -m src.run --sites GOOGLE TRIPADVISOR
+```
+
+Run tests:
+
+```bash
+pytest -q
+```
+
+## GitHub Actions Automation
+
+Workflow: `.github/workflows/weekly.yml`
+
+- Schedule: every Monday at 06:00 UTC
+- Steps:
+  1. run unit tests
+  2. run `python -m src.run --summary-json data/run_summary.json`
+  3. upload summary artifact
+  4. commit changed `data/*.csv` files
+
+Repository secrets required:
+
+- `GOOGLE_MAPS_API_KEY`
+- `TRIPADVISOR_API_KEY`
+- Optional alias: `GOOGLE_PLACES_API_KEY`
+
+If a scraper fails, the run exits non-zero and GitHub Actions marks the job as failed.  
+If a scraper succeeds but collects zero rows for the date, `src.run` emits a GitHub warning annotation.
+
+## Project Structure
+
+```text
+config/hotels.yaml          # selected websites + hotel list
+src/sites/*.py              # one script per source website
+src/run.py                  # orchestrator + validation + CI annotations
+data/*.csv                  # historical score tables
+tests/test_run.py           # unit tests for runner logic
+dashboard/app.py            # Streamlit dashboard starter
+```
+
+## Dashboard (Public Access)
+
+Use the Streamlit app in `dashboard/app.py`.
+
+Local run:
+
+```bash
+pip install -r requirements-dashboard.txt
+streamlit run dashboard/app.py
+```
+
+Recommended public deployment:
+
+1. Push this repo to GitHub.
+2. Deploy `dashboard/app.py` on Streamlit Community Cloud.
+3. Keep the weekly workflow committing `data/*.csv`, and the dashboard will always show fresh data from `main`.
