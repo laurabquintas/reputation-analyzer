@@ -44,6 +44,7 @@ import random
 from time import sleep
 from datetime import datetime
 from typing import Dict, Optional
+from urllib.parse import urlsplit, urlunsplit, parse_qsl, urlencode
 
 import pandas as pd
 import requests
@@ -88,6 +89,36 @@ HEADERS = {
 }
 
 
+def _expedia_url_candidates(url: str) -> list[str]:
+    """
+    Build fallback URL variants. Some Expedia hosts/queries are blocked
+    depending on client IP (common on CI runners).
+    """
+    if not url:
+        return []
+
+    out: list[str] = [url]
+    parsed = urlsplit(url)
+    query_pairs = parse_qsl(parsed.query, keep_blank_values=True)
+    query_no_dialog = [(k, v) for (k, v) in query_pairs if not k.lower().startswith("pwadialog")]
+
+    host_variants = [parsed.netloc]
+    if parsed.netloc == "euro.expedia.net":
+        host_variants.extend(["www.expedia.com", "www.expedia.co.uk"])
+
+    for host in host_variants:
+        with_query = urlunsplit((parsed.scheme, host, parsed.path, parsed.query, parsed.fragment))
+        if with_query not in out:
+            out.append(with_query)
+        if query_no_dialog != query_pairs:
+            no_dialog = urlunsplit(
+                (parsed.scheme, host, parsed.path, urlencode(query_no_dialog), parsed.fragment)
+            )
+            if no_dialog not in out:
+                out.append(no_dialog)
+    return out
+
+
 def fetch_page(url: str, timeout: int, retries: int) -> Optional[str]:
     """
     Fetch the HTML for a given Expedia hotel URL with simple retry logic.
@@ -98,28 +129,48 @@ def fetch_page(url: str, timeout: int, retries: int) -> Optional[str]:
         return None
 
     last_exc: Exception | None = None
-    for attempt in range(retries + 1):
-        try:
-            resp = requests.get(url, headers=HEADERS, timeout=timeout)
-            resp.raise_for_status()
-            lowered = resp.text.lower()
-            blocked_markers = [
-                "captcha",
-                "access denied",
-                "bot detection",
-                "verify you are human",
-                "unusual traffic",
-            ]
-            if any(marker in lowered for marker in blocked_markers):
-                print(f"   WARN: possible anti-bot/challenge page for {url}")
-            return resp.text
-        except Exception as e:
-            last_exc = e
-            if attempt < retries:
-                sleep(1.5)
-            else:
-                print(f"   ERROR: failed to fetch after {retries + 1} attempts: {e}")
-                return None
+    blocked_markers = [
+        "captcha",
+        "access denied",
+        "bot detection",
+        "verify you are human",
+        "unusual traffic",
+    ]
+    candidates = _expedia_url_candidates(url)
+    proxies = None
+    proxy_url = os.getenv("HTTPS_PROXY") or os.getenv("HTTP_PROXY")
+    if proxy_url:
+        proxies = {"http": proxy_url, "https": proxy_url}
+
+    for candidate_url in candidates:
+        for attempt in range(retries + 1):
+            try:
+                resp = requests.get(
+                    candidate_url,
+                    headers=HEADERS,
+                    timeout=timeout,
+                    proxies=proxies,
+                    allow_redirects=True,
+                )
+                if resp.status_code == 403:
+                    raise requests.HTTPError(f"403 Client Error: Forbidden for url: {candidate_url}")
+                resp.raise_for_status()
+                lowered = resp.text.lower()
+                if any(marker in lowered for marker in blocked_markers):
+                    print(f"   WARN: possible anti-bot/challenge page for {candidate_url}")
+                if candidate_url != url:
+                    print(f"   INFO: fetched via fallback URL: {candidate_url}")
+                return resp.text
+            except Exception as e:
+                last_exc = e
+                if attempt < retries:
+                    sleep(1.5)
+                else:
+                    print(f"   WARN: fetch failed for {candidate_url} after {retries + 1} attempts: {e}")
+                    # try next candidate URL
+
+    if last_exc is not None:
+        print(f"   ERROR: failed to fetch page on all Expedia URL variants: {last_exc}")
     return None
 
 
