@@ -69,6 +69,14 @@ DEFAULT_SEP = ";"                # you are using semicolon CSV
 DEFAULT_TIMEOUT = 15
 DEFAULT_MIN_DELAY = 2.5          # seconds between hotel requests (min)
 DEFAULT_MAX_DELAY = 5.0          # seconds between hotel requests (max)
+UA_HEADERS = {
+    "User-Agent": (
+        "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) "
+        "AppleWebKit/537.36 (KHTML, like Gecko) "
+        "Chrome/124.0.0.0 Safari/537.36"
+    ),
+    "Accept-Language": "en-US,en;q=0.9,de;q=0.8",
+}
 
 # Map of hotel display name -> Booking URL
 URLS = {
@@ -95,15 +103,30 @@ def get_holidaycheck_score(url: str, timeout: int = 15) -> float | None:
     if not url:
         return None
 
-    resp = requests.get(url, timeout=timeout)
+    resp = requests.get(url, headers=UA_HEADERS, timeout=timeout)
     resp.raise_for_status()
     soup = BeautifulSoup(resp.text, "html.parser")
 
-    # You need to inspect the page once and adjust this selector.
-    # Typical patterns include something like "4,5 / 6".
+    # 1) Preferred: JSON-LD aggregate rating.
+    for tag in soup.find_all("script", type="application/ld+json"):
+        raw = (tag.string or "").strip()
+        if not raw:
+            continue
+        m = re.search(
+            r'"aggregateRating"\s*:\s*\{[^{}]*?"ratingValue"\s*:\s*"?(?P<score>\d+(?:[.,]\d+)?)"?',
+            raw,
+            flags=re.IGNORECASE | re.DOTALL,
+        )
+        if not m:
+            continue
+        try:
+            return float(m.group("score").replace(",", "."))
+        except ValueError:
+            pass
+
+    # 2) Fallback: text pattern like "4,5 / 6"
     text = soup.get_text(" ", strip=True)
 
-    # Find patterns like "4,5 / 6" or "4.5 / 6"
     m = re.search(r"(\d+[.,]\d)\s*/\s*6", text)
     if not m:
         return None
@@ -181,7 +204,11 @@ def main():
 
     for i, (hotel, url) in enumerate(URLS.items(), start=1):
         print(f"{i:02d}/{len(URLS)} → {hotel}")
-        score = get_holidaycheck_score(url, timeout=args.timeout)
+        try:
+            score = get_holidaycheck_score(url, timeout=args.timeout)
+        except Exception as exc:
+            print(f"   ERROR: {exc}")
+            score = None
         new_scores[hotel] = score
         if score is not None:
             print(f"   {score}/6")
