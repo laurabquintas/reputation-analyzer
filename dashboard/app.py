@@ -67,6 +67,8 @@ def load_source_df(path: Path) -> pd.DataFrame | None:
     df = pd.read_csv(path, sep=";")
     if "Hotel" not in df.columns:
         return None
+    df["Hotel"] = df["Hotel"].astype(str).str.strip()
+    df = df.groupby("Hotel", as_index=False).first()
     return df
 
 
@@ -90,6 +92,9 @@ def set_manual_score(source: str, hotel: str, date_col: str, score: float) -> No
         raise FileNotFoundError(f"Missing CSV for {source}: {csv_path}")
 
     df = pd.read_csv(csv_path, sep=";", index_col="Hotel")
+    df.index = df.index.astype(str).str.strip()
+    df = df.groupby(level=0).first()
+    hotel = hotel.strip()
     if hotel not in df.index:
         df.loc[hotel] = pd.NA
 
