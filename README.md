@@ -67,6 +67,19 @@ Repository secrets required:
 If a scraper fails, the run exits non-zero and GitHub Actions marks the job as failed.  
 If a scraper succeeds but collects zero rows for the date, `src.run` emits a GitHub warning annotation.
 
+### Expedia on Self-Hosted Runner
+
+Expedia scraping runs on `self-hosted` (your own computer) because hosted GitHub runners are commonly blocked by Expedia (403/429).
+
+1. Go to GitHub repo: `Settings -> Actions -> Runners -> New self-hosted runner`.
+2. Follow the install/start commands on your computer.
+3. Keep the runner online during scheduled workflow time.
+
+The workflow now runs:
+- non-Expedia sites on `ubuntu-latest`
+- Expedia on `self-hosted`
+- then merges and commits all updated `data/*.csv`.
+
 ## Project Structure
 
 ```text
