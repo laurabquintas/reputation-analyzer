@@ -98,7 +98,7 @@ Use the Streamlit app in `dashboard/app.py`.
 Local run:
 
 ```bash
-pip install -r requirements-dashboard.txt
+pip install -r requirements.txt
 streamlit run dashboard/app.py
 ```
 

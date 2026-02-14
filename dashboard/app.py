@@ -19,6 +19,14 @@ SOURCES = {
     "HolidayCheck": DATA_DIR / "holidaycheck_scores.csv",
 }
 
+SCALE_MAX = {
+    "Booking": 10.0,
+    "Tripadvisor": 5.0,
+    "Google": 5.0,
+    "Expedia": 10.0,
+    "HolidayCheck": 6.0,
+}
+
 
 def load_source_df(path: Path) -> pd.DataFrame | None:
     if not path.exists():
@@ -30,6 +38,41 @@ def load_source_df(path: Path) -> pd.DataFrame | None:
 
 
 DATE_COL_RE = re.compile(r"^\d{4}-\d{2}-\d{2}$")
+
+
+def source_date_columns(df: pd.DataFrame) -> list[str]:
+    return sorted([c for c in df.columns if DATE_COL_RE.fullmatch(str(c))])
+
+
+def update_average(df: pd.DataFrame) -> pd.DataFrame:
+    date_cols = source_date_columns(df)
+    if date_cols:
+        df["Average Score"] = pd.to_numeric(df[date_cols].stack(), errors="coerce").groupby(level=0).mean().round(2)
+    return df
+
+
+def set_manual_score(source: str, hotel: str, date_col: str, score: float) -> None:
+    csv_path = SOURCES[source]
+    if not csv_path.exists():
+        raise FileNotFoundError(f"Missing CSV for {source}: {csv_path}")
+
+    df = pd.read_csv(csv_path, sep=";", index_col="Hotel")
+    if hotel not in df.index:
+        df.loc[hotel] = pd.NA
+
+    if date_col not in df.columns:
+        df[date_col] = pd.NA
+
+    df.loc[hotel, date_col] = score
+    df = update_average(df)
+    df.to_csv(csv_path, sep=";", index_label="Hotel")
+
+
+def missing_for_date(df: pd.DataFrame, date_col: str) -> list[str]:
+    if date_col not in df.columns:
+        return []
+    series = pd.to_numeric(df[date_col], errors="coerce")
+    return df.loc[series.isna(), "Hotel"].astype(str).tolist()
 
 
 def scores_over_time(df: pd.DataFrame, source: str) -> pd.DataFrame:
@@ -61,12 +104,14 @@ def main() -> None:
     st.title("Hotel Reputation Dashboard")
     st.caption("Weekly reputation scores over time, pulled from source websites.")
 
+    source_dfs: dict[str, pd.DataFrame] = {}
     all_history = []
     for source, path in SOURCES.items():
         df = load_source_df(path)
         if df is None:
             st.warning(f"{source}: no valid data file found at {path}")
             continue
+        source_dfs[source] = df
         all_history.append(scores_over_time(df, source))
 
     if not all_history:
@@ -128,6 +173,46 @@ def main() -> None:
         latest_df[["Hotel", "Source", "Date", "Score"]].sort_values(["Hotel", "Source"]),
         use_container_width=True,
     )
+
+    st.subheader("Manual Missing Values")
+    st.caption("Use this to fill scores when scraping failed. Changes are written directly to CSV files in data/.")
+
+    editable_sources = [s for s in SOURCES if s in source_dfs]
+    source = st.selectbox("Source", editable_sources, index=0)
+    src_df = source_dfs[source]
+
+    date_options = source_date_columns(src_df)
+    if not date_options:
+        st.warning(f"No date columns found for {source}.")
+        return
+
+    selected_date = st.selectbox("Date", list(reversed(date_options)), index=0)
+    missing_hotels = missing_for_date(src_df, selected_date)
+    hotel_options = missing_hotels if missing_hotels else sorted(src_df["Hotel"].astype(str).tolist())
+    hotel = st.selectbox("Hotel", hotel_options, index=0)
+
+    if missing_hotels:
+        st.info(f"Missing for {source} on {selected_date}: {len(missing_hotels)} hotel(s)")
+    else:
+        st.info(f"No missing values for {source} on {selected_date}. You can still overwrite an existing value.")
+
+    max_scale = SCALE_MAX.get(source, 10.0)
+    score = st.number_input(
+        "Score",
+        min_value=0.0,
+        max_value=max_scale,
+        value=0.0,
+        step=0.1,
+        format="%.1f",
+    )
+
+    if st.button("Save score"):
+        try:
+            set_manual_score(source=source, hotel=hotel, date_col=selected_date, score=float(score))
+            st.success(f"Saved {score:.1f} for {hotel} in {source} ({selected_date}).")
+            st.rerun()
+        except Exception as exc:
+            st.error(f"Failed to save score: {exc}")
 
 
 if __name__ == "__main__":
