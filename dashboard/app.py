@@ -4,7 +4,6 @@ import re
 from pathlib import Path
 
 import pandas as pd
-import plotly.express as px
 import streamlit as st
 
 
@@ -140,31 +139,26 @@ def main() -> None:
             .groupby(["Date", "Source"], as_index=False)["Score"]
             .mean()
         )
-        fig = px.line(
-            trend_by_source,
-            x="Date",
-            y="Score",
-            color="Source",
-            markers=True,
-            title="Average Score Trend by Source",
+        st.markdown("**Average Score Trend by Source**")
+        source_chart_df = (
+            trend_by_source.pivot(index="Date", columns="Source", values="Score")
+            .sort_index()
         )
-        st.plotly_chart(fig, use_container_width=True)
+        st.line_chart(source_chart_df, use_container_width=True)
     with col2:
         st.metric("Hotels", int(filtered["Hotel"].nunique()))
         st.metric("Sources", int(filtered["Source"].nunique()))
         st.metric("Date Range", f"{filtered['Date'].min().date()} to {filtered['Date'].max().date()}")
 
     st.subheader("Hotel Trends")
-    hotel_fig = px.line(
-        filtered.dropna(subset=["Score"]),
-        x="Date",
-        y="Score",
-        color="Hotel",
-        line_dash="Source",
-        markers=True,
-        title="Score Trend by Hotel (line style = source)",
+    st.caption("Each line represents a Hotel + Source series.")
+    hotel_series = (
+        filtered.dropna(subset=["Score"])
+        .assign(Series=lambda d: d["Hotel"] + " | " + d["Source"])
+        .pivot(index="Date", columns="Series", values="Score")
+        .sort_index()
     )
-    st.plotly_chart(hotel_fig, use_container_width=True)
+    st.line_chart(hotel_series, use_container_width=True)
 
     st.subheader("Latest Snapshot")
     latest_df = latest_snapshot(filtered)
