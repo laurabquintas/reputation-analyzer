@@ -59,6 +59,7 @@ HOTEL_LINKS: dict[str, dict[str, str]] = {
         "Vidamar Resort Hotel Algarve": "https://maps.app.goo.gl/etAzqPDxgnjJ2DDu7",
     },
 }
+ANANEA_HOTEL = "Ananea Castelo Suites Hotel"
 
 
 def load_source_df(path: Path) -> pd.DataFrame | None:
@@ -137,6 +138,116 @@ def latest_snapshot(history_df: pd.DataFrame) -> pd.DataFrame:
     return history_df[history_df["Date"] == latest_date].copy()
 
 
+def ananea_scorecard_rows(history_df: pd.DataFrame, sources: list[str]) -> pd.DataFrame:
+    rows = []
+    for source in sources:
+        src = history_df[(history_df["Source"] == source) & history_df["Score"].notna()]
+        if src.empty:
+            continue
+        latest_date = src["Date"].max()
+        latest = src[src["Date"] == latest_date]
+        ananea = latest[latest["Hotel"] == ANANEA_HOTEL]
+        if ananea.empty:
+            continue
+        ananea_score = float(ananea["Score"].iloc[0])
+        peers = latest[latest["Hotel"] != ANANEA_HOTEL]["Score"].dropna()
+        peers_avg = float(peers.mean()) if not peers.empty else None
+        delta_vs_peers = ananea_score - peers_avg if peers_avg is not None else None
+        rows.append(
+            {
+                "Source": source,
+                "Date": latest_date,
+                "Ananea Score": round(ananea_score, 2),
+                "Peers Avg": round(peers_avg, 2) if peers_avg is not None else None,
+                "Delta vs Peers": round(delta_vs_peers, 2) if delta_vs_peers is not None else None,
+                "Peers Count": int(peers.count()),
+            }
+        )
+    return pd.DataFrame(rows)
+
+
+def ananea_vs_peers_trend(history_df: pd.DataFrame, sources: list[str]) -> pd.DataFrame:
+    rows = []
+    for source in sources:
+        src = history_df[(history_df["Source"] == source) & history_df["Score"].notna()]
+        if src.empty:
+            continue
+        for date in sorted(src["Date"].dropna().unique()):
+            point = src[src["Date"] == date]
+            ananea = point[point["Hotel"] == ANANEA_HOTEL]["Score"].dropna()
+            peers = point[point["Hotel"] != ANANEA_HOTEL]["Score"].dropna()
+            if not ananea.empty:
+                rows.append({"Date": date, "Series": f"{source} | Ananea", "Score": float(ananea.iloc[0])})
+            if not peers.empty:
+                rows.append({"Date": date, "Series": f"{source} | Peers Avg", "Score": float(peers.mean())})
+    return pd.DataFrame(rows)
+
+
+def ananea_latest_comparison(history_df: pd.DataFrame, sources: list[str]) -> pd.DataFrame:
+    rows = []
+    for source in sources:
+        src = history_df[(history_df["Source"] == source) & history_df["Score"].notna()]
+        if src.empty:
+            continue
+        latest_date = src["Date"].max()
+        latest = src[src["Date"] == latest_date]
+        ananea = latest[latest["Hotel"] == ANANEA_HOTEL]
+        if ananea.empty:
+            continue
+        ananea_score = float(ananea["Score"].iloc[0])
+        for _, row in latest[latest["Hotel"] != ANANEA_HOTEL].iterrows():
+            rows.append(
+                {
+                    "Source": source,
+                    "Date": latest_date,
+                    "Hotel": row["Hotel"],
+                    "Hotel Score": round(float(row["Score"]), 2),
+                    "Ananea Score": round(ananea_score, 2),
+                    "Ananea - Hotel": round(ananea_score - float(row["Score"]), 2),
+                }
+            )
+    return pd.DataFrame(rows)
+
+
+def ananea_competitive_index(history_df: pd.DataFrame, sources: list[str]) -> dict[str, float | int]:
+    """
+    KPI on 0-100 scale:
+    - ananea_index: average normalized Ananea score across selected sources
+    - peers_index: average normalized peers score across selected sources
+    - edge_pp: Ananea advantage/disadvantage in percentage points
+    """
+    rows = ananea_scorecard_rows(history_df, sources)
+    if rows.empty:
+        return {"ananea_index": float("nan"), "peers_index": float("nan"), "edge_pp": float("nan"), "sources_used": 0}
+
+    normalized = []
+    for _, row in rows.iterrows():
+        source = str(row["Source"])
+        scale = SCALE_MAX.get(source, 10.0)
+        ananea_score = row.get("Ananea Score")
+        peers_avg = row.get("Peers Avg")
+        if pd.isna(ananea_score):
+            continue
+        an = float(ananea_score) / float(scale) * 100.0
+        peers = float(peers_avg) / float(scale) * 100.0 if pd.notna(peers_avg) else float("nan")
+        normalized.append((an, peers))
+
+    if not normalized:
+        return {"ananea_index": float("nan"), "peers_index": float("nan"), "edge_pp": float("nan"), "sources_used": 0}
+
+    an_values = [x[0] for x in normalized]
+    peers_values = [x[1] for x in normalized if pd.notna(x[1])]
+    ananea_index = sum(an_values) / len(an_values)
+    peers_index = sum(peers_values) / len(peers_values) if peers_values else float("nan")
+    edge_pp = ananea_index - peers_index if pd.notna(peers_index) else float("nan")
+    return {
+        "ananea_index": round(ananea_index, 2),
+        "peers_index": round(peers_index, 2) if pd.notna(peers_index) else float("nan"),
+        "edge_pp": round(edge_pp, 2) if pd.notna(edge_pp) else float("nan"),
+        "sources_used": len(an_values),
+    }
+
+
 def main() -> None:
     st.set_page_config(page_title="Hotel Reputation Dashboard", layout="wide")
     st.title("Hotel Reputation Dashboard")
@@ -170,6 +281,56 @@ def main() -> None:
     if filtered.empty:
         st.warning("No data for the selected filters.")
         return
+
+    st.subheader("Ananea Scorecard")
+    st.caption("Focused comparison for Ananea Castelo Suites Hotel across selected sources.")
+    scorecard = ananea_scorecard_rows(history_df, selected_sources)
+    kpi = ananea_competitive_index(history_df, selected_sources)
+
+    kpi_col1, kpi_col2, kpi_col3 = st.columns(3)
+    with kpi_col1:
+        if pd.notna(kpi["ananea_index"]):
+            st.metric("Ananea Competitive Index", f"{kpi['ananea_index']:.2f}/100")
+        else:
+            st.metric("Ananea Competitive Index", "N/A")
+    with kpi_col2:
+        if pd.notna(kpi["peers_index"]):
+            st.metric("Peers Index", f"{kpi['peers_index']:.2f}/100")
+        else:
+            st.metric("Peers Index", "N/A")
+    with kpi_col3:
+        if pd.notna(kpi["edge_pp"]):
+            st.metric("Edge vs Peers", f"{kpi['edge_pp']:+.2f} pp")
+        else:
+            st.metric("Edge vs Peers", "N/A")
+
+    if scorecard.empty:
+        st.warning("No Ananea scorecard data available for the selected sources.")
+    else:
+        metric_cols = st.columns(max(1, len(scorecard)))
+        for i, row in scorecard.reset_index(drop=True).iterrows():
+            value = f"{row['Ananea Score']:.2f}/{SCALE_MAX.get(row['Source'], 10):.0f}"
+            delta = None
+            if pd.notna(row["Delta vs Peers"]):
+                delta = f"{row['Delta vs Peers']:+.2f} vs peers"
+            metric_cols[i].metric(label=f"{row['Source']} ({row['Date'].date()})", value=value, delta=delta)
+        st.dataframe(scorecard.sort_values("Source"), use_container_width=True)
+
+    st.subheader("Ananea vs Other Hotels")
+    compare_latest = ananea_latest_comparison(history_df, selected_sources)
+    if compare_latest.empty:
+        st.warning("No latest-date comparison rows available.")
+    else:
+        st.dataframe(
+            compare_latest.sort_values(["Source", "Ananea - Hotel"], ascending=[True, False]),
+            use_container_width=True,
+        )
+
+    trend_compare = ananea_vs_peers_trend(history_df, selected_sources)
+    if not trend_compare.empty:
+        st.markdown("**Ananea vs Peers Trend**")
+        trend_chart = trend_compare.pivot(index="Date", columns="Series", values="Score").sort_index()
+        st.line_chart(trend_chart, use_container_width=True)
 
     col1, col2 = st.columns([2, 1])
     with col1:
