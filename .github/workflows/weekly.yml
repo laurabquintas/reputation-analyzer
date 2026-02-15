@@ -7,83 +7,31 @@ on:
 
 jobs:
   test:
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
     permissions:
       contents: read
     steps:
       - uses: actions/checkout@v4
 
-      - uses: actions/setup-python@v5
-        with:
-          python-version: "3.11"
+      - name: Show Python version on self-hosted runner
+        run: python3 --version
 
       - name: Install deps
         run: |
-          python -m pip install -U pip
-          pip install -r requirements.txt
-          pip install pytest
+          python3 -m pip install -U pip
+          python3 -m pip install -r requirements.txt
+          python3 -m pip install pytest
 
       - name: Run unit tests
-        run: pytest -q
+        run: python3 -m pytest -q
 
-  scrape-nonexpedia:
-    runs-on: ubuntu-latest
-    needs: test
-    permissions:
-      contents: read
-    outputs:
-      scrape_outcome: ${{ steps.scrape_nonexpedia.outcome }}
-    steps:
-      - uses: actions/checkout@v4
-
-      - uses: actions/setup-python@v5
-        with:
-          python-version: "3.11"
-
-      - name: Install deps
-        run: |
-          python -m pip install -U pip
-          pip install -r requirements.txt
-
-      - name: Run non-Expedia scraping
-        id: scrape_nonexpedia
-        continue-on-error: true
-        env:
-          GOOGLE_MAPS_API_KEY: ${{ secrets.GOOGLE_MAPS_API_KEY }}
-          GOOGLE_PLACES_API_KEY: ${{ secrets.GOOGLE_PLACES_API_KEY }}
-          TRIPADVISOR_API_KEY: ${{ secrets.TRIPADVISOR_API_KEY }}
-        run: |
-          python -m src.run \
-            --sites BOOKING TRIPADVISOR GOOGLE HOLIDAYCHECK \
-            --summary-json data/run_summary_nonexpedia.json
-
-      - name: Upload non-Expedia summary
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: run-summary-nonexpedia
-          path: data/run_summary_nonexpedia.json
-          if-no-files-found: warn
-
-      - name: Upload non-Expedia CSVs
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: csv-nonexpedia
-          path: |
-            data/booking_scores.csv
-            data/tripadvisor_scores.csv
-            data/google_scores.csv
-            data/holidaycheck_scores.csv
-          if-no-files-found: warn
-
-  scrape-expedia:
+  scrape-all:
     runs-on: self-hosted
     needs: test
     permissions:
       contents: read
     outputs:
-      scrape_outcome: ${{ steps.scrape_expedia.outcome }}
+      scrape_outcome: ${{ steps.scrape.outcome }}
     steps:
       - uses: actions/checkout@v4
 
@@ -95,32 +43,28 @@ jobs:
           python3 -m pip install -U pip
           python3 -m pip install -r requirements.txt
 
-      - name: Run Expedia scraping (self-hosted)
-        id: scrape_expedia
+      - name: Run weekly scraping
+        id: scrape
         continue-on-error: true
+        env:
+          GOOGLE_MAPS_API_KEY: ${{ secrets.GOOGLE_MAPS_API_KEY }}
+          GOOGLE_PLACES_API_KEY: ${{ secrets.GOOGLE_PLACES_API_KEY }}
+          TRIPADVISOR_API_KEY: ${{ secrets.TRIPADVISOR_API_KEY }}
         run: |
-          python3 -m src.run --sites EXPEDIA --summary-json data/run_summary_expedia.json
+          python3 -m src.run --summary-json data/run_summary.json
 
-      - name: Upload Expedia summary
+      - name: Upload run summary
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: run-summary-expedia
-          path: data/run_summary_expedia.json
-          if-no-files-found: warn
-
-      - name: Upload Expedia CSV
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: csv-expedia
-          path: data/expedia_scores.csv
+          name: run-summary
+          path: data/run_summary.json
           if-no-files-found: warn
 
   commit-data:
     if: always()
-    runs-on: ubuntu-latest
-    needs: [scrape-nonexpedia, scrape-expedia]
+    runs-on: self-hosted
+    needs: scrape-all
     permissions:
       contents: write
     steps:
@@ -128,43 +72,13 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Download non-Expedia CSV artifact
-        continue-on-error: true
-        uses: actions/download-artifact@v4
-        with:
-          name: csv-nonexpedia
-          path: _artifacts/nonexpedia
-
-      - name: Download Expedia CSV artifact
-        continue-on-error: true
-        uses: actions/download-artifact@v4
-        with:
-          name: csv-expedia
-          path: _artifacts/expedia
-
-      - name: Merge CSV artifacts into data/
-        run: |
-          mkdir -p data
-          cp -f _artifacts/nonexpedia/*.csv data/ || true
-          cp -f _artifacts/expedia/*.csv data/ || true
-
-      - name: Download run summaries
+      - name: Download run summary
         if: always()
         continue-on-error: true
         uses: actions/download-artifact@v4
         with:
-          pattern: run-summary-*
-          path: _artifacts/summaries
-          merge-multiple: true
-
-      - name: Upload combined summaries
-        if: always()
-        continue-on-error: true
-        uses: actions/upload-artifact@v4
-        with:
-          name: run-summaries-combined
-          path: _artifacts/summaries
-          if-no-files-found: warn
+          name: run-summary
+          path: data
 
       - name: Commit updated CSV files
         run: |
@@ -179,8 +93,8 @@ jobs:
           git commit -m "chore(data): weekly score update $(date -u +%F)"
           git push
 
-      - name: Mark workflow failed if any scrape failed
-        if: needs['scrape-nonexpedia'].outputs.scrape_outcome == 'failure' || needs['scrape-expedia'].outputs.scrape_outcome == 'failure'
+      - name: Mark workflow failed if scraping failed
+        if: needs['scrape-all'].outputs.scrape_outcome == 'failure'
         run: |
-          echo "One or more scraper jobs failed. Partial CSV updates were still committed."
+          echo "One or more scrapers failed. Partial CSV updates were still committed."
           exit 1

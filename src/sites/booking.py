@@ -95,6 +95,17 @@ DATE_COL_RE = re.compile(r"^\d{4}-\d{2}-\d{2}$")
 
 
 # -------------------------- Scraper logic -------------------------- #
+def sanitize_booking_score(score: float | None) -> float | None:
+    if score is None:
+        return None
+    try:
+        value = float(score)
+    except (TypeError, ValueError):
+        return None
+    if 0.0 <= value <= 10.0:
+        return value
+    print(f"[warn] booking score out of expected range 0-10: {value}. Ignoring value.")
+    return None
 
 def fetch_booking_rating(url: str, session: requests.Session, retries: int = DEFAULT_RETRIES) -> float | None:
     """
@@ -123,7 +134,7 @@ def fetch_booking_rating(url: str, session: requests.Session, retries: int = DEF
                     if isinstance(agg, dict) and "ratingValue" in agg:
                         val = str(agg.get("ratingValue"))
                         # Normalize decimal separator & cast
-                        return float(val.replace(",", "."))
+                        return sanitize_booking_score(float(val.replace(",", ".")))
 
         except Exception as e:
             print(f"[warn] {url} attempt {attempt + 1} failed: {e}")
@@ -202,6 +213,7 @@ def main():
     for i, (hotel, url) in enumerate(URLS.items(), start=1):
         print(f"{i:02d}/{len(URLS)} → {hotel}")
         score = fetch_booking_rating(url, session, retries=args.retries)
+        score = sanitize_booking_score(score)
         new_scores[hotel] = score
         if score is not None:
             print(f"   {score}/10")

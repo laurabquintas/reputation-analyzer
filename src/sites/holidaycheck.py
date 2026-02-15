@@ -91,6 +91,27 @@ URLS = {
 DATE_COL_RE = re.compile(r"\d{4}-\d{2}-\d{2}")  # YYYY-MM-DD
 # -------------------------- Scraper logic -------------------------- #
 
+def _normalize_to_six_scale(score: float, best_rating: float | None) -> float:
+    """
+    Convert rating to HolidayCheck's 0-6 scale.
+    """
+    if best_rating is None or best_rating == 6:
+        return score
+    if best_rating <= 0:
+        return score
+    return round((score / best_rating) * 6.0, 2)
+
+
+def sanitize_holidaycheck_score(score: float | None) -> float | None:
+    if score is None:
+        return None
+    try:
+        value = float(score)
+    except (TypeError, ValueError):
+        return None
+    return max(0.0, min(6.0, value))
+
+
 def get_holidaycheck_score(url: str, timeout: int = 15) -> float | None:
     """
     Fetch overall HolidayCheck score (0–6 scale) from a hotel page.
@@ -113,14 +134,23 @@ def get_holidaycheck_score(url: str, timeout: int = 15) -> float | None:
         if not raw:
             continue
         m = re.search(
-            r'"aggregateRating"\s*:\s*\{[^{}]*?"ratingValue"\s*:\s*"?(?P<score>\d+(?:[.,]\d+)?)"?',
+            r'"aggregateRating"\s*:\s*\{[^{}]*?"ratingValue"\s*:\s*"?(?P<score>\d+(?:[.,]\d+)?)"?'
+            r'(?:[^{}]*?"bestRating"\s*:\s*"?(?P<best>\d+(?:[.,]\d+)?)"?)?[^{}]*?\}',
             raw,
             flags=re.IGNORECASE | re.DOTALL,
         )
         if not m:
             continue
         try:
-            return float(m.group("score").replace(",", "."))
+            score = float(m.group("score").replace(",", "."))
+            best = m.group("best")
+            best_rating = float(best.replace(",", ".")) if best else None
+            normalized = _normalize_to_six_scale(score, best_rating)
+            if normalized > 6.0 and score > 6.0:
+                # Guard for pages where bestRating is missing but score clearly
+                # appears to be on a 10-point scale.
+                normalized = round(score * 0.6, 2)
+            return sanitize_holidaycheck_score(normalized)
         except ValueError:
             pass
 
@@ -133,7 +163,7 @@ def get_holidaycheck_score(url: str, timeout: int = 15) -> float | None:
 
     raw = m.group(1).replace(",", ".")
     try:
-        return float(raw)
+        return sanitize_holidaycheck_score(float(raw))
     except ValueError:
         return None
 
@@ -209,6 +239,7 @@ def main():
         except Exception as exc:
             print(f"   ERROR: {exc}")
             score = None
+        score = sanitize_holidaycheck_score(score)
         new_scores[hotel] = score
         if score is not None:
             print(f"   {score}/6")

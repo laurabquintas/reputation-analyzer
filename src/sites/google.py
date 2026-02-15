@@ -90,6 +90,18 @@ DATE_COL_RE = re.compile(r"\d{4}-\d{2}-\d{2}")  # YYYY-MM-DD
 
 # -------------------------- API logic ------------------------------ #
 
+def sanitize_google_score(score: float | None) -> float | None:
+    if score is None:
+        return None
+    try:
+        value = float(score)
+    except (TypeError, ValueError):
+        return None
+    if 0.0 <= value <= 5.0:
+        return value
+    print(f"[warn] google score out of expected range 0-5: {value}. Ignoring value.")
+    return None
+
 def get_google_rating(query: str, api_key: str, timeout: int = DEFAULT_TIMEOUT) -> float | None:
     """
     Call Google Places Text Search for the given query and return the rating (0–5).
@@ -132,7 +144,7 @@ def get_google_rating(query: str, api_key: str, timeout: int = DEFAULT_TIMEOUT) 
         return None
 
     try:
-        return float(rating)
+        return sanitize_google_score(float(rating))
     except (TypeError, ValueError):
         return None
 
@@ -240,6 +252,7 @@ def main():
             print(f"   ERROR: {e}")
             score = None
 
+        score = sanitize_google_score(score)
         new_scores[hotel] = score
 
         if score is not None:
