@@ -82,6 +82,18 @@ LOCATION_IDS ={
 DATE_COL_RE = re.compile(r"\d{4}-\d{2}-\d{2}")  # YYYY-MM-DD
 # -------------------------- Scraper logic -------------------------- #
 
+def sanitize_tripadvisor_score(score: float | None) -> float | None:
+    if score is None:
+        return None
+    try:
+        value = float(score)
+    except (TypeError, ValueError):
+        return None
+    if 0.0 <= value <= 5.0:
+        return value
+    print(f"[warn] tripadvisor score out of expected range 0-5: {value}. Ignoring value.")
+    return None
+
 
 def ta_get_rating(location_id: str, api_key: str):
     url = f"https://api.content.tripadvisor.com/api/v1/location/{location_id}/details"
@@ -101,6 +113,7 @@ def ta_get_rating(location_id: str, api_key: str):
         rating = float(rating_raw) if rating_raw is not None else None
     except ValueError:
         rating = None
+    rating = sanitize_tripadvisor_score(rating)
 
     print("Parsed rating:", rating, "num_reviews:", num_reviews)
     return rating, num_reviews
@@ -180,6 +193,7 @@ def main():
     for i, (hotel, url) in enumerate(LOCATION_IDS.items(), start=1):
         print(f"{i:02d}/{len(LOCATION_IDS)} → {hotel}")
         score, n = ta_get_rating(url, api_key=api_key)
+        score = sanitize_tripadvisor_score(score)
         new_scores[hotel] = score
         if score is not None:
             print(f"   {score}/5")

@@ -72,7 +72,7 @@ EXPEDIA_URLS: Dict[str, str] = {
     "PortoBay Falésia" : "https://euro.expedia.net/Albufeira-Hotels-PortoBay-Falesia.h1787641.Hotel-Information?pwaDialog=product-reviews",
     "Regency Salgados Hotel & Spa" : "https://euro.expedia.net/Albufeira-Hotels-Regency-Salgados-Hotel-Spa.h67650702.Hotel-Information?pwaDialog=product-reviews",
     "NAU São Rafael Atlântico" : "https://euro.expedia.net/Albufeira-Hotels-Sao-Rafael-Suite-Hotel.h1210300.Hotel-Information?pwaDialogNested=PropertyDetailsReviewsBreakdownDialog",
-    "NAU Salgados Dunas Suites" : "",
+    "NAU Salgados Dunas Suites" : "https://www.expedia.com/Albufeira-Hotels-The-Westin-Salgados-Beach-Resort.h3639949.Hotel-Information?pwaDialogNested=PropertyDetailsReviewsBreakdownDialog",
     "Vidamar Resort Hotel Algarve" : "https://euro.expedia.net/Albufeira-Hotels-VidaMar-Resort-Hotel-Algarve.h5670748.Hotel-Information?pwaDialog=product-reviews"
 }
 
@@ -181,8 +181,19 @@ def _safe_float(value: str | None) -> Optional[float]:
         score = float(value)
     except (TypeError, ValueError):
         return None
-    if 0.0 <= score <= 10.0:
-        return score
+    return score
+
+
+def validate_expedia_score(score: float | None) -> float | None:
+    if score is None:
+        return None
+    try:
+        value = float(score)
+    except (TypeError, ValueError):
+        return None
+    if 0.0 <= value <= 10.0:
+        return value
+    print(f"   WARN: expedia score out of expected range 0-10: {value}. Ignoring value.")
     return None
 
 
@@ -353,7 +364,7 @@ def get_expedia_score(
     # 1) Prefer JSON-LD when present
     score = _extract_jsonld_score(soup)
     if score is not None:
-        return score
+        return validate_expedia_score(score)
 
     # 2) Limit search to the Reviews section
     reviews_section = soup.find("section", id="Reviews")
@@ -364,17 +375,17 @@ def get_expedia_score(
     # 3) Semantic class-based score
     score = _extract_semantic_div_score(reviews_section)
     if score is not None:
-        return score
+        return validate_expedia_score(score)
 
     # 4) Textual fallback from page text
     score = _extract_textual_score(page_text)
     if score is not None:
-        return score
+        return validate_expedia_score(score)
 
     # 5) Embedded JSON fallback
     score = _extract_embedded_json_score(html)
     if score is not None:
-        return score
+        return validate_expedia_score(score)
 
     if debug:
         details = debug_expedia_score_candidates(url, timeout=timeout, retries=retries)
@@ -499,6 +510,7 @@ def main():
             retries=args.retries,
             debug=args.debug,
         )
+        score = validate_expedia_score(score)
         new_scores[hotel] = score
 
         if score is not None:
