@@ -134,6 +134,41 @@ jobs:
           git commit -m "chore(data): weekly score update $(date -u +%F)"
           git push
 
+      - name: Compose alert email body
+        id: compose_alert
+        if: needs['scrape-all'].outputs.has_issues == 'true'
+        run: |
+          python3 - <<'PY'
+          import json
+          import os
+          from pathlib import Path
+
+          summary_path = Path("data/run_summary.json")
+          lines = ["Execution summary:"]
+
+          if summary_path.exists():
+            data = json.loads(summary_path.read_text(encoding="utf-8"))
+            for result in data.get("results", []):
+              site = result.get("site", "UNKNOWN")
+              status = result.get("status", "unknown")
+              message = result.get("message", "")
+              duration = result.get("duration_seconds", 0)
+              lines.append(f"- {site}: {status} | {message} ({duration}s)")
+          else:
+            lines.append("- run_summary.json not found.")
+
+          lines.extend([
+            "",
+            f"Run: {os.environ['GITHUB_SERVER_URL']}/{os.environ['GITHUB_REPOSITORY']}/actions/runs/{os.environ['GITHUB_RUN_ID']}",
+          ])
+
+          body = "\n".join(lines)
+          with open(os.environ["GITHUB_OUTPUT"], "a", encoding="utf-8") as fh:
+            fh.write("body<<EOF\n")
+            fh.write(body)
+            fh.write("\nEOF\n")
+          PY
+
       - name: Send alert email on issues
         if: needs['scrape-all'].outputs.has_issues == 'true'
         uses: dawidd6/action-send-mail@v3
@@ -146,10 +181,7 @@ jobs:
           to: ${{ secrets.ALERT_EMAIL_TO }}
           from: ${{ secrets.ALERT_EMAIL_FROM }}
           secure: true
-          body: |
-            Weekly workflow finished with issues.
-            Issue count: ${{ needs['scrape-all'].outputs.issue_count }}
-            Run: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+          body: ${{ steps.compose_alert.outputs.body }}
           attachments: data/run_summary.json
 
       - name: Mark workflow failed if scraping failed
