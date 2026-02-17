@@ -77,6 +77,7 @@ jobs:
         run: |
           python3 - <<'PY'
           import json
+          import os
           from pathlib import Path
 
           p = Path("data/run_summary.json")
@@ -88,7 +89,7 @@ jobs:
             issue_count = sum(1 for r in results if str(r.get("status", "")).lower() != "ok")
             has_issues = issue_count > 0
 
-          with open("${GITHUB_OUTPUT}", "a", encoding="utf-8") as fh:
+          with open(os.environ["GITHUB_OUTPUT"], "a", encoding="utf-8") as fh:
             fh.write(f"has_issues={'true' if has_issues else 'false'}\n")
             fh.write(f"issue_count={issue_count}\n")
           PY
