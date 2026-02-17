@@ -93,6 +93,25 @@ USER_AGENTS = [
 
 
 def _expedia_url_candidates(url: str) -> list[str]:
+    """
+    Generate fallback Expedia URL variants for a single property URL.
+
+    Rationale:
+    Expedia may block or rate-limit one host/query combination while another
+    equivalent variant still works, especially on automated runners.
+
+    Variant strategy:
+    1. Keep the original URL first.
+    2. Try all known Expedia hosts for the same path:
+       - euro.expedia.net
+       - www.expedia.com
+       - www.expedia.co.uk
+    3. For each host, include:
+       - original query params
+       - a version with pwaDialog* params removed
+
+    This improves fetch resilience but does not bypass hard anti-bot blocks.
+    """
     if not url:
         return []
 
