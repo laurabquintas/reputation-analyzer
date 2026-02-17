@@ -63,6 +63,14 @@ jobs:
           path: data/run_summary.json
           if-no-files-found: warn
 
+      - name: Upload updated CSV files
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: updated-csvs
+          path: data/*.csv
+          if-no-files-found: warn
+
       - name: Evaluate run summary
         id: evaluate
         if: always()
@@ -102,6 +110,14 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: run-summary
+          path: data
+
+      - name: Download updated CSV files
+        if: always()
+        continue-on-error: true
+        uses: actions/download-artifact@v4
+        with:
+          name: updated-csvs
           path: data
 
       - name: Commit updated CSV files
