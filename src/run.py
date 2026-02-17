@@ -201,6 +201,11 @@ def run_site(site: str, config: SiteConfig, date_col: str, python_cmd: str, time
         print(f"::warning title={site}::{message}")
         status = "warning"
         warning = True
+    elif scored < total:
+        message = f"Collected scores for {scored}/{total} hotels"
+        print(f"::warning title={site}::{message}")
+        status = "warning"
+        warning = True
     else:
         message = f"Collected scores for {scored}/{total} hotels"
         status = "ok"
