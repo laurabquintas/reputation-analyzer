@@ -4,6 +4,7 @@ import re
 from pathlib import Path
 
 import pandas as pd
+import plotly.graph_objects as go
 import streamlit as st
 
 
@@ -107,13 +108,6 @@ def set_manual_score(source: str, hotel: str, date_col: str, score: float) -> No
     df.to_csv(csv_path, sep=";", index_label="Hotel")
 
 
-def missing_for_date(df: pd.DataFrame, date_col: str) -> list[str]:
-    if date_col not in df.columns:
-        return []
-    series = pd.to_numeric(df[date_col], errors="coerce")
-    return df.loc[series.isna(), "Hotel"].astype(str).tolist()
-
-
 def scores_over_time(df: pd.DataFrame, source: str) -> pd.DataFrame:
     date_cols = [c for c in df.columns if DATE_COL_RE.fullmatch(str(c))]
     if not date_cols:
@@ -131,14 +125,11 @@ def scores_over_time(df: pd.DataFrame, source: str) -> pd.DataFrame:
     return long_df.dropna(subset=["Date"])
 
 
-def latest_snapshot(history_df: pd.DataFrame) -> pd.DataFrame:
+def latest_scorecard_table(history_df: pd.DataFrame, sources: list[str]) -> pd.DataFrame:
     if history_df.empty:
-        return history_df
-    latest_date = history_df["Date"].max()
-    return history_df[history_df["Date"] == latest_date].copy()
+        return pd.DataFrame()
 
-
-def ananea_scorecard_rows(history_df: pd.DataFrame, sources: list[str]) -> pd.DataFrame:
+    competitors = sorted([h for h in history_df["Hotel"].dropna().unique().tolist() if h != ANANEA_HOTEL])
     rows = []
     for source in sources:
         src = history_df[(history_df["Source"] == source) & history_df["Score"].notna()]
@@ -149,64 +140,47 @@ def ananea_scorecard_rows(history_df: pd.DataFrame, sources: list[str]) -> pd.Da
         ananea = latest[latest["Hotel"] == ANANEA_HOTEL]
         if ananea.empty:
             continue
-        ananea_score = float(ananea["Score"].iloc[0])
-        peers = latest[latest["Hotel"] != ANANEA_HOTEL]["Score"].dropna()
-        peers_avg = float(peers.mean()) if not peers.empty else None
-        delta_vs_peers = ananea_score - peers_avg if peers_avg is not None else None
-        rows.append(
-            {
-                "Source": source,
-                "Date": latest_date,
-                "Ananea Score": round(ananea_score, 2),
-                "Peers Avg": round(peers_avg, 2) if peers_avg is not None else None,
-                "Delta vs Peers": round(delta_vs_peers, 2) if delta_vs_peers is not None else None,
-                "Peers Count": int(peers.count()),
-            }
-        )
+
+        row: dict[str, object] = {
+            "Source": source,
+            "Date": latest_date.date().isoformat(),
+            ANANEA_HOTEL: round(float(ananea["Score"].iloc[0]), 2),
+        }
+        for competitor in competitors:
+            value = latest.loc[latest["Hotel"] == competitor, "Score"]
+            row[competitor] = round(float(value.iloc[0]), 2) if not value.empty else None
+        rows.append(row)
+
     return pd.DataFrame(rows)
 
 
-def ananea_vs_peers_trend(history_df: pd.DataFrame, sources: list[str]) -> pd.DataFrame:
-    rows = []
-    for source in sources:
-        src = history_df[(history_df["Source"] == source) & history_df["Score"].notna()]
-        if src.empty:
-            continue
-        for date in sorted(src["Date"].dropna().unique()):
-            point = src[src["Date"] == date]
-            ananea = point[point["Hotel"] == ANANEA_HOTEL]["Score"].dropna()
-            peers = point[point["Hotel"] != ANANEA_HOTEL]["Score"].dropna()
-            if not ananea.empty:
-                rows.append({"Date": date, "Series": f"{source} | Ananea", "Score": float(ananea.iloc[0])})
-            if not peers.empty:
-                rows.append({"Date": date, "Series": f"{source} | Peers Avg", "Score": float(peers.mean())})
-    return pd.DataFrame(rows)
+def style_scorecard(df: pd.DataFrame) -> pd.io.formats.style.Styler:
+    competitor_cols = [c for c in df.columns if c not in {"Source", "Date", ANANEA_HOTEL}]
 
+    def style_row(row: pd.Series) -> list[str]:
+        styles = []
+        ananea = pd.to_numeric(pd.Series([row.get(ANANEA_HOTEL)]), errors="coerce").iloc[0]
+        for col in df.columns:
+            if col in {"Source", "Date"}:
+                styles.append("")
+            elif col == ANANEA_HOTEL:
+                styles.append("font-weight: 700;")
+            else:
+                value = pd.to_numeric(pd.Series([row.get(col)]), errors="coerce").iloc[0]
+                if pd.isna(value) or pd.isna(ananea):
+                    styles.append("")
+                elif value > ananea:
+                    styles.append("color: #b91c1c; font-weight: 600;")
+                elif value < ananea:
+                    styles.append("color: #15803d; font-weight: 600;")
+                else:
+                    styles.append("")
+        return styles
 
-def ananea_latest_comparison(history_df: pd.DataFrame, sources: list[str]) -> pd.DataFrame:
-    rows = []
-    for source in sources:
-        src = history_df[(history_df["Source"] == source) & history_df["Score"].notna()]
-        if src.empty:
-            continue
-        latest_date = src["Date"].max()
-        latest = src[src["Date"] == latest_date]
-        ananea = latest[latest["Hotel"] == ANANEA_HOTEL]
-        if ananea.empty:
-            continue
-        ananea_score = float(ananea["Score"].iloc[0])
-        for _, row in latest[latest["Hotel"] != ANANEA_HOTEL].iterrows():
-            rows.append(
-                {
-                    "Source": source,
-                    "Date": latest_date,
-                    "Hotel": row["Hotel"],
-                    "Hotel Score": round(float(row["Score"]), 2),
-                    "Ananea Score": round(ananea_score, 2),
-                    "Ananea - Hotel": round(ananea_score - float(row["Score"]), 2),
-                }
-            )
-    return pd.DataFrame(rows)
+    return (
+        df.style.apply(style_row, axis=1)
+        .format(precision=2, na_rep="-", subset=[ANANEA_HOTEL, *competitor_cols])
+    )
 
 
 def ananea_competitive_index(history_df: pd.DataFrame, sources: list[str]) -> dict[str, float | int]:
@@ -216,7 +190,7 @@ def ananea_competitive_index(history_df: pd.DataFrame, sources: list[str]) -> di
     - peers_index: average normalized peers score across selected sources
     - edge_pp: Ananea advantage/disadvantage in percentage points
     """
-    rows = ananea_scorecard_rows(history_df, sources)
+    rows = latest_scorecard_table(history_df, sources)
     if rows.empty:
         return {"ananea_index": float("nan"), "peers_index": float("nan"), "edge_pp": float("nan"), "sources_used": 0}
 
@@ -224,8 +198,12 @@ def ananea_competitive_index(history_df: pd.DataFrame, sources: list[str]) -> di
     for _, row in rows.iterrows():
         source = str(row["Source"])
         scale = SCALE_MAX.get(source, 10.0)
-        ananea_score = row.get("Ananea Score")
-        peers_avg = row.get("Peers Avg")
+        ananea_score = row.get(ANANEA_HOTEL)
+        competitor_values = pd.to_numeric(
+            pd.Series([row[c] for c in rows.columns if c not in {"Source", "Date", ANANEA_HOTEL}]),
+            errors="coerce",
+        ).dropna()
+        peers_avg = competitor_values.mean() if not competitor_values.empty else float("nan")
         if pd.isna(ananea_score):
             continue
         an = float(ananea_score) / float(scale) * 100.0
@@ -246,6 +224,86 @@ def ananea_competitive_index(history_df: pd.DataFrame, sources: list[str]) -> di
         "edge_pp": round(edge_pp, 2) if pd.notna(edge_pp) else float("nan"),
         "sources_used": len(an_values),
     }
+
+
+def source_one_year_figure(history_df: pd.DataFrame, source: str) -> go.Figure | None:
+    src = history_df[(history_df["Source"] == source) & history_df["Score"].notna()].copy()
+    if src.empty:
+        return None
+
+    max_date = src["Date"].max()
+    min_date = max_date - pd.DateOffset(years=1)
+    src = src[src["Date"] >= min_date].sort_values("Date")
+    if src.empty:
+        return None
+
+    fig = go.Figure()
+    competitors = sorted([h for h in src["Hotel"].dropna().unique().tolist() if h != ANANEA_HOTEL])
+    for hotel in [ANANEA_HOTEL, *competitors]:
+        hotel_df = src[src["Hotel"] == hotel]
+        if hotel_df.empty:
+            continue
+        is_ananea = hotel == ANANEA_HOTEL
+        fig.add_trace(
+            go.Scatter(
+                x=hotel_df["Date"],
+                y=hotel_df["Score"],
+                mode="lines+markers",
+                name=hotel,
+                line={"width": 4 if is_ananea else 1.8},
+                marker={"size": 9 if is_ananea else 6},
+                opacity=1.0 if is_ananea else 0.6,
+            )
+        )
+
+    fig.update_layout(
+        margin={"l": 20, "r": 20, "t": 20, "b": 20},
+        height=360,
+        legend_title_text="Hotel",
+        xaxis_title="Month",
+        yaxis_title=f"Score (max {SCALE_MAX.get(source, 10):.0f})",
+    )
+    fig.update_xaxes(dtick="M1", tickformat="%b %Y")
+    return fig
+
+
+def missing_or_zero_rows(df: pd.DataFrame, date_col: str) -> pd.DataFrame:
+    if date_col not in df.columns:
+        return pd.DataFrame(columns=["Hotel", "Issue", "Current Value"])
+
+    series = pd.to_numeric(df[date_col], errors="coerce")
+    missing_mask = series.isna()
+    zero_mask = series.eq(0)
+    flagged = df.loc[missing_mask | zero_mask, ["Hotel"]].copy()
+    if flagged.empty:
+        return pd.DataFrame(columns=["Hotel", "Issue", "Current Value"])
+
+    flagged["Issue"] = flagged.index.to_series().map(lambda idx: "Zero value" if bool(zero_mask.loc[idx]) else "Missing")
+    flagged["Current Value"] = series.loc[flagged.index].values
+    return flagged.sort_values(["Issue", "Hotel"]).reset_index(drop=True)
+
+
+def manual_pending_summary(source_dfs: dict[str, pd.DataFrame]) -> pd.DataFrame:
+    rows: list[dict[str, object]] = []
+    for source, df in source_dfs.items():
+        dates = source_date_columns(df)
+        if not dates:
+            continue
+        latest_date = dates[-1]
+        flagged = missing_or_zero_rows(df, latest_date)
+        if flagged.empty:
+            continue
+        for _, item in flagged.iterrows():
+            rows.append(
+                {
+                    "Source": source,
+                    "Date": latest_date,
+                    "Hotel": item["Hotel"],
+                    "Issue": item["Issue"],
+                    "Current Value": item["Current Value"],
+                }
+            )
+    return pd.DataFrame(rows)
 
 
 def main() -> None:
@@ -274,17 +332,13 @@ def main() -> None:
     selected_sources = st.multiselect("Sources", available_sources, default=available_sources)
 
     filtered = history_df[history_df["Source"].isin(selected_sources)].copy()
-    available_hotels = sorted(filtered["Hotel"].dropna().unique().tolist())
-    selected_hotels = st.multiselect("Hotels", available_hotels, default=available_hotels[:4] if len(available_hotels) > 4 else available_hotels)
-    filtered = filtered[filtered["Hotel"].isin(selected_hotels)]
-
     if filtered.empty:
         st.warning("No data for the selected filters.")
         return
 
     st.subheader("Ananea Scorecard")
-    st.caption("Focused comparison for Ananea Castelo Suites Hotel across selected sources.")
-    scorecard = ananea_scorecard_rows(history_df, selected_sources)
+    st.caption("Latest available score per source. Competitor values are red when higher than Ananea and green when lower.")
+    scorecard = latest_scorecard_table(history_df, selected_sources)
     kpi = ananea_competitive_index(history_df, selected_sources)
 
     kpi_col1, kpi_col2, kpi_col3 = st.columns(3)
@@ -303,73 +357,36 @@ def main() -> None:
             st.metric("Edge vs Peers", f"{kpi['edge_pp']:+.2f} pp")
         else:
             st.metric("Edge vs Peers", "N/A")
+    st.caption(
+        "Competitive Index formula: for each selected source, normalize score to 0-100 "
+        f"(score / source max * 100), then average across sources. "
+        "Peers Index uses the average competitor score per source."
+    )
 
     if scorecard.empty:
         st.warning("No Ananea scorecard data available for the selected sources.")
     else:
-        metric_cols = st.columns(max(1, len(scorecard)))
-        for i, row in scorecard.reset_index(drop=True).iterrows():
-            value = f"{row['Ananea Score']:.2f}/{SCALE_MAX.get(row['Source'], 10):.0f}"
-            delta = None
-            if pd.notna(row["Delta vs Peers"]):
-                delta = f"{row['Delta vs Peers']:+.2f} vs peers"
-            metric_cols[i].metric(label=f"{row['Source']} ({row['Date'].date()})", value=value, delta=delta)
-        st.dataframe(scorecard.sort_values("Source"), use_container_width=True)
+        st.dataframe(style_scorecard(scorecard.sort_values("Source")), use_container_width=True)
 
-    st.subheader("Ananea vs Other Hotels")
-    compare_latest = ananea_latest_comparison(history_df, selected_sources)
-    if compare_latest.empty:
-        st.warning("No latest-date comparison rows available.")
-    else:
-        st.dataframe(
-            compare_latest.sort_values(["Source", "Ananea - Hotel"], ascending=[True, False]),
-            use_container_width=True,
-        )
-
-    trend_compare = ananea_vs_peers_trend(history_df, selected_sources)
-    if not trend_compare.empty:
-        st.markdown("**Ananea vs Peers Trend**")
-        trend_chart = trend_compare.pivot(index="Date", columns="Series", values="Score").sort_index()
-        st.line_chart(trend_chart, use_container_width=True)
-
-    col1, col2 = st.columns([2, 1])
-    with col1:
-        trend_by_source = (
-            filtered.dropna(subset=["Score"])
-            .groupby(["Date", "Source"], as_index=False)["Score"]
-            .mean()
-        )
-        st.markdown("**Average Score Trend by Source**")
-        source_chart_df = (
-            trend_by_source.pivot(index="Date", columns="Source", values="Score")
-            .sort_index()
-        )
-        st.line_chart(source_chart_df, use_container_width=True)
-    with col2:
-        st.metric("Hotels", int(filtered["Hotel"].nunique()))
-        st.metric("Sources", int(filtered["Source"].nunique()))
-        st.metric("Date Range", f"{filtered['Date'].min().date()} to {filtered['Date'].max().date()}")
-
-    st.subheader("Hotel Trends")
-    st.caption("Each line represents a Hotel + Source series.")
-    hotel_series = (
-        filtered.dropna(subset=["Score"])
-        .assign(Series=lambda d: d["Hotel"] + " | " + d["Source"])
-        .pivot(index="Date", columns="Series", values="Score")
-        .sort_index()
-    )
-    st.line_chart(hotel_series, use_container_width=True)
-
-    st.subheader("Latest Snapshot")
-    latest_df = latest_snapshot(filtered)
-    latest_df["Date"] = latest_df["Date"].dt.strftime("%Y-%m-%d")
-    st.dataframe(
-        latest_df[["Hotel", "Source", "Date", "Score"]].sort_values(["Hotel", "Source"]),
-        use_container_width=True,
-    )
+    st.subheader("Source Trends (Last 12 Months)")
+    st.caption("One chart per selected source. Points mark collection dates.")
+    for source in selected_sources:
+        fig = source_one_year_figure(history_df, source)
+        if fig is None:
+            st.warning(f"{source}: no score history available in the last year.")
+            continue
+        st.markdown(f"**{source}**")
+        st.plotly_chart(fig, use_container_width=True)
 
     st.subheader("Manual Missing Values")
     st.caption("Use this to fill scores when scraping failed. Changes are written directly to CSV files in data/.")
+
+    pending = manual_pending_summary(source_dfs)
+    if pending.empty:
+        st.success("No missing or zero values pending on the latest date for each source.")
+    else:
+        st.warning("Missing/zero values detected (latest date per source):")
+        st.dataframe(pending.sort_values(["Source", "Issue", "Hotel"]), use_container_width=True)
 
     editable_sources = [s for s in SOURCES if s in source_dfs]
     source = st.selectbox("Source", editable_sources, index=0)
@@ -381,7 +398,8 @@ def main() -> None:
         return
 
     selected_date = st.selectbox("Date", list(reversed(date_options)), index=0)
-    missing_hotels = missing_for_date(src_df, selected_date)
+    flagged_rows = missing_or_zero_rows(src_df, selected_date)
+    missing_hotels = flagged_rows["Hotel"].astype(str).tolist()
     hotel_options = missing_hotels if missing_hotels else sorted(src_df["Hotel"].astype(str).tolist())
     hotel = st.selectbox("Hotel", hotel_options, index=0)
     hotel_link = HOTEL_LINKS.get(source, {}).get(hotel)
@@ -392,9 +410,13 @@ def main() -> None:
         st.caption("No direct hotel link configured for this source/hotel.")
 
     if missing_hotels:
-        st.info(f"Missing for {source} on {selected_date}: {len(missing_hotels)} hotel(s)")
+        st.info(
+            f"Needs input for {source} on {selected_date}: "
+            + ", ".join(missing_hotels)
+        )
+        st.dataframe(flagged_rows, use_container_width=True)
     else:
-        st.info(f"No missing values for {source} on {selected_date}. You can still overwrite an existing value.")
+        st.info(f"No missing/zero values for {source} on {selected_date}. You can still overwrite an existing value.")
 
     max_scale = SCALE_MAX.get(source, 10.0)
     score = st.number_input(
