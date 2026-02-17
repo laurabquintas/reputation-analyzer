@@ -93,10 +93,6 @@ USER_AGENTS = [
 
 
 def _expedia_url_candidates(url: str) -> list[str]:
-    """
-    Build fallback URL variants. Some Expedia hosts/queries are blocked
-    depending on client IP (common on CI runners).
-    """
     if not url:
         return []
 
@@ -105,9 +101,9 @@ def _expedia_url_candidates(url: str) -> list[str]:
     query_pairs = parse_qsl(parsed.query, keep_blank_values=True)
     query_no_dialog = [(k, v) for (k, v) in query_pairs if not k.lower().startswith("pwadialog")]
 
-    host_variants = [parsed.netloc]
-    if parsed.netloc == "euro.expedia.net":
-        host_variants.extend(["www.expedia.com", "www.expedia.co.uk"])
+    # Try all known Expedia hostnames, regardless of which one was given
+    all_hosts = ["euro.expedia.net", "www.expedia.com", "www.expedia.co.uk"]
+    host_variants = [parsed.netloc] + [h for h in all_hosts if h != parsed.netloc]
 
     for host in host_variants:
         with_query = urlunsplit((parsed.scheme, host, parsed.path, parsed.query, parsed.fragment))
@@ -120,7 +116,6 @@ def _expedia_url_candidates(url: str) -> list[str]:
             if no_dialog not in out:
                 out.append(no_dialog)
     return out
-
 
 def fetch_page(url: str, timeout: int, retries: int) -> Optional[str]:
     """
