@@ -76,7 +76,7 @@ URLS = {
     "PortoBay Falésia": "https://www.booking.com/hotel/pt/porto-bay-falesia.en-gb.html",
     "Regency Salgados Hotel & Spa": "https://www.booking.com/hotel/pt/regency-salgados-amp-spa.en-gb.html",
     "NAU São Rafael Atlântico": "https://www.booking.com/hotel/pt/sao-rafael-suites-all-inclusive.en-gb.html",
-    "NAU Salgados Dunas Suites": "https://www.booking.com/hotel/pt/westin-salgados-beach-resort-algarve.en-gb.html",
+    "The Westin Salgados Beach Resort": "https://www.booking.com/hotel/pt/westin-salgados-beach-resort-algarve.en-gb.html",
     "Vidamar Resort Hotel Algarve": "https://www.booking.com/hotel/pt/vidamar-algarve-hotel.en-gb.html",
 }
 

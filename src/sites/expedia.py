@@ -72,7 +72,7 @@ EXPEDIA_URLS: Dict[str, str] = {
     "PortoBay Falésia" : "https://euro.expedia.net/Albufeira-Hotels-PortoBay-Falesia.h1787641.Hotel-Information?pwaDialog=product-reviews",
     "Regency Salgados Hotel & Spa" : "https://euro.expedia.net/Albufeira-Hotels-Regency-Salgados-Hotel-Spa.h67650702.Hotel-Information?pwaDialog=product-reviews",
     "NAU São Rafael Atlântico" : "https://euro.expedia.net/Albufeira-Hotels-Sao-Rafael-Suite-Hotel.h1210300.Hotel-Information?pwaDialogNested=PropertyDetailsReviewsBreakdownDialog",
-    "NAU Salgados Dunas Suites" : "https://www.expedia.com/Albufeira-Hotels-The-Westin-Salgados-Beach-Resort.h3639949.Hotel-Information",
+    "The Westin Salgados Beach Resort" : "https://www.expedia.com/Albufeira-Hotels-The-Westin-Salgados-Beach-Resort.h3639949.Hotel-Information",
     "Vidamar Resort Hotel Algarve" : "https://euro.expedia.net/Albufeira-Hotels-VidaMar-Resort-Hotel-Algarve.h5670748.Hotel-Information?pwaDialog=product-reviews"
 }
 

@@ -44,7 +44,7 @@ hotels:
     holidaycheck_url: ""
     zoover_url: ""
 
-  - name: "NAU Salgados Dunas Suites"
+  - name: "The Westin Salgados Beach Resort"
     aliases: []
     booking_url: "https://www.booking.com/hotel/pt/westin-salgados-beach-resort-algarve.en-gb.html"
     tripadvisor_url: ""
