@@ -75,7 +75,7 @@ LOCATION_IDS ={
                 'PortoBay Falésia': '625806',
                 'Regency Salgados Hotel & Spa': '23418643',
                 'NAU São Rafael Atlântico': '289104',
-                'NAU Salgados Dunas Suites': '1772673',
+                'The Westin Salgados Beach Resort': '1772673',
                 'Vidamar Resort Hotel Algarve': '3927147'
                 }
 

@@ -32,7 +32,7 @@ HOTEL_LINKS: dict[str, dict[str, str]] = {
         "PortoBay Falésia": "https://www.booking.com/hotel/pt/porto-bay-falesia.en-gb.html",
         "Regency Salgados Hotel & Spa": "https://www.booking.com/hotel/pt/regency-salgados-amp-spa.en-gb.html",
         "NAU São Rafael Atlântico": "https://www.booking.com/hotel/pt/sao-rafael-suites-all-inclusive.en-gb.html",
-        "NAU Salgados Dunas Suites": "https://www.booking.com/hotel/pt/westin-salgados-beach-resort-algarve.en-gb.html",
+        "The Westin Salgados Beach Resort": "https://www.booking.com/hotel/pt/westin-salgados-beach-resort-algarve.en-gb.html",
         "Vidamar Resort Hotel Algarve": "https://www.booking.com/hotel/pt/vidamar-algarve-hotel.en-gb.html",
     },
     "Expedia": {
@@ -47,7 +47,7 @@ HOTEL_LINKS: dict[str, dict[str, str]] = {
         "PortoBay Falésia": "https://www.holidaycheck.de/hi/portobay-falesia/44a47534-85c4-3114-a6da-472d82e16e29",
         "Regency Salgados Hotel & Spa": "https://www.holidaycheck.de/hi/regency-salgados-hotel-spa/b0478236-7644-46b4-8fde-bd6cb1832cf8",
         "NAU São Rafael Atlântico": "https://www.holidaycheck.de/hi/nau-sao-rafael-suites-all-inclusive/739da55a-710e-3514-83f6-8e01149442a5",
-        "NAU Salgados Dunas Suites": "https://www.holidaycheck.de/hi/nau-salgados-vila-das-lagoas-apartment/602ac74a-9c28-3d74-8dd9-37c47c53cd4a",
+        "The Westin Salgados Beach Resort": "https://www.holidaycheck.de/hi/nau-salgados-vila-das-lagoas-apartment/602ac74a-9c28-3d74-8dd9-37c47c53cd4a",
         "Vidamar Resort Hotel Algarve": "https://www.holidaycheck.de/hi/vidamar-hotel-resort-algarve/e641bc1e-59d5-37a0-832e-90e6bbb51977",
     },
     "Google": {
@@ -55,7 +55,7 @@ HOTEL_LINKS: dict[str, dict[str, str]] = {
         "PortoBay Falésia": "https://maps.app.goo.gl/DxodrUv4ub7qp89eA",
         "Regency Salgados Hotel & Spa": "https://maps.app.goo.gl/UZ6dAot3VC4eWV3U7",
         "NAU São Rafael Atlântico": "https://maps.app.goo.gl/G3Nfg49qBYQkR2xr5",
-        "NAU Salgados Dunas Suites": "https://maps.app.goo.gl/CxCEgfZkiXnzAEsy9",
+        "The Westin Salgados Beach Resort": "https://maps.app.goo.gl/CxCEgfZkiXnzAEsy9",
         "Vidamar Resort Hotel Algarve": "https://maps.app.goo.gl/etAzqPDxgnjJ2DDu7",
     },
 }

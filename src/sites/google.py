@@ -72,7 +72,7 @@ HOTEL_QUERIES: Dict[str, str] = {
     "PortoBay Falésia": "PortoBay Falésia, Albufeira, Portugal",
     "Regency Salgados Hotel & Spa": "Regency Salgados Hotel & Spa, Algarve, Portugal",
     "NAU São Rafael Atlântico": "NAU São Rafael Atlântico, Albufeira, Portugal",
-    "NAU Salgados Dunas Suites": "NAU Salgados Dunas Suites, Albufeira, Portugal",
+    "The Westin Salgados Beach Resort": "The Westin Salgados Beach Resort, Albufeira, Portugal",
     "Vidamar Resort Hotel Algarve": "Vidamar Resort Hotel Algarve, Albufeira, Portugal",
 }
 # Map of hotel display name 
@@ -81,7 +81,7 @@ URLS = {
     "PortoBay Falésia": "https://maps.app.goo.gl/DxodrUv4ub7qp89eA",
     "Regency Salgados Hotel & Spa": "https://maps.app.goo.gl/UZ6dAot3VC4eWV3U7",
     "NAU São Rafael Atlântico": "https://maps.app.goo.gl/G3Nfg49qBYQkR2xr5",
-    "NAU Salgados Dunas Suites": "https://maps.app.goo.gl/CxCEgfZkiXnzAEsy9",
+    "The Westin Salgados Beach Resort": "https://maps.app.goo.gl/CxCEgfZkiXnzAEsy9",
     "Vidamar Resort Hotel Algarve": "https://maps.app.goo.gl/etAzqPDxgnjJ2DDu7",
 }
 
