@@ -1,0 +1,11 @@
+name: Test Runner
+
+on: [push]
+
+jobs:
+  test:
+    runs-on: [self-hosted, linux]
+    steps:
+      - uses: actions/checkout@v4
+      - run: echo "Running on self-hosted runner"
+      - run: nvidia-smi
