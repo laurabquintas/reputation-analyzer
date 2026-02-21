@@ -4,7 +4,6 @@ import re
 from pathlib import Path
 
 import pandas as pd
-import plotly.graph_objects as go
 import streamlit as st
 
 
@@ -226,45 +225,26 @@ def ananea_competitive_index(history_df: pd.DataFrame, sources: list[str]) -> di
     }
 
 
-def source_one_year_figure(history_df: pd.DataFrame, source: str) -> go.Figure | None:
+def source_one_year_chart_df(history_df: pd.DataFrame, source: str) -> pd.DataFrame:
     src = history_df[(history_df["Source"] == source) & history_df["Score"].notna()].copy()
     if src.empty:
-        return None
+        return pd.DataFrame()
 
     max_date = src["Date"].max()
     min_date = max_date - pd.DateOffset(years=1)
     src = src[src["Date"] >= min_date].sort_values("Date")
     if src.empty:
-        return None
+        return pd.DataFrame()
 
-    fig = go.Figure()
-    competitors = sorted([h for h in src["Hotel"].dropna().unique().tolist() if h != ANANEA_HOTEL])
-    for hotel in [ANANEA_HOTEL, *competitors]:
-        hotel_df = src[src["Hotel"] == hotel]
-        if hotel_df.empty:
-            continue
-        is_ananea = hotel == ANANEA_HOTEL
-        fig.add_trace(
-            go.Scatter(
-                x=hotel_df["Date"],
-                y=hotel_df["Score"],
-                mode="lines+markers",
-                name=hotel,
-                line={"width": 4 if is_ananea else 1.8},
-                marker={"size": 9 if is_ananea else 6},
-                opacity=1.0 if is_ananea else 0.6,
-            )
-        )
-
-    fig.update_layout(
-        margin={"l": 20, "r": 20, "t": 20, "b": 20},
-        height=360,
-        legend_title_text="Hotel",
-        xaxis_title="Month",
-        yaxis_title=f"Score (max {SCALE_MAX.get(source, 10):.0f})",
+    chart_df = (
+        src.pivot_table(index="Date", columns="Hotel", values="Score", aggfunc="mean")
+        .sort_index()
     )
-    fig.update_xaxes(dtick="M1", tickformat="%b %Y")
-    return fig
+
+    if ANANEA_HOTEL in chart_df.columns:
+        ordered_cols = [ANANEA_HOTEL] + [c for c in chart_df.columns if c != ANANEA_HOTEL]
+        chart_df = chart_df[ordered_cols]
+    return chart_df
 
 
 def missing_or_zero_rows(df: pd.DataFrame, date_col: str) -> pd.DataFrame:
@@ -369,14 +349,14 @@ def main() -> None:
         st.dataframe(style_scorecard(scorecard.sort_values("Source")), use_container_width=True)
 
     st.subheader("Source Trends (Last 12 Months)")
-    st.caption("One chart per selected source. Points mark collection dates.")
+    st.caption("One chart per selected source (last 12 months).")
     for source in selected_sources:
-        fig = source_one_year_figure(history_df, source)
-        if fig is None:
+        chart_df = source_one_year_chart_df(history_df, source)
+        if chart_df.empty:
             st.warning(f"{source}: no score history available in the last year.")
             continue
         st.markdown(f"**{source}**")
-        st.plotly_chart(fig, use_container_width=True)
+        st.line_chart(chart_df, use_container_width=True)
 
     st.subheader("Manual Missing Values")
     st.caption("Use this to fill scores when scraping failed. Changes are written directly to CSV files in data/.")
