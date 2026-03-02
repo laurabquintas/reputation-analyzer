@@ -52,7 +52,6 @@ jobs:
         continue-on-error: true
         env:
           GOOGLE_MAPS_API_KEY: ${{ secrets.GOOGLE_MAPS_API_KEY }}
-          GOOGLE_PLACES_API_KEY: ${{ secrets.GOOGLE_PLACES_API_KEY }}
           TRIPADVISOR_API_KEY: ${{ secrets.TRIPADVISOR_API_KEY }}
         run: |
           .venv/bin/python -m src.run --summary-json data/run_summary.json --date $(date -u +%F)
