@@ -208,7 +208,7 @@ def parse_args() -> argparse.Namespace:
     p.add_argument(
         "--api-key",
         default=None,
-        help="Google Maps API key. If omitted, uses GOOGLE_MAPS_API_KEY (or GOOGLE_PLACES_API_KEY) env var.",
+        help="Google Maps API key. If omitted, uses GOOGLE_MAPS_API_KEY env var.",
     )
     return p.parse_args()
 
@@ -221,10 +221,10 @@ def main():
         raise ValueError(f"--date must be YYYY-MM-DD, got: {args.date}")
 
     # Resolve API key
-    api_key = args.api_key or os.getenv("GOOGLE_MAPS_API_KEY") or os.getenv("GOOGLE_PLACES_API_KEY")
+    api_key = args.api_key or os.getenv("GOOGLE_MAPS_API_KEY")
     if not api_key:
         raise RuntimeError(
-            "No API key provided. Use --api-key or set GOOGLE_MAPS_API_KEY (or GOOGLE_PLACES_API_KEY)."
+            "No API key provided. Use --api-key or set GOOGLE_MAPS_API_KEY."
         )
 
     hotels = list(HOTEL_QUERIES.keys())

@@ -3,45 +3,36 @@
 """
 holidaycheck_scraper.py
 
-Fetch Booking.com review scores for a fixed list of hotels and update a CSV
+Fetch HolidayCheck review scores for a fixed list of hotels and update a CSV
 with the following layout:
 - Index column: "Hotel"
-- One column per run date (YYYY-MM-DD) with the score (float)
+- One column per run date (YYYY-MM-DD) with the score (float, 0-6)
 - An "Average Score" column computed across all date columns
 
-The scraper is intentionally simple and stable:
-- It requests each property page with a desktop User-Agent.
-- It parses <script type="application/ld+json"> and reads the JSON-LD's
-  "aggregateRating" -> "ratingValue". This is the most reliable source.
-- If no rating is found, it records NaN for that hotel on that date.
+The scraper parses each hotel's HolidayCheck page:
+1. Preferred: JSON-LD aggregateRating -> ratingValue (normalized to 0-6 scale).
+2. Fallback: text pattern like "4,5 / 6" on the page.
+If no rating is found, it records NaN for that hotel on that date.
 
 CSV details:
-- Default file: booking_scores.csv
-- Separator: ";" (semicolon), matching your current file
+- Default file: holidaycheck_scores.csv
+- Separator: ";" (semicolon)
 - If the CSV does not exist, it is created with the hotel list as index.
 
 USAGE
 -----
 Basic:
-    python src/sites/booking.py
-
-Custom CSV path / retries / delays:
-    python src/sites/booking.py --csv data/booking_scores.csv --retries 2 --min-delay 2.5 --max-delay 5.0
+    python src/sites/holidaycheck.py
 
 Pin a specific date column (otherwise "today"):
-    python src/sites/booking.py --date 2025-09-20
+    python src/sites/holidaycheck.py --date 2025-09-20
 
 REQUIREMENTS
 ------------
 pandas
 requests
 beautifulsoup4
-
-TIPS
-----
-- Verify each Booking URL in a normal browser to ensure it points to the exact
-  property page you want.
-- Be polite with delays; small random sleeps help avoid throttling.
+PyYAML
 """
 
 from __future__ import annotations

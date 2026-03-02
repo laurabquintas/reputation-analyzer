@@ -62,7 +62,6 @@ Repository secrets required:
 
 - `GOOGLE_MAPS_API_KEY`
 - `TRIPADVISOR_API_KEY`
-- Optional alias: `GOOGLE_PLACES_API_KEY`
 
 If a scraper fails, the run exits non-zero and GitHub Actions marks the job as failed.  
 If a scraper succeeds but collects zero rows for the date, `src.run` emits a GitHub warning annotation.

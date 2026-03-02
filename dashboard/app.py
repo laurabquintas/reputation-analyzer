@@ -3,6 +3,7 @@ from __future__ import annotations
 import re
 from pathlib import Path
 
+import yaml
 import pandas as pd
 import plotly.graph_objects as go
 import streamlit as st
@@ -10,6 +11,7 @@ import streamlit as st
 
 ROOT = Path(__file__).resolve().parents[1]
 DATA_DIR = ROOT / "data"
+CONFIG_PATH = ROOT / "config" / "hotels.yaml"
 
 SOURCES = {
     "Booking": DATA_DIR / "booking_scores.csv",
@@ -27,39 +29,32 @@ SCALE_MAX = {
     "HolidayCheck": 6.0,
 }
 
-HOTEL_LINKS: dict[str, dict[str, str]] = {
-    "Booking": {
-        "Ananea Castelo Suites Hotel": "https://www.booking.com/hotel/pt/castelo-suites.en-gb.html",
-        "PortoBay Falésia": "https://www.booking.com/hotel/pt/porto-bay-falesia.en-gb.html",
-        "Regency Salgados Hotel & Spa": "https://www.booking.com/hotel/pt/regency-salgados-amp-spa.en-gb.html",
-        "NAU São Rafael Atlântico": "https://www.booking.com/hotel/pt/sao-rafael-suites-all-inclusive.en-gb.html",
-        "The Westin Salgados Beach Resort": "https://www.booking.com/hotel/pt/westin-salgados-beach-resort-algarve.en-gb.html",
-        "Vidamar Resort Hotel Algarve": "https://www.booking.com/hotel/pt/vidamar-algarve-hotel.en-gb.html",
-    },
-    "Expedia": {
-        "Ananea Castelo Suites Hotel": "https://euro.expedia.net/Albufeira-Hotels-Castelo-Suites-Hotel.h111521689.Hotel-Information?pwaDialog=product-reviews",
-        "PortoBay Falésia": "https://euro.expedia.net/Albufeira-Hotels-PortoBay-Falesia.h1787641.Hotel-Information?pwaDialog=product-reviews",
-        "Regency Salgados Hotel & Spa": "https://euro.expedia.net/Albufeira-Hotels-Regency-Salgados-Hotel-Spa.h67650702.Hotel-Information?pwaDialog=product-reviews",
-        "NAU São Rafael Atlântico": "https://euro.expedia.net/Albufeira-Hotels-Sao-Rafael-Suite-Hotel.h1210300.Hotel-Information?pwaDialogNested=PropertyDetailsReviewsBreakdownDialog",
-        "Vidamar Resort Hotel Algarve": "https://euro.expedia.net/Albufeira-Hotels-VidaMar-Resort-Hotel-Algarve.h5670748.Hotel-Information?pwaDialog=product-reviews",
-    },
-    "HolidayCheck": {
-        "Ananea Castelo Suites Hotel": "https://www.holidaycheck.de/hi/ananea-castelo-suites-algarve/069563af-47db-44a3-bdb1-3441ae3a2ac4",
-        "PortoBay Falésia": "https://www.holidaycheck.de/hi/portobay-falesia/44a47534-85c4-3114-a6da-472d82e16e29",
-        "Regency Salgados Hotel & Spa": "https://www.holidaycheck.de/hi/regency-salgados-hotel-spa/b0478236-7644-46b4-8fde-bd6cb1832cf8",
-        "NAU São Rafael Atlântico": "https://www.holidaycheck.de/hi/nau-sao-rafael-suites-all-inclusive/739da55a-710e-3514-83f6-8e01149442a5",
-        "The Westin Salgados Beach Resort": "https://www.holidaycheck.de/hi/nau-salgados-vila-das-lagoas-apartment/602ac74a-9c28-3d74-8dd9-37c47c53cd4a",
-        "Vidamar Resort Hotel Algarve": "https://www.holidaycheck.de/hi/vidamar-hotel-resort-algarve/e641bc1e-59d5-37a0-832e-90e6bbb51977",
-    },
-    "Google": {
-        "Ananea Castelo Suites Hotel": "https://maps.app.goo.gl/QsTaS8vLupyrC3hQ8",
-        "PortoBay Falésia": "https://maps.app.goo.gl/DxodrUv4ub7qp89eA",
-        "Regency Salgados Hotel & Spa": "https://maps.app.goo.gl/UZ6dAot3VC4eWV3U7",
-        "NAU São Rafael Atlântico": "https://maps.app.goo.gl/G3Nfg49qBYQkR2xr5",
-        "The Westin Salgados Beach Resort": "https://maps.app.goo.gl/CxCEgfZkiXnzAEsy9",
-        "Vidamar Resort Hotel Algarve": "https://maps.app.goo.gl/etAzqPDxgnjJ2DDu7",
-    },
+# Map from dashboard source name to YAML field name
+_LINK_FIELDS = {
+    "Booking": "booking_url",
+    "Expedia": "expedia_url",
+    "HolidayCheck": "holidaycheck_url",
+    "Google": "google_maps_url",
 }
+
+
+def _load_hotel_links() -> dict[str, dict[str, str]]:
+    """Build HOTEL_LINKS from config/hotels.yaml."""
+    with open(CONFIG_PATH, encoding="utf-8") as f:
+        cfg = yaml.safe_load(f)
+    links: dict[str, dict[str, str]] = {}
+    for source, field in _LINK_FIELDS.items():
+        source_links = {}
+        for hotel in cfg.get("hotels", []):
+            url = hotel.get(field, "")
+            if url:
+                source_links[hotel["name"]] = url
+        if source_links:
+            links[source] = source_links
+    return links
+
+
+HOTEL_LINKS: dict[str, dict[str, str]] = _load_hotel_links()
 ANANEA_HOTEL = "Ananea Castelo Suites Hotel"
 
 
