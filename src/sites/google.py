@@ -49,6 +49,7 @@ import argparse
 from datetime import datetime
 from typing import Dict
 
+import yaml
 import pandas as pd
 import requests
 
@@ -65,25 +66,15 @@ DEFAULT_TIMEOUT = 15
 
 PLACES_SEARCH_TEXT_URL = "https://places.googleapis.com/v1/places:searchText"
 
+_CONFIG_PATH = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "..", "config", "hotels.yaml")
+
+def _load_hotel_queries() -> Dict[str, str]:
+    with open(_CONFIG_PATH, encoding="utf-8") as f:
+        cfg = yaml.safe_load(f)
+    return {h["name"]: h["google_query"] for h in cfg["hotels"] if h.get("google_query")}
+
 # Map of hotel display name -> text query for Places search
-# Adjust queries to what works best for each hotel.
-HOTEL_QUERIES: Dict[str, str] = {
-    "Ananea Castelo Suites Hotel": "Ananea Castelo Suites Algarve, Portugal",
-    "PortoBay Falésia": "PortoBay Falésia, Albufeira, Portugal",
-    "Regency Salgados Hotel & Spa": "Regency Salgados Hotel & Spa, Algarve, Portugal",
-    "NAU São Rafael Atlântico": "NAU São Rafael Atlântico, Albufeira, Portugal",
-    "The Westin Salgados Beach Resort": "The Westin Salgados Beach Resort, Albufeira, Portugal",
-    "Vidamar Resort Hotel Algarve": "Vidamar Resort Hotel Algarve, Albufeira, Portugal",
-}
-# Map of hotel display name 
-URLS = {
-    "Ananea Castelo Suites Hotel": "https://maps.app.goo.gl/QsTaS8vLupyrC3hQ8",
-    "PortoBay Falésia": "https://maps.app.goo.gl/DxodrUv4ub7qp89eA",
-    "Regency Salgados Hotel & Spa": "https://maps.app.goo.gl/UZ6dAot3VC4eWV3U7",
-    "NAU São Rafael Atlântico": "https://maps.app.goo.gl/G3Nfg49qBYQkR2xr5",
-    "The Westin Salgados Beach Resort": "https://maps.app.goo.gl/CxCEgfZkiXnzAEsy9",
-    "Vidamar Resort Hotel Algarve": "https://maps.app.goo.gl/etAzqPDxgnjJ2DDu7",
-}
+HOTEL_QUERIES: Dict[str, str] = _load_hotel_queries()
 
 DATE_COL_RE = re.compile(r"\d{4}-\d{2}-\d{2}")  # YYYY-MM-DD
 
