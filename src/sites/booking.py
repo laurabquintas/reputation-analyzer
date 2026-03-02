@@ -54,6 +54,7 @@ import random
 from time import sleep
 from datetime import datetime
 
+import yaml
 import pandas as pd
 import requests
 from bs4 import BeautifulSoup
@@ -70,15 +71,15 @@ DEFAULT_RETRIES = 2
 DEFAULT_MIN_DELAY = 2.5          # seconds between hotel requests (min)
 DEFAULT_MAX_DELAY = 5.0          # seconds between hotel requests (max)
 
+_CONFIG_PATH = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "..", "config", "hotels.yaml")
+
+def _load_urls() -> dict[str, str]:
+    with open(_CONFIG_PATH, encoding="utf-8") as f:
+        cfg = yaml.safe_load(f)
+    return {h["name"]: h["booking_url"] for h in cfg["hotels"] if h.get("booking_url")}
+
 # Map of hotel display name -> Booking URL
-URLS = {
-    "Ananea Castelo Suites Hotel": "https://www.booking.com/hotel/pt/castelo-suites.en-gb.html",
-    "PortoBay Falésia": "https://www.booking.com/hotel/pt/porto-bay-falesia.en-gb.html",
-    "Regency Salgados Hotel & Spa": "https://www.booking.com/hotel/pt/regency-salgados-amp-spa.en-gb.html",
-    "NAU São Rafael Atlântico": "https://www.booking.com/hotel/pt/sao-rafael-suites-all-inclusive.en-gb.html",
-    "The Westin Salgados Beach Resort": "https://www.booking.com/hotel/pt/westin-salgados-beach-resort-algarve.en-gb.html",
-    "Vidamar Resort Hotel Algarve": "https://www.booking.com/hotel/pt/vidamar-algarve-hotel.en-gb.html",
-}
+URLS = _load_urls()
 
 UA_HEADERS = {
     "User-Agent": (

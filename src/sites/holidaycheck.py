@@ -48,12 +48,12 @@ from __future__ import annotations
 
 import os
 import re
-import json
 import argparse
 import random
 from time import sleep
 from datetime import datetime
 
+import yaml
 import pandas as pd
 import requests
 from bs4 import BeautifulSoup
@@ -78,15 +78,15 @@ UA_HEADERS = {
     "Accept-Language": "en-US,en;q=0.9,de;q=0.8",
 }
 
-# Map of hotel display name -> Booking URL
-URLS = {
-    "Ananea Castelo Suites Hotel": "https://www.holidaycheck.de/hi/ananea-castelo-suites-algarve/069563af-47db-44a3-bdb1-3441ae3a2ac4",
-    "PortoBay Falésia": "https://www.holidaycheck.de/hi/portobay-falesia/44a47534-85c4-3114-a6da-472d82e16e29",
-    "Regency Salgados Hotel & Spa": "https://www.holidaycheck.de/hi/regency-salgados-hotel-spa/b0478236-7644-46b4-8fde-bd6cb1832cf8",
-    "NAU São Rafael Atlântico": "https://www.holidaycheck.de/hi/nau-sao-rafael-suites-all-inclusive/739da55a-710e-3514-83f6-8e01149442a5",
-    "The Westin Salgados Beach Resort": "https://www.holidaycheck.de/hi/the-westin-salgados-beach-resort-algarve/226cd009-8ddb-3e7f-8191-ca0e0024caf0",
-    "Vidamar Resort Hotel Algarve": "https://www.holidaycheck.de/hi/vidamar-hotel-resort-algarve/e641bc1e-59d5-37a0-832e-90e6bbb51977",
-}
+_CONFIG_PATH = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "..", "config", "hotels.yaml")
+
+def _load_urls() -> dict[str, str]:
+    with open(_CONFIG_PATH, encoding="utf-8") as f:
+        cfg = yaml.safe_load(f)
+    return {h["name"]: h["holidaycheck_url"] for h in cfg["hotels"] if h.get("holidaycheck_url")}
+
+# Map of hotel display name -> HolidayCheck URL
+URLS = _load_urls()
 
 DATE_COL_RE = re.compile(r"\d{4}-\d{2}-\d{2}")  # YYYY-MM-DD
 # -------------------------- Scraper logic -------------------------- #
