@@ -16,14 +16,15 @@ jobs:
       - name: Show Python version on self-hosted runner
         run: python3 --version
 
-      - name: Install deps
+      - name: Set up virtualenv and install deps
         run: |
-          python3 -m pip install -U pip
-          python3 -m pip install -r requirements.txt
-          python3 -m pip install pytest
+          python3 -m venv .venv
+          .venv/bin/pip install -U pip
+          .venv/bin/pip install -r requirements.txt
+          .venv/bin/pip install pytest
 
       - name: Run unit tests
-        run: python3 -m pytest -q
+        run: .venv/bin/python -m pytest -q
 
   scrape-all:
     runs-on: self-hosted
@@ -40,10 +41,11 @@ jobs:
       - name: Show Python version on self-hosted runner
         run: python3 --version
 
-      - name: Install deps
+      - name: Set up virtualenv and install deps
         run: |
-          python3 -m pip install -U pip
-          python3 -m pip install -r requirements.txt
+          python3 -m venv .venv
+          .venv/bin/pip install -U pip
+          .venv/bin/pip install -r requirements.txt
 
       - name: Run weekly scraping
         id: scrape
@@ -53,7 +55,7 @@ jobs:
           GOOGLE_PLACES_API_KEY: ${{ secrets.GOOGLE_PLACES_API_KEY }}
           TRIPADVISOR_API_KEY: ${{ secrets.TRIPADVISOR_API_KEY }}
         run: |
-          python3 -m src.run --summary-json data/run_summary.json
+          .venv/bin/python -m src.run --summary-json data/run_summary.json
 
       - name: Upload run summary
         if: always()
