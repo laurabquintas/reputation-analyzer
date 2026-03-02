@@ -46,6 +46,7 @@ from datetime import datetime
 from typing import Dict, Optional
 from urllib.parse import urlsplit, urlunsplit, parse_qsl, urlencode
 
+import yaml
 import pandas as pd
 import requests
 from bs4 import BeautifulSoup
@@ -66,15 +67,15 @@ DEFAULT_RETRIES = 2
 
 DATE_COL_RE = re.compile(r"\d{4}-\d{2}-\d{2}")  # YYYY-MM-DD
 
+_CONFIG_PATH = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "..", "config", "hotels.yaml")
+
+def _load_expedia_urls() -> Dict[str, str]:
+    with open(_CONFIG_PATH, encoding="utf-8") as f:
+        cfg = yaml.safe_load(f)
+    return {h["name"]: h["expedia_url"] for h in cfg["hotels"] if h.get("expedia_url")}
+
 # Map of hotel display name -> Expedia URL
-EXPEDIA_URLS: Dict[str, str] = {
-    "Ananea Castelo Suites Hotel" : "https://euro.expedia.net/Albufeira-Hotels-Castelo-Suites-Hotel.h111521689.Hotel-Information?pwaDialog=product-reviews",
-    "PortoBay Falésia" : "https://euro.expedia.net/Albufeira-Hotels-PortoBay-Falesia.h1787641.Hotel-Information?pwaDialog=product-reviews",
-    "Regency Salgados Hotel & Spa" : "https://euro.expedia.net/Albufeira-Hotels-Regency-Salgados-Hotel-Spa.h67650702.Hotel-Information?pwaDialog=product-reviews",
-    "NAU São Rafael Atlântico" : "https://euro.expedia.net/Albufeira-Hotels-Sao-Rafael-Suite-Hotel.h1210300.Hotel-Information?pwaDialogNested=PropertyDetailsReviewsBreakdownDialog",
-    "The Westin Salgados Beach Resort" : "https://euro.expedia.net/Albufeira-Hotels-The-Westin-Salgados-Beach-Resort.h3639949.Hotel-Information?pwaDialog=product-reviews",
-    "Vidamar Resort Hotel Algarve" : "https://euro.expedia.net/Albufeira-Hotels-VidaMar-Resort-Hotel-Algarve.h5670748.Hotel-Information?pwaDialog=product-reviews"
-}
+EXPEDIA_URLS: Dict[str, str] = _load_expedia_urls()
 
 # ------------------------ Scraper logic ---------------------------- #
 
