@@ -48,15 +48,14 @@ from __future__ import annotations
 
 import os
 import re
-import json
 import argparse
 import random
 from time import sleep
 from datetime import datetime
 
+import yaml
 import pandas as pd
 import requests
-from bs4 import BeautifulSoup
 
 
 # ---------------------- Default configuration ---------------------- #
@@ -69,15 +68,16 @@ DEFAULT_SEP = ";"                # you are using semicolon CSV
 
 DEFAULT_MIN_DELAY = 2.5          # seconds between hotel requests (min)
 DEFAULT_MAX_DELAY = 5.0          # seconds between hotel requests (max)
-# Map of hotel display name -> Booking URL
-LOCATION_IDS ={
-                'Ananea Castelo Suites Hotel': '33299137',
-                'PortoBay Falésia': '625806',
-                'Regency Salgados Hotel & Spa': '23418643',
-                'NAU São Rafael Atlântico': '289104',
-                'The Westin Salgados Beach Resort': '1772673',
-                'Vidamar Resort Hotel Algarve': '3927147'
-                }
+
+_CONFIG_PATH = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "..", "config", "hotels.yaml")
+
+def _load_location_ids() -> dict[str, str]:
+    with open(_CONFIG_PATH, encoding="utf-8") as f:
+        cfg = yaml.safe_load(f)
+    return {h["name"]: h["tripadvisor_location_id"] for h in cfg["hotels"] if h.get("tripadvisor_location_id")}
+
+# Map of hotel display name -> TripAdvisor location ID
+LOCATION_IDS = _load_location_ids()
 
 DATE_COL_RE = re.compile(r"\d{4}-\d{2}-\d{2}")  # YYYY-MM-DD
 # -------------------------- Scraper logic -------------------------- #
