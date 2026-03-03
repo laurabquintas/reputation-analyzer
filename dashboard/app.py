@@ -133,7 +133,6 @@ def latest_scorecard_table(history_df: pd.DataFrame, sources: list[str]) -> pd.D
             continue
         unique_dates = sorted(src["Date"].unique())
         latest_date = unique_dates[-1]
-        prev_date = unique_dates[-2] if len(unique_dates) >= 2 else None
 
         latest = src[src["Date"] == latest_date]
         ananea = latest[latest["Hotel"] == ANANEA_HOTEL]
@@ -142,12 +141,18 @@ def latest_scorecard_table(history_df: pd.DataFrame, sources: list[str]) -> pd.D
 
         ananea_score = round(float(ananea["Score"].iloc[0]), 2)
 
-        # Compute Ananea delta vs previous date
+        # Compute Ananea delta vs the last value from a previous month.
+        # Walk backwards through dates until we find one whose month differs
+        # from latest_date's month.
         ananea_delta = None
-        if prev_date is not None:
-            prev = src[(src["Date"] == prev_date) & (src["Hotel"] == ANANEA_HOTEL)]
+        latest_month = (latest_date.year, latest_date.month)
+        for d in reversed(unique_dates[:-1]):
+            if (d.year, d.month) == latest_month:
+                continue
+            prev = src[(src["Date"] == d) & (src["Hotel"] == ANANEA_HOTEL)]
             if not prev.empty:
                 ananea_delta = round(ananea_score - float(prev["Score"].iloc[0]), 2)
+                break
 
         row: dict[str, object] = {
             "Source": source,
@@ -349,7 +354,7 @@ def manual_pending_summary(source_dfs: dict[str, pd.DataFrame]) -> pd.DataFrame:
 def main() -> None:
     st.set_page_config(page_title="Hotel Reputation Dashboard", layout="wide")
     st.title("Hotel Reputation Dashboard")
-    st.caption("Weekly reputation scores over time, pulled from source websites.")
+    st.caption("Biweekly reputation scores over time, pulled from source websites.")
 
     source_dfs: dict[str, pd.DataFrame] = {}
     all_history = []
