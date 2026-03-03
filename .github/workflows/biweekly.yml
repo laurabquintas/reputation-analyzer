@@ -56,6 +56,13 @@ jobs:
         run: |
           .venv/bin/python -m src.run --summary-json data/run_summary.json --date $(date -u +%F)
 
+      - name: Scrape TripAdvisor reviews
+        continue-on-error: true
+        env:
+          TRIPADVISOR_API_KEY: ${{ secrets.TRIPADVISOR_API_KEY }}
+        run: |
+          .venv/bin/python src/sites/tripadvisor_reviews.py --date $(date -u +%F)
+
       - name: Upload run summary
         if: always()
         uses: actions/upload-artifact@v4
@@ -70,6 +77,14 @@ jobs:
         with:
           name: updated-csvs
           path: data/*.csv
+          if-no-files-found: warn
+
+      - name: Upload reviews JSON
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: updated-reviews
+          path: data/tripadvisor_reviews.json
           if-no-files-found: warn
 
       - name: Evaluate run summary
@@ -122,16 +137,25 @@ jobs:
           name: updated-csvs
           path: data
 
-      - name: Commit updated CSV files
+      - name: Download updated reviews JSON
+        if: always()
+        continue-on-error: true
+        uses: actions/download-artifact@v4
+        with:
+          name: updated-reviews
+          path: data
+
+      - name: Commit updated data files
         run: |
-          if git diff --quiet -- data/*.csv; then
-            echo "No CSV changes to commit."
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add data/*.csv data/*.json 2>/dev/null || true
+
+          if git diff --cached --quiet; then
+            echo "No data changes to commit."
             exit 0
           fi
 
-          git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add data/*.csv
           git commit -m "chore(data): biweekly score update $(date -u +%F)"
           git push
 
