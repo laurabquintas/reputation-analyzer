@@ -1,0 +1,67 @@
+{
+  "date": "2026-03-03",
+  "results": [
+    {
+      "site": "BOOKING",
+      "status": "warning",
+      "message": "No scores collected for date 2026-03-03 in /home/laurabquintas/actions-runner/_work/reputation-analyzer/reputation-analyzer/data/booking_scores.csv",
+      "warning": true,
+      "returncode": 0,
+      "duration_seconds": 119.27,
+      "csv_path": "/home/laurabquintas/actions-runner/_work/reputation-analyzer/reputation-analyzer/data/booking_scores.csv",
+      "has_date_column": true,
+      "scored_hotels": 0,
+      "total_hotels": 6
+    },
+    {
+      "site": "TRIPADVISOR",
+      "status": "ok",
+      "message": "Collected scores for 6/6 hotels",
+      "warning": false,
+      "returncode": 0,
+      "duration_seconds": 24.65,
+      "csv_path": "/home/laurabquintas/actions-runner/_work/reputation-analyzer/reputation-analyzer/data/tripadvisor_scores.csv",
+      "has_date_column": true,
+      "scored_hotels": 6,
+      "total_hotels": 6
+    },
+    {
+      "site": "GOOGLE",
+      "status": "ok",
+      "message": "Collected scores for 6/6 hotels",
+      "warning": false,
+      "returncode": 0,
+      "duration_seconds": 5.1,
+      "csv_path": "/home/laurabquintas/actions-runner/_work/reputation-analyzer/reputation-analyzer/data/google_scores.csv",
+      "has_date_column": true,
+      "scored_hotels": 6,
+      "total_hotels": 6
+    },
+    {
+      "site": "EXPEDIA",
+      "status": "ok",
+      "message": "Collected scores for 6/6 hotels",
+      "warning": false,
+      "returncode": 0,
+      "duration_seconds": 29.76,
+      "csv_path": "/home/laurabquintas/actions-runner/_work/reputation-analyzer/reputation-analyzer/data/expedia_scores.csv",
+      "has_date_column": true,
+      "scored_hotels": 6,
+      "total_hotels": 6
+    },
+    {
+      "site": "HOLIDAYCHECK",
+      "status": "ok",
+      "message": "Collected scores for 6/6 hotels",
+      "warning": false,
+      "returncode": 0,
+      "duration_seconds": 25.93,
+      "csv_path": "/home/laurabquintas/actions-runner/_work/reputation-analyzer/reputation-analyzer/data/holidaycheck_scores.csv",
+      "has_date_column": true,
+      "scored_hotels": 6,
+      "total_hotels": 6
+    }
+  ],
+  "failed_count": 0,
+  "warning_count": 1
+}
