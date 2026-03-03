@@ -56,7 +56,7 @@ DEFAULT_JSON_PATH = str(DATA_DIR / "tripadvisor_reviews.json")
 
 ANANEA_HOTEL = "Ananea Castelo Suites Hotel"
 
-VALID_TOPICS = {"employees", "commodities", "comfort", "cleaning", "quality_price", "meals"}
+VALID_TOPICS = {"employees", "commodities", "comfort", "cleaning", "quality_price", "meals", "return"}
 VALID_SENTIMENTS = {"positive", "negative"}
 
 
@@ -173,6 +173,7 @@ TOPICS (use these exact keys):
 - cleaning: cleanliness, hygiene, tidiness, housekeeping, spotless, dirty, stains, towels changed, room serviced
 - quality_price: value for money, pricing, worth, cost, overpriced, good deal, expensive, cheap, affordable, half board value
 - meals: food, breakfast, restaurant, dining, bar, drinks, buffet, dinner, lunch, cuisine, menu, chef, kitchen, snacks
+- return: whether the guest would return, come back, visit again, recommend, revisit, not return, wouldn't go back
 
 RULES:
 1. You MUST check each topic one by one. Go through the review sentence by sentence.
@@ -181,8 +182,8 @@ RULES:
 4. If a topic is described positively, mark it positive. If negatively, mark it negative.
 5. Output ONLY a JSON array. No explanation, no markdown.
 
-EXAMPLE INPUT: "Staff were amazing. Breakfast was varied. Pool was cold but rooms were spotless and spacious."
-EXAMPLE OUTPUT: [{{"topic":"employees","sentiment":"positive"}},{{"topic":"meals","sentiment":"positive"}},{{"topic":"commodities","sentiment":"negative"}},{{"topic":"cleaning","sentiment":"positive"}},{{"topic":"comfort","sentiment":"positive"}}]
+EXAMPLE INPUT: "Staff were amazing. Breakfast was varied. Pool was cold but rooms were spotless and spacious. Would definitely come back!"
+EXAMPLE OUTPUT: [{{"topic":"employees","sentiment":"positive"}},{{"topic":"meals","sentiment":"positive"}},{{"topic":"commodities","sentiment":"negative"}},{{"topic":"cleaning","sentiment":"positive"}},{{"topic":"comfort","sentiment":"positive"}},{{"topic":"return","sentiment":"positive"}}]
 
 Now analyze this review:
 \"\"\"{text}\"\"\"
