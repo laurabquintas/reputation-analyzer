@@ -1,62 +1,53 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-holidaycheck_scraper.py
+tripadvisor_scraper.py
 
-Fetch Booking.com review scores for a fixed list of hotels and update a CSV
-with the following layout:
+Fetch TripAdvisor review scores for a fixed list of hotels via the
+TripAdvisor Content API and update a CSV with the following layout:
 - Index column: "Hotel"
-- One column per run date (YYYY-MM-DD) with the score (float)
+- One column per run date (YYYY-MM-DD) with the score (float, 0-5)
 - An "Average Score" column computed across all date columns
 
-The scraper is intentionally simple and stable:
-- It requests each property page with a desktop User-Agent.
-- It parses <script type="application/ld+json"> and reads the JSON-LD's
-  "aggregateRating" -> "ratingValue". This is the most reliable source.
-- If no rating is found, it records NaN for that hotel on that date.
+The scraper uses the official TripAdvisor Content API (location details
+endpoint) to retrieve the aggregate rating for each hotel.
 
 CSV details:
-- Default file: booking_scores.csv
-- Separator: ";" (semicolon), matching your current file
+- Default file: tripadvisor_scores.csv
+- Separator: ";" (semicolon)
 - If the CSV does not exist, it is created with the hotel list as index.
 
 USAGE
 -----
-Basic:
-    python src/sites/booking.py
-
-Custom CSV path / retries / delays:
-    python src/sites/booking.py --csv data/booking_scores.csv --retries 2 --min-delay 2.5 --max-delay 5.0
+Basic (API key via env var):
+    export TRIPADVISOR_API_KEY="YOUR_KEY"
+    python src/sites/tripadvisor.py
 
 Pin a specific date column (otherwise "today"):
-    python src/sites/booking.py --date 2025-09-20
+    python src/sites/tripadvisor.py --date 2025-09-20
 
 REQUIREMENTS
 ------------
 pandas
 requests
-beautifulsoup4
-
-TIPS
-----
-- Verify each Booking URL in a normal browser to ensure it points to the exact
-  property page you want.
-- Be polite with delays; small random sleeps help avoid throttling.
+PyYAML
 """
 
 from __future__ import annotations
 
+import logging
 import os
 import re
-import json
 import argparse
 import random
 from time import sleep
 from datetime import datetime
 
+import yaml
 import pandas as pd
 import requests
-from bs4 import BeautifulSoup
+
+logger = logging.getLogger(__name__)
 
 
 # ---------------------- Default configuration ---------------------- #
@@ -69,15 +60,16 @@ DEFAULT_SEP = ";"                # you are using semicolon CSV
 
 DEFAULT_MIN_DELAY = 2.5          # seconds between hotel requests (min)
 DEFAULT_MAX_DELAY = 5.0          # seconds between hotel requests (max)
-# Map of hotel display name -> Booking URL
-LOCATION_IDS ={
-                'Ananea Castelo Suites Hotel': '33299137',
-                'PortoBay Falésia': '625806',
-                'Regency Salgados Hotel & Spa': '23418643',
-                'NAU São Rafael Atlântico': '289104',
-                'The Westin Salgados Beach Resort': '1772673',
-                'Vidamar Resort Hotel Algarve': '3927147'
-                }
+
+_CONFIG_PATH = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "..", "config", "hotels.yaml")
+
+def _load_location_ids() -> dict[str, str]:
+    with open(_CONFIG_PATH, encoding="utf-8") as f:
+        cfg = yaml.safe_load(f)
+    return {h["name"]: h["tripadvisor_location_id"] for h in cfg["hotels"] if h.get("tripadvisor_location_id")}
+
+# Map of hotel display name -> TripAdvisor location ID
+LOCATION_IDS = _load_location_ids()
 
 DATE_COL_RE = re.compile(r"\d{4}-\d{2}-\d{2}")  # YYYY-MM-DD
 # -------------------------- Scraper logic -------------------------- #
@@ -91,7 +83,7 @@ def sanitize_tripadvisor_score(score: float | None) -> float | None:
         return None
     if 0.0 <= value <= 5.0:
         return value
-    print(f"[warn] tripadvisor score out of expected range 0-5: {value}. Ignoring value.")
+    logger.warning("TripAdvisor score out of expected range 0-5: %s. Ignoring value.", value)
     return None
 
 
@@ -102,10 +94,10 @@ def ta_get_rating(location_id: str, api_key: str):
         "language": "en",
     }
     resp = requests.get(url, params=params, timeout=15)
-    print("details status:", resp.status_code)
+    logger.debug("Details status: %d", resp.status_code)
     resp.raise_for_status()
     data = resp.json()
-    print("details json:", data)
+    logger.debug("Details json: %s", data)
 
     rating_raw = data.get("rating")
     num_reviews = data.get("num_reviews") or data.get("review_count")
@@ -115,7 +107,7 @@ def ta_get_rating(location_id: str, api_key: str):
         rating = None
     rating = sanitize_tripadvisor_score(rating)
 
-    print("Parsed rating:", rating, "num_reviews:", num_reviews)
+    logger.info("Parsed rating: %s, num_reviews: %s", rating, num_reviews)
     return rating, num_reviews
 
 
@@ -127,7 +119,7 @@ def ensure_csv(csv_path: str, sep: str, hotels: list[str]) -> pd.DataFrame:
     that an 'Average Score' column exists.
     """
     if not os.path.exists(csv_path):
-        print(f"Creating {csv_path} …")
+        logger.info("Creating %s", csv_path)
         df = pd.DataFrame(index=hotels)
         df.index.name = "Hotel"
         df["Average Score"] = pd.NA
@@ -157,7 +149,7 @@ def update_average(df: pd.DataFrame) -> None:
 # ----------------------------- CLI main ---------------------------- #
 
 def parse_args() -> argparse.Namespace:
-    p = argparse.ArgumentParser(description="Fetch HolidayCheck scores and update a semicolon CSV.")
+    p = argparse.ArgumentParser(description="Fetch TripAdvisor scores and update a semicolon CSV.")
     p.add_argument("--csv", default=DEFAULT_CSV_PATH, help=f"Output CSV path (default: {DEFAULT_CSV_PATH})")
     p.add_argument("--sep", default=DEFAULT_SEP, help=f"CSV separator (default: '{DEFAULT_SEP}')")
     p.add_argument("--date", default=datetime.now().strftime("%Y-%m-%d"),
@@ -173,6 +165,7 @@ def parse_args() -> argparse.Namespace:
 
 
 def main():
+    logging.basicConfig(level=logging.INFO, format="%(levelname)s %(name)s: %(message)s")
     args = parse_args()
 
     # Validate date format early
@@ -188,17 +181,17 @@ def main():
     today_col = args.date
     new_scores: dict[str, float | None] = {}
 
-    print(f"Writing scores into column: {today_col}\n")
+    logger.info("Writing scores into column: %s", today_col)
 
     for i, (hotel, url) in enumerate(LOCATION_IDS.items(), start=1):
-        print(f"{i:02d}/{len(LOCATION_IDS)} → {hotel}")
+        logger.info("%02d/%d → %s", i, len(LOCATION_IDS), hotel)
         score, n = ta_get_rating(url, api_key=api_key)
         score = sanitize_tripadvisor_score(score)
         new_scores[hotel] = score
         if score is not None:
-            print(f"   {score}/5")
+            logger.info("  %s/5", score)
         else:
-            print("   (no score)")
+            logger.warning("  (no score)")
 
         # be polite; jitter within [min-delay, max-delay]
         delay = random.uniform(args.min_delay, args.max_delay)
@@ -210,10 +203,7 @@ def main():
 
     # Save
     df.to_csv(args.csv, sep=args.sep, index_label="Hotel")
-    print(f"\nSaved {args.csv}. Added/updated column: {today_col}")
-    # Show non-null for this run
-    with pd.option_context("display.max_rows", None, "display.width", 120):
-        print(df[[today_col]].dropna())
+    logger.info("Saved %s. Added/updated column: %s", args.csv, today_col)
 
 if __name__ == "__main__":
     main()

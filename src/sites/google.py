@@ -42,6 +42,7 @@ NOTES
 
 from __future__ import annotations
 
+import logging
 import os
 import re
 import json
@@ -49,8 +50,11 @@ import argparse
 from datetime import datetime
 from typing import Dict
 
+import yaml
 import pandas as pd
 import requests
+
+logger = logging.getLogger(__name__)
 
 
 # ---------------------- Default configuration ---------------------- #
@@ -65,25 +69,15 @@ DEFAULT_TIMEOUT = 15
 
 PLACES_SEARCH_TEXT_URL = "https://places.googleapis.com/v1/places:searchText"
 
+_CONFIG_PATH = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "..", "config", "hotels.yaml")
+
+def _load_hotel_queries() -> Dict[str, str]:
+    with open(_CONFIG_PATH, encoding="utf-8") as f:
+        cfg = yaml.safe_load(f)
+    return {h["name"]: h["google_query"] for h in cfg["hotels"] if h.get("google_query")}
+
 # Map of hotel display name -> text query for Places search
-# Adjust queries to what works best for each hotel.
-HOTEL_QUERIES: Dict[str, str] = {
-    "Ananea Castelo Suites Hotel": "Ananea Castelo Suites Algarve, Portugal",
-    "PortoBay Falésia": "PortoBay Falésia, Albufeira, Portugal",
-    "Regency Salgados Hotel & Spa": "Regency Salgados Hotel & Spa, Algarve, Portugal",
-    "NAU São Rafael Atlântico": "NAU São Rafael Atlântico, Albufeira, Portugal",
-    "The Westin Salgados Beach Resort": "The Westin Salgados Beach Resort, Albufeira, Portugal",
-    "Vidamar Resort Hotel Algarve": "Vidamar Resort Hotel Algarve, Albufeira, Portugal",
-}
-# Map of hotel display name 
-URLS = {
-    "Ananea Castelo Suites Hotel": "https://maps.app.goo.gl/QsTaS8vLupyrC3hQ8",
-    "PortoBay Falésia": "https://maps.app.goo.gl/DxodrUv4ub7qp89eA",
-    "Regency Salgados Hotel & Spa": "https://maps.app.goo.gl/UZ6dAot3VC4eWV3U7",
-    "NAU São Rafael Atlântico": "https://maps.app.goo.gl/G3Nfg49qBYQkR2xr5",
-    "The Westin Salgados Beach Resort": "https://maps.app.goo.gl/CxCEgfZkiXnzAEsy9",
-    "Vidamar Resort Hotel Algarve": "https://maps.app.goo.gl/etAzqPDxgnjJ2DDu7",
-}
+HOTEL_QUERIES: Dict[str, str] = _load_hotel_queries()
 
 DATE_COL_RE = re.compile(r"\d{4}-\d{2}-\d{2}")  # YYYY-MM-DD
 
@@ -99,7 +93,7 @@ def sanitize_google_score(score: float | None) -> float | None:
         return None
     if 0.0 <= value <= 5.0:
         return value
-    print(f"[warn] google score out of expected range 0-5: {value}. Ignoring value.")
+    logger.warning("Google score out of expected range 0-5: %s. Ignoring value.", value)
     return None
 
 def get_google_rating(query: str, api_key: str, timeout: int = DEFAULT_TIMEOUT) -> float | None:
@@ -157,7 +151,7 @@ def ensure_csv(csv_path: str, sep: str, hotels: list[str]) -> pd.DataFrame:
     that an 'Average Score' column exists.
     """
     if not os.path.exists(csv_path):
-        print(f"Creating {csv_path} …")
+        logger.info("Creating %s", csv_path)
         df = pd.DataFrame(index=hotels)
         df.index.name = "Hotel"
         df["Average Score"] = pd.NA
@@ -217,12 +211,13 @@ def parse_args() -> argparse.Namespace:
     p.add_argument(
         "--api-key",
         default=None,
-        help="Google Maps API key. If omitted, uses GOOGLE_MAPS_API_KEY (or GOOGLE_PLACES_API_KEY) env var.",
+        help="Google Maps API key. If omitted, uses GOOGLE_MAPS_API_KEY env var.",
     )
     return p.parse_args()
 
 
 def main():
+    logging.basicConfig(level=logging.INFO, format="%(levelname)s %(name)s: %(message)s")
     args = parse_args()
 
     # Validate date format early
@@ -230,10 +225,10 @@ def main():
         raise ValueError(f"--date must be YYYY-MM-DD, got: {args.date}")
 
     # Resolve API key
-    api_key = args.api_key or os.getenv("GOOGLE_MAPS_API_KEY") or os.getenv("GOOGLE_PLACES_API_KEY")
+    api_key = args.api_key or os.getenv("GOOGLE_MAPS_API_KEY")
     if not api_key:
         raise RuntimeError(
-            "No API key provided. Use --api-key or set GOOGLE_MAPS_API_KEY (or GOOGLE_PLACES_API_KEY)."
+            "No API key provided. Use --api-key or set GOOGLE_MAPS_API_KEY."
         )
 
     hotels = list(HOTEL_QUERIES.keys())
@@ -242,23 +237,23 @@ def main():
     today_col = args.date
     new_scores: dict[str, float | None] = {}
 
-    print(f"Writing Google ratings into column: {today_col}\n")
+    logger.info("Writing Google ratings into column: %s", today_col)
 
     for i, (hotel, query) in enumerate(HOTEL_QUERIES.items(), start=1):
-        print(f"{i:02d}/{len(HOTEL_QUERIES)} → {hotel}")
+        logger.info("%02d/%d → %s", i, len(HOTEL_QUERIES), hotel)
         try:
             score = get_google_rating(query, api_key=api_key, timeout=args.timeout)
         except Exception as e:
-            print(f"   ERROR: {e}")
+            logger.error("  %s", e)
             score = None
 
         score = sanitize_google_score(score)
         new_scores[hotel] = score
 
         if score is not None:
-            print(f"   {score}/5")
+            logger.info("  %s/5", score)
         else:
-            print("   (no score)")
+            logger.warning("  (no score)")
 
     # Write column & update average
     df[today_col] = pd.Series(new_scores)
@@ -266,11 +261,7 @@ def main():
 
     # Save
     df.to_csv(args.csv, sep=args.sep, index_label="Hotel")
-    print(f"\nSaved {args.csv}. Added/updated column: {today_col}")
-
-    # Show non-null for this run
-    with pd.option_context("display.max_rows", None, "display.width", 120):
-        print(df[[today_col]].dropna())
+    logger.info("Saved %s. Added/updated column: %s", args.csv, today_col)
 
 
 if __name__ == "__main__":

@@ -1,8 +1,10 @@
 from __future__ import annotations
 
 import re
+from collections.abc import Callable
 from pathlib import Path
 
+import yaml
 import pandas as pd
 import plotly.graph_objects as go
 import streamlit as st
@@ -10,6 +12,7 @@ import streamlit as st
 
 ROOT = Path(__file__).resolve().parents[1]
 DATA_DIR = ROOT / "data"
+CONFIG_PATH = ROOT / "config" / "hotels.yaml"
 
 SOURCES = {
     "Booking": DATA_DIR / "booking_scores.csv",
@@ -27,39 +30,32 @@ SCALE_MAX = {
     "HolidayCheck": 6.0,
 }
 
-HOTEL_LINKS: dict[str, dict[str, str]] = {
-    "Booking": {
-        "Ananea Castelo Suites Hotel": "https://www.booking.com/hotel/pt/castelo-suites.en-gb.html",
-        "PortoBay Falésia": "https://www.booking.com/hotel/pt/porto-bay-falesia.en-gb.html",
-        "Regency Salgados Hotel & Spa": "https://www.booking.com/hotel/pt/regency-salgados-amp-spa.en-gb.html",
-        "NAU São Rafael Atlântico": "https://www.booking.com/hotel/pt/sao-rafael-suites-all-inclusive.en-gb.html",
-        "The Westin Salgados Beach Resort": "https://www.booking.com/hotel/pt/westin-salgados-beach-resort-algarve.en-gb.html",
-        "Vidamar Resort Hotel Algarve": "https://www.booking.com/hotel/pt/vidamar-algarve-hotel.en-gb.html",
-    },
-    "Expedia": {
-        "Ananea Castelo Suites Hotel": "https://euro.expedia.net/Albufeira-Hotels-Castelo-Suites-Hotel.h111521689.Hotel-Information?pwaDialog=product-reviews",
-        "PortoBay Falésia": "https://euro.expedia.net/Albufeira-Hotels-PortoBay-Falesia.h1787641.Hotel-Information?pwaDialog=product-reviews",
-        "Regency Salgados Hotel & Spa": "https://euro.expedia.net/Albufeira-Hotels-Regency-Salgados-Hotel-Spa.h67650702.Hotel-Information?pwaDialog=product-reviews",
-        "NAU São Rafael Atlântico": "https://euro.expedia.net/Albufeira-Hotels-Sao-Rafael-Suite-Hotel.h1210300.Hotel-Information?pwaDialogNested=PropertyDetailsReviewsBreakdownDialog",
-        "Vidamar Resort Hotel Algarve": "https://euro.expedia.net/Albufeira-Hotels-VidaMar-Resort-Hotel-Algarve.h5670748.Hotel-Information?pwaDialog=product-reviews",
-    },
-    "HolidayCheck": {
-        "Ananea Castelo Suites Hotel": "https://www.holidaycheck.de/hi/ananea-castelo-suites-algarve/069563af-47db-44a3-bdb1-3441ae3a2ac4",
-        "PortoBay Falésia": "https://www.holidaycheck.de/hi/portobay-falesia/44a47534-85c4-3114-a6da-472d82e16e29",
-        "Regency Salgados Hotel & Spa": "https://www.holidaycheck.de/hi/regency-salgados-hotel-spa/b0478236-7644-46b4-8fde-bd6cb1832cf8",
-        "NAU São Rafael Atlântico": "https://www.holidaycheck.de/hi/nau-sao-rafael-suites-all-inclusive/739da55a-710e-3514-83f6-8e01149442a5",
-        "The Westin Salgados Beach Resort": "https://www.holidaycheck.de/hi/nau-salgados-vila-das-lagoas-apartment/602ac74a-9c28-3d74-8dd9-37c47c53cd4a",
-        "Vidamar Resort Hotel Algarve": "https://www.holidaycheck.de/hi/vidamar-hotel-resort-algarve/e641bc1e-59d5-37a0-832e-90e6bbb51977",
-    },
-    "Google": {
-        "Ananea Castelo Suites Hotel": "https://maps.app.goo.gl/QsTaS8vLupyrC3hQ8",
-        "PortoBay Falésia": "https://maps.app.goo.gl/DxodrUv4ub7qp89eA",
-        "Regency Salgados Hotel & Spa": "https://maps.app.goo.gl/UZ6dAot3VC4eWV3U7",
-        "NAU São Rafael Atlântico": "https://maps.app.goo.gl/G3Nfg49qBYQkR2xr5",
-        "The Westin Salgados Beach Resort": "https://maps.app.goo.gl/CxCEgfZkiXnzAEsy9",
-        "Vidamar Resort Hotel Algarve": "https://maps.app.goo.gl/etAzqPDxgnjJ2DDu7",
-    },
+# Map from dashboard source name to YAML field name
+_LINK_FIELDS = {
+    "Booking": "booking_url",
+    "Expedia": "expedia_url",
+    "HolidayCheck": "holidaycheck_url",
+    "Google": "google_maps_url",
 }
+
+
+def _load_hotel_links() -> dict[str, dict[str, str]]:
+    """Build HOTEL_LINKS from config/hotels.yaml."""
+    with open(CONFIG_PATH, encoding="utf-8") as f:
+        cfg = yaml.safe_load(f)
+    links: dict[str, dict[str, str]] = {}
+    for source, field in _LINK_FIELDS.items():
+        source_links = {}
+        for hotel in cfg.get("hotels", []):
+            url = hotel.get(field, "")
+            if url:
+                source_links[hotel["name"]] = url
+        if source_links:
+            links[source] = source_links
+    return links
+
+
+HOTEL_LINKS: dict[str, dict[str, str]] = _load_hotel_links()
 ANANEA_HOTEL = "Ananea Castelo Suites Hotel"
 
 
@@ -135,16 +131,34 @@ def latest_scorecard_table(history_df: pd.DataFrame, sources: list[str]) -> pd.D
         src = history_df[(history_df["Source"] == source) & history_df["Score"].notna()]
         if src.empty:
             continue
-        latest_date = src["Date"].max()
+        unique_dates = sorted(src["Date"].unique())
+        latest_date = unique_dates[-1]
+
         latest = src[src["Date"] == latest_date]
         ananea = latest[latest["Hotel"] == ANANEA_HOTEL]
         if ananea.empty:
             continue
 
+        ananea_score = round(float(ananea["Score"].iloc[0]), 2)
+
+        # Compute Ananea delta vs the last value from a previous month.
+        # Walk backwards through dates until we find one whose month differs
+        # from latest_date's month.
+        ananea_delta = None
+        latest_month = (latest_date.year, latest_date.month)
+        for d in reversed(unique_dates[:-1]):
+            if (d.year, d.month) == latest_month:
+                continue
+            prev = src[(src["Date"] == d) & (src["Hotel"] == ANANEA_HOTEL)]
+            if not prev.empty:
+                ananea_delta = round(ananea_score - float(prev["Score"].iloc[0]), 2)
+                break
+
         row: dict[str, object] = {
             "Source": source,
             "Date": latest_date.date().isoformat(),
-            ANANEA_HOTEL: round(float(ananea["Score"].iloc[0]), 2),
+            ANANEA_HOTEL: ananea_score,
+            "Ananea \u0394": ananea_delta,
         }
         for competitor in competitors:
             value = latest.loc[latest["Hotel"] == competitor, "Score"]
@@ -154,8 +168,22 @@ def latest_scorecard_table(history_df: pd.DataFrame, sources: list[str]) -> pd.D
     return pd.DataFrame(rows)
 
 
+def _format_delta(val: object) -> str:
+    """Format a delta value with ▲/▼ arrows."""
+    if pd.isna(val):
+        return "-"
+    v = float(val)
+    if v > 0:
+        return f"\u25b2 +{v:.2f}"
+    if v < 0:
+        return f"\u25bc {v:.2f}"
+    return "= 0.00"
+
+
 def style_scorecard(df: pd.DataFrame) -> pd.io.formats.style.Styler:
-    competitor_cols = [c for c in df.columns if c not in {"Source", "Date", ANANEA_HOTEL}]
+    delta_col = "Ananea \u0394"
+    meta_cols = {"Source", "Date", ANANEA_HOTEL, delta_col}
+    competitor_cols = [c for c in df.columns if c not in meta_cols]
 
     def style_row(row: pd.Series) -> list[str]:
         styles = []
@@ -165,6 +193,16 @@ def style_scorecard(df: pd.DataFrame) -> pd.io.formats.style.Styler:
                 styles.append("")
             elif col == ANANEA_HOTEL:
                 styles.append("font-weight: 700;")
+            elif col == delta_col:
+                delta = pd.to_numeric(pd.Series([row.get(col)]), errors="coerce").iloc[0]
+                if pd.isna(delta):
+                    styles.append("")
+                elif delta > 0:
+                    styles.append("color: #15803d; font-weight: 600;")
+                elif delta < 0:
+                    styles.append("color: #b91c1c; font-weight: 600;")
+                else:
+                    styles.append("")
             else:
                 value = pd.to_numeric(pd.Series([row.get(col)]), errors="coerce").iloc[0]
                 if pd.isna(value) or pd.isna(ananea):
@@ -177,9 +215,16 @@ def style_scorecard(df: pd.DataFrame) -> pd.io.formats.style.Styler:
                     styles.append("")
         return styles
 
+    format_dict: dict[str, str | Callable] = {
+        ANANEA_HOTEL: "{:.2f}",
+        **{c: "{:.2f}" for c in competitor_cols},
+    }
+    if delta_col in df.columns:
+        format_dict[delta_col] = _format_delta
+
     return (
         df.style.apply(style_row, axis=1)
-        .format(precision=2, na_rep="-", subset=[ANANEA_HOTEL, *competitor_cols])
+        .format(format_dict, na_rep="-", subset=[ANANEA_HOTEL, delta_col, *competitor_cols] if delta_col in df.columns else [ANANEA_HOTEL, *competitor_cols])
     )
 
 
@@ -309,7 +354,7 @@ def manual_pending_summary(source_dfs: dict[str, pd.DataFrame]) -> pd.DataFrame:
 def main() -> None:
     st.set_page_config(page_title="Hotel Reputation Dashboard", layout="wide")
     st.title("Hotel Reputation Dashboard")
-    st.caption("Weekly reputation scores over time, pulled from source websites.")
+    st.caption("Biweekly reputation scores over time, pulled from source websites.")
 
     source_dfs: dict[str, pd.DataFrame] = {}
     all_history = []
@@ -366,7 +411,7 @@ def main() -> None:
     if scorecard.empty:
         st.warning("No Ananea scorecard data available for the selected sources.")
     else:
-        st.dataframe(style_scorecard(scorecard.sort_values("Source")), width="stretch")
+        st.dataframe(style_scorecard(scorecard.sort_values("Source")), use_container_width=True)
 
     st.subheader("Source Trends (Last 12 Months)")
     st.caption("One chart per selected source. Points mark collection dates.")
@@ -376,7 +421,7 @@ def main() -> None:
             st.warning(f"{source}: no score history available in the last year.")
             continue
         st.markdown(f"**{source}**")
-        st.plotly_chart(fig, width="stretch")
+        st.plotly_chart(fig, use_container_width=True)
 
     st.subheader("Manual Missing Values")
     st.caption("Use this to fill scores when scraping failed. Changes are written directly to CSV files in data/.")
@@ -386,7 +431,7 @@ def main() -> None:
         st.success("No missing or zero values pending on the latest date for each source.")
     else:
         st.warning("Missing/zero values detected (latest date per source):")
-        st.dataframe(pending.sort_values(["Source", "Issue", "Hotel"]), width="stretch")
+        st.dataframe(pending.sort_values(["Source", "Issue", "Hotel"]), use_container_width=True)
 
     editable_sources = [s for s in SOURCES if s in source_dfs]
     source = st.selectbox("Source", editable_sources, index=0)
@@ -414,7 +459,7 @@ def main() -> None:
             f"Needs input for {source} on {selected_date}: "
             + ", ".join(missing_hotels)
         )
-        st.dataframe(flagged_rows, width="stretch")
+        st.dataframe(flagged_rows, use_container_width=True)
     else:
         st.info(f"No missing/zero values for {source} on {selected_date}. You can still overwrite an existing value.")
 
