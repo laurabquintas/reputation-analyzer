@@ -26,9 +26,6 @@ Basic (API key via env var):
 Custom CSV path / date:
     python src/sites/google_places_scores.py --csv data/google_scores.csv --date 2025-09-20
 
-API key via CLI:
-    python src/sites/google_places_scores.py --api-key YOUR_KEY_HERE
-
 REQUIREMENTS
 ------------
 pandas
@@ -208,11 +205,6 @@ def parse_args() -> argparse.Namespace:
         default=DEFAULT_TIMEOUT,
         help=f"HTTP timeout per hotel (default: {DEFAULT_TIMEOUT})",
     )
-    p.add_argument(
-        "--api-key",
-        default=None,
-        help="Google Maps API key. If omitted, uses GOOGLE_MAPS_API_KEY env var.",
-    )
     return p.parse_args()
 
 
@@ -224,11 +216,11 @@ def main():
     if not DATE_COL_RE.fullmatch(args.date):
         raise ValueError(f"--date must be YYYY-MM-DD, got: {args.date}")
 
-    # Resolve API key
-    api_key = args.api_key or os.getenv("GOOGLE_MAPS_API_KEY")
+    # Resolve API key (environment variable only – never pass keys via CLI)
+    api_key = os.getenv("GOOGLE_MAPS_API_KEY")
     if not api_key:
         raise RuntimeError(
-            "No API key provided. Use --api-key or set GOOGLE_MAPS_API_KEY."
+            "No API key provided. Set the GOOGLE_MAPS_API_KEY environment variable."
         )
 
     hotels = list(HOTEL_QUERIES.keys())
