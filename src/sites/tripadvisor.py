@@ -156,11 +156,6 @@ def parse_args() -> argparse.Namespace:
                    help="Date column to write (YYYY-MM-DD). Default: today.")
     p.add_argument("--min-delay", type=float, default=2.0, help=f"Min delay (s) between hotels (default: 2.0)")
     p.add_argument("--max-delay", type=float, default=5.0, help=f"Max delay (s) between hotels (default: 5.0)")
-    p.add_argument(
-        "--api-key",
-        default=None,
-        help="Tripadvisor API key. If omitted, uses TRIPADVISOR_API_KEY env var.",
-    )
     return p.parse_args()
 
 
@@ -171,9 +166,10 @@ def main():
     # Validate date format early
     if not DATE_COL_RE.fullmatch(args.date):
         raise ValueError(f"--date must be YYYY-MM-DD, got: {args.date}")
-    api_key = args.api_key or os.getenv("TRIPADVISOR_API_KEY")
+    # Resolve API key (environment variable only – never pass keys via CLI)
+    api_key = os.getenv("TRIPADVISOR_API_KEY")
     if not api_key:
-        raise RuntimeError("No API key provided. Use --api-key or set TRIPADVISOR_API_KEY.")
+        raise RuntimeError("No API key provided. Set the TRIPADVISOR_API_KEY environment variable.")
 
     hotels = list(LOCATION_IDS.keys())
     df = ensure_csv(args.csv, args.sep, hotels)
