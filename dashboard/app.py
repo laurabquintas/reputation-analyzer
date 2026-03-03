@@ -406,7 +406,7 @@ def main() -> None:
     if scorecard.empty:
         st.warning("No Ananea scorecard data available for the selected sources.")
     else:
-        st.dataframe(style_scorecard(scorecard.sort_values("Source")), width="stretch")
+        st.dataframe(style_scorecard(scorecard.sort_values("Source")), use_container_width=True)
 
     st.subheader("Source Trends (Last 12 Months)")
     st.caption("One chart per selected source. Points mark collection dates.")
@@ -416,7 +416,7 @@ def main() -> None:
             st.warning(f"{source}: no score history available in the last year.")
             continue
         st.markdown(f"**{source}**")
-        st.plotly_chart(fig, width="stretch")
+        st.plotly_chart(fig, use_container_width=True)
 
     st.subheader("Manual Missing Values")
     st.caption("Use this to fill scores when scraping failed. Changes are written directly to CSV files in data/.")
@@ -426,7 +426,7 @@ def main() -> None:
         st.success("No missing or zero values pending on the latest date for each source.")
     else:
         st.warning("Missing/zero values detected (latest date per source):")
-        st.dataframe(pending.sort_values(["Source", "Issue", "Hotel"]), width="stretch")
+        st.dataframe(pending.sort_values(["Source", "Issue", "Hotel"]), use_container_width=True)
 
     editable_sources = [s for s in SOURCES if s in source_dfs]
     source = st.selectbox("Source", editable_sources, index=0)
@@ -454,7 +454,7 @@ def main() -> None:
             f"Needs input for {source} on {selected_date}: "
             + ", ".join(missing_hotels)
         )
-        st.dataframe(flagged_rows, width="stretch")
+        st.dataframe(flagged_rows, use_container_width=True)
     else:
         st.info(f"No missing/zero values for {source} on {selected_date}. You can still overwrite an existing value.")
 
