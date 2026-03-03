@@ -37,6 +37,7 @@ beautifulsoup4
 
 from __future__ import annotations
 
+import logging
 import os
 import re
 import argparse
@@ -46,9 +47,12 @@ from datetime import datetime
 from typing import Dict, Optional
 from urllib.parse import urlsplit, urlunsplit, parse_qsl, urlencode
 
+import yaml
 import pandas as pd
 import requests
 from bs4 import BeautifulSoup
+
+logger = logging.getLogger(__name__)
 
 
 # ---------------------- Default configuration ---------------------- #
@@ -66,15 +70,15 @@ DEFAULT_RETRIES = 2
 
 DATE_COL_RE = re.compile(r"\d{4}-\d{2}-\d{2}")  # YYYY-MM-DD
 
+_CONFIG_PATH = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "..", "config", "hotels.yaml")
+
+def _load_expedia_urls() -> Dict[str, str]:
+    with open(_CONFIG_PATH, encoding="utf-8") as f:
+        cfg = yaml.safe_load(f)
+    return {h["name"]: h["expedia_url"] for h in cfg["hotels"] if h.get("expedia_url")}
+
 # Map of hotel display name -> Expedia URL
-EXPEDIA_URLS: Dict[str, str] = {
-    "Ananea Castelo Suites Hotel" : "https://euro.expedia.net/Albufeira-Hotels-Castelo-Suites-Hotel.h111521689.Hotel-Information?pwaDialog=product-reviews",
-    "PortoBay Falésia" : "https://euro.expedia.net/Albufeira-Hotels-PortoBay-Falesia.h1787641.Hotel-Information?pwaDialog=product-reviews",
-    "Regency Salgados Hotel & Spa" : "https://euro.expedia.net/Albufeira-Hotels-Regency-Salgados-Hotel-Spa.h67650702.Hotel-Information?pwaDialog=product-reviews",
-    "NAU São Rafael Atlântico" : "https://euro.expedia.net/Albufeira-Hotels-Sao-Rafael-Suite-Hotel.h1210300.Hotel-Information?pwaDialogNested=PropertyDetailsReviewsBreakdownDialog",
-    "The Westin Salgados Beach Resort" : "https://euro.expedia.net/Albufeira-Hotels-The-Westin-Salgados-Beach-Resort.h3639949.Hotel-Information?pwaDialog=product-reviews",
-    "Vidamar Resort Hotel Algarve" : "https://euro.expedia.net/Albufeira-Hotels-VidaMar-Resort-Hotel-Algarve.h5670748.Hotel-Information?pwaDialog=product-reviews"
-}
+EXPEDIA_URLS: Dict[str, str] = _load_expedia_urls()
 
 # ------------------------ Scraper logic ---------------------------- #
 
@@ -178,9 +182,9 @@ def fetch_page(url: str, timeout: int, retries: int) -> Optional[str]:
                 resp.raise_for_status()
                 lowered = resp.text.lower()
                 if any(marker in lowered for marker in blocked_markers):
-                    print(f"   WARN: possible anti-bot/challenge page for {candidate_url}")
+                    logger.warning("Possible anti-bot/challenge page for %s", candidate_url)
                 if candidate_url != url:
-                    print(f"   INFO: fetched via fallback URL: {candidate_url}")
+                    logger.info("Fetched via fallback URL: %s", candidate_url)
                 return resp.text
             except Exception as e:
                 last_exc = e
@@ -189,16 +193,16 @@ def fetch_page(url: str, timeout: int, retries: int) -> Optional[str]:
                     err_text = str(e)
                     if "429" in err_text:
                         wait_s = 15.0 * (attempt + 1)
-                        print(f"   WARN: 429 received for {candidate_url}; backing off {wait_s:.1f}s before retry.")
+                        logger.warning("429 received for %s; backing off %.1fs before retry.", candidate_url, wait_s)
                     else:
                         wait_s = 1.5
                     sleep(wait_s)
                 else:
-                    print(f"   WARN: fetch failed for {candidate_url} after {retries + 1} attempts: {e}")
+                    logger.warning("Fetch failed for %s after %d attempts: %s", candidate_url, retries + 1, e)
                     # try next candidate URL
 
     if last_exc is not None:
-        print(f"   ERROR: failed to fetch page on all Expedia URL variants: {last_exc}")
+        logger.error("Failed to fetch page on all Expedia URL variants: %s", last_exc)
     return None
 
 
@@ -221,7 +225,7 @@ def validate_expedia_score(score: float | None) -> float | None:
         return None
     if 0.0 <= value <= 10.0:
         return value
-    print(f"   WARN: expedia score out of expected range 0-10: {value}. Ignoring value.")
+    logger.warning("Expedia score out of expected range 0-10: %s. Ignoring value.", value)
     return None
 
 
@@ -417,9 +421,9 @@ def get_expedia_score(
 
     if debug:
         details = debug_expedia_score_candidates(url, timeout=timeout, retries=retries)
-        print("   DEBUG: extraction candidates:", details)
+        logger.debug("Extraction candidates: %s", details)
     else:
-        print("   WARN: no Expedia score pattern matched for this page.")
+        logger.warning("No Expedia score pattern matched for this page.")
 
     return None
 
@@ -432,7 +436,7 @@ def ensure_csv(csv_path: str, sep: str, hotels: list[str]) -> pd.DataFrame:
     that an 'Average Score' column exists.
     """
     if not os.path.exists(csv_path):
-        print(f"Creating {csv_path} …")
+        logger.info("Creating %s", csv_path)
         df = pd.DataFrame(index=hotels)
         df.index.name = "Hotel"
         df["Average Score"] = pd.NA
@@ -510,13 +514,17 @@ def parse_args() -> argparse.Namespace:
     p.add_argument(
         "--debug",
         action="store_true",
-        help="Print parser candidate details when no score is found.",
+        help="Enable DEBUG-level logging for parser candidate details.",
     )
     return p.parse_args()
 
 
 def main():
+    logging.basicConfig(level=logging.INFO, format="%(levelname)s %(name)s: %(message)s")
     args = parse_args()
+
+    if args.debug:
+        logging.getLogger(__name__).setLevel(logging.DEBUG)
 
     # Validate date format early
     if not DATE_COL_RE.fullmatch(args.date):
@@ -528,10 +536,10 @@ def main():
     today_col = args.date
     new_scores: dict[str, Optional[float]] = {}
 
-    print(f"Writing Expedia scores into column: {today_col}\n")
+    logger.info("Writing Expedia scores into column: %s", today_col)
 
     for i, (hotel, url) in enumerate(EXPEDIA_URLS.items(), start=1):
-        print(f"{i:02d}/{len(EXPEDIA_URLS)} → {hotel}")
+        logger.info("%02d/%d → %s", i, len(EXPEDIA_URLS), hotel)
         score = get_expedia_score(
             url,
             timeout=args.timeout,
@@ -542,9 +550,9 @@ def main():
         new_scores[hotel] = score
 
         if score is not None:
-            print(f"   {score}/10")
+            logger.info("  %s/10", score)
         else:
-            print("   (no score)")
+            logger.warning("  (no score)")
 
         delay = random.uniform(args.min_delay, args.max_delay)
         sleep(delay)
@@ -555,11 +563,7 @@ def main():
 
     # Save
     df.to_csv(args.csv, sep=args.sep, index_label="Hotel")
-    print(f"\nSaved {args.csv}. Added/updated column: {today_col}")
-
-    # Show non-null for this run
-    with pd.option_context("display.max_rows", None, "display.width", 120):
-        print(df[[today_col]].dropna())
+    logger.info("Saved %s. Added/updated column: %s", args.csv, today_col)
 
 
 if __name__ == "__main__":

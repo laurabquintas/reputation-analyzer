@@ -3,60 +3,54 @@
 """
 holidaycheck_scraper.py
 
-Fetch Booking.com review scores for a fixed list of hotels and update a CSV
+Fetch HolidayCheck review scores for a fixed list of hotels and update a CSV
 with the following layout:
 - Index column: "Hotel"
-- One column per run date (YYYY-MM-DD) with the score (float)
+- One column per run date (YYYY-MM-DD) with the score (float, 0-6)
 - An "Average Score" column computed across all date columns
 
-The scraper is intentionally simple and stable:
-- It requests each property page with a desktop User-Agent.
-- It parses <script type="application/ld+json"> and reads the JSON-LD's
-  "aggregateRating" -> "ratingValue". This is the most reliable source.
-- If no rating is found, it records NaN for that hotel on that date.
+The scraper parses each hotel's HolidayCheck page:
+1. Preferred: JSON-LD aggregateRating -> ratingValue (normalized to 0-6 scale).
+2. Fallback: text pattern like "4,5 / 6" on the page.
+If no rating is found, it records NaN for that hotel on that date.
 
 CSV details:
-- Default file: booking_scores.csv
-- Separator: ";" (semicolon), matching your current file
+- Default file: holidaycheck_scores.csv
+- Separator: ";" (semicolon)
 - If the CSV does not exist, it is created with the hotel list as index.
 
 USAGE
 -----
 Basic:
-    python src/sites/booking.py
-
-Custom CSV path / retries / delays:
-    python src/sites/booking.py --csv data/booking_scores.csv --retries 2 --min-delay 2.5 --max-delay 5.0
+    python src/sites/holidaycheck.py
 
 Pin a specific date column (otherwise "today"):
-    python src/sites/booking.py --date 2025-09-20
+    python src/sites/holidaycheck.py --date 2025-09-20
 
 REQUIREMENTS
 ------------
 pandas
 requests
 beautifulsoup4
-
-TIPS
-----
-- Verify each Booking URL in a normal browser to ensure it points to the exact
-  property page you want.
-- Be polite with delays; small random sleeps help avoid throttling.
+PyYAML
 """
 
 from __future__ import annotations
 
+import logging
 import os
 import re
-import json
 import argparse
 import random
 from time import sleep
 from datetime import datetime
 
+import yaml
 import pandas as pd
 import requests
 from bs4 import BeautifulSoup
+
+logger = logging.getLogger(__name__)
 
 
 # ---------------------- Default configuration ---------------------- #
@@ -78,15 +72,15 @@ UA_HEADERS = {
     "Accept-Language": "en-US,en;q=0.9,de;q=0.8",
 }
 
-# Map of hotel display name -> Booking URL
-URLS = {
-    "Ananea Castelo Suites Hotel": "https://www.holidaycheck.de/hi/ananea-castelo-suites-algarve/069563af-47db-44a3-bdb1-3441ae3a2ac4",
-    "PortoBay Falésia": "https://www.holidaycheck.de/hi/portobay-falesia/44a47534-85c4-3114-a6da-472d82e16e29",
-    "Regency Salgados Hotel & Spa": "https://www.holidaycheck.de/hi/regency-salgados-hotel-spa/b0478236-7644-46b4-8fde-bd6cb1832cf8",
-    "NAU São Rafael Atlântico": "https://www.holidaycheck.de/hi/nau-sao-rafael-suites-all-inclusive/739da55a-710e-3514-83f6-8e01149442a5",
-    "The Westin Salgados Beach Resort": "https://www.holidaycheck.de/hi/the-westin-salgados-beach-resort-algarve/226cd009-8ddb-3e7f-8191-ca0e0024caf0",
-    "Vidamar Resort Hotel Algarve": "https://www.holidaycheck.de/hi/vidamar-hotel-resort-algarve/e641bc1e-59d5-37a0-832e-90e6bbb51977",
-}
+_CONFIG_PATH = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "..", "config", "hotels.yaml")
+
+def _load_urls() -> dict[str, str]:
+    with open(_CONFIG_PATH, encoding="utf-8") as f:
+        cfg = yaml.safe_load(f)
+    return {h["name"]: h["holidaycheck_url"] for h in cfg["hotels"] if h.get("holidaycheck_url")}
+
+# Map of hotel display name -> HolidayCheck URL
+URLS = _load_urls()
 
 DATE_COL_RE = re.compile(r"\d{4}-\d{2}-\d{2}")  # YYYY-MM-DD
 # -------------------------- Scraper logic -------------------------- #
@@ -176,7 +170,7 @@ def ensure_csv(csv_path: str, sep: str, hotels: list[str]) -> pd.DataFrame:
     that an 'Average Score' column exists.
     """
     if not os.path.exists(csv_path):
-        print(f"Creating {csv_path} …")
+        logger.info("Creating %s", csv_path)
         df = pd.DataFrame(index=hotels)
         df.index.name = "Hotel"
         df["Average Score"] = pd.NA
@@ -218,6 +212,7 @@ def parse_args() -> argparse.Namespace:
 
 
 def main():
+    logging.basicConfig(level=logging.INFO, format="%(levelname)s %(name)s: %(message)s")
     args = parse_args()
 
     # Validate date format early
@@ -230,21 +225,21 @@ def main():
     today_col = args.date
     new_scores: dict[str, float | None] = {}
 
-    print(f"Writing scores into column: {today_col}\n")
+    logger.info("Writing scores into column: %s", today_col)
 
     for i, (hotel, url) in enumerate(URLS.items(), start=1):
-        print(f"{i:02d}/{len(URLS)} → {hotel}")
+        logger.info("%02d/%d → %s", i, len(URLS), hotel)
         try:
             score = get_holidaycheck_score(url, timeout=args.timeout)
         except Exception as exc:
-            print(f"   ERROR: {exc}")
+            logger.error("  %s", exc)
             score = None
         score = sanitize_holidaycheck_score(score)
         new_scores[hotel] = score
         if score is not None:
-            print(f"   {score}/6")
+            logger.info("  %s/6", score)
         else:
-            print("   (no score)")
+            logger.warning("  (no score)")
 
         # be polite; jitter within [min-delay, max-delay]
         delay = random.uniform(args.min_delay, args.max_delay)
@@ -256,10 +251,7 @@ def main():
 
     # Save
     df.to_csv(args.csv, sep=args.sep, index_label="Hotel")
-    print(f"\nSaved {args.csv}. Added/updated column: {today_col}")
-    # Show non-null for this run
-    with pd.option_context("display.max_rows", None, "display.width", 120):
-        print(df[[today_col]].dropna())
+    logger.info("Saved %s. Added/updated column: %s", args.csv, today_col)
 
 
 if __name__ == "__main__":
