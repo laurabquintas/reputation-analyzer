@@ -459,7 +459,13 @@ def main() -> None:
     history_df = history_df.sort_values("Date")
 
     available_sources = sorted(history_df["Source"].dropna().unique().tolist())
-    selected_sources = st.multiselect("Sources", available_sources, default=available_sources)
+    if "source_selector" not in st.session_state:
+        st.session_state["source_selector"] = available_sources
+    selected_sources = st.multiselect(
+        "Sources",
+        available_sources,
+        key="source_selector",
+    )
 
     filtered = history_df[history_df["Source"].isin(selected_sources)].copy()
     if filtered.empty:
