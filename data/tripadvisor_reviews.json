@@ -1,0 +1,94 @@
+{
+  "meta": {
+    "last_updated": "2026-03-03T18:35:10",
+    "total_reviews": 3
+  },
+  "reviews": [
+    {
+      "id": "1037605287",
+      "hotel": "Ananea Castelo Suites Hotel",
+      "location_id": "33299137",
+      "rating": 5,
+      "title": "Lovely quiet hotel",
+      "text": "We travelled as a family of four with 2 children 9 and 11 and really enjoyed our time at this hotel.\n\nThe hotel is in a quiet area with a few restaurants and bars within walking distance. There are a couple of beaches nearby (Praia do Evaristo and Praia do Castelo) both with restaurants and well worth a visit. I would recommend hiring a car, there is ample free parking available.\n\nWe stayed in a family suite with twin beds in one room and a king in the other. Each had its own door but were accessed by a single door at the front which could be locked and created a bit of additional storage space.\n\nThe rooms were small but perfectly adequate. Ritual toiletries were provided, and the rooms were cleaned and towels changed daily. There is a small fridge but no bottle openers in the rooms.\n\nWe stayed half board and the food and service was beyond our expectations. Everything was freshly cooked, and the restaurant area was spotless. In the evening’s salad, soups, vegetables and fresh meat / fish were offered as well as fruit, cheeses and a variety of desserts. The staff were great, even bringing salt for the poached eggs at breakfast without being asked.\n\nOne slight disappointment was that the main pool isn't heated and was really cold. There is a heated pool on the roof terrace, but you had to be 16+ to access this.\n\nThe hotel seemed to attract couples rather than families however, we had a great time and would definitely return.",
+      "published_date": "2025-11-03T11:15:52Z",
+      "travel_date": "2025-10-31",
+      "trip_type": "Family",
+      "subratings": {},
+      "helpful_votes": 0,
+      "scraped_date": "2026-03-03",
+      "topics": [],
+      "classified": true
+    },
+    {
+      "id": "1033353426",
+      "hotel": "Ananea Castelo Suites Hotel",
+      "location_id": "33299137",
+      "rating": 5,
+      "title": "Fabulous Modern Hotel",
+      "text": "Fabulous hotel with a very calming feel. When you walk into the lobby it smells like a Spa. Beautiful modern rooms with high quality toiletries and daily servicing. Breakfast had something for everyone and a vast selection of hot food, pastries and juices to mention a few. Swimming pools were cold but still lovely and pool area is spotless. I highly recommend the Traditional Club Sandwich from the pool side bar..delicious! Staff couldn’t be nicer, and always had a smile for you. Only a few € into the old town via uber too so very well located. 100% would visit again",
+      "published_date": "2025-10-04T10:10:17Z",
+      "travel_date": "2025-10-31",
+      "trip_type": "Couples",
+      "subratings": {},
+      "helpful_votes": 0,
+      "scraped_date": "2026-03-03",
+      "topics": [
+        {
+          "topic": "employees",
+          "sentiment": "positive"
+        },
+        {
+          "topic": "commodities",
+          "sentiment": "positive"
+        },
+        {
+          "topic": "comfort",
+          "sentiment": "positive"
+        },
+        {
+          "topic": "cleaning",
+          "sentiment": "positive"
+        },
+        {
+          "topic": "meals",
+          "sentiment": "positive"
+        },
+        {
+          "topic": "commodities",
+          "sentiment": "negative"
+        }
+      ],
+      "classified": true
+    },
+    {
+      "id": "1033043012",
+      "hotel": "Ananea Castelo Suites Hotel",
+      "location_id": "33299137",
+      "rating": 5,
+      "title": "Wonderful week with wonderful staff",
+      "text": "We have just checked out after a wonderful week in this hotel. The rooms are lovely, the staff are amazing and friendly. For such a young team of people they have the most excellent customer service skills. The breakfast was lovely too. We would definitely come back to this lovely place. Thank you x",
+      "published_date": "2025-10-02T03:03:08Z",
+      "travel_date": "2025-09-30",
+      "trip_type": "Couples",
+      "subratings": {},
+      "helpful_votes": 0,
+      "scraped_date": "2026-03-03",
+      "topics": [
+        {
+          "topic": "employees",
+          "sentiment": "positive"
+        },
+        {
+          "topic": "comfort",
+          "sentiment": "positive"
+        },
+        {
+          "topic": "meals",
+          "sentiment": "positive"
+        }
+      ],
+      "classified": true
+    }
+  ]
+}
