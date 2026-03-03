@@ -1,7 +1,11 @@
 from __future__ import annotations
 
+import hmac
+import json
+import os
 import re
 from collections.abc import Callable
+from datetime import datetime
 from pathlib import Path
 
 import yaml
@@ -57,6 +61,7 @@ def _load_hotel_links() -> dict[str, dict[str, str]]:
 
 HOTEL_LINKS: dict[str, dict[str, str]] = _load_hotel_links()
 ANANEA_HOTEL = "Ananea Castelo Suites Hotel"
+REVIEWS_JSON_PATH = DATA_DIR / "tripadvisor_reviews.json"
 
 
 def load_source_df(path: Path) -> pd.DataFrame | None:
@@ -351,8 +356,88 @@ def manual_pending_summary(source_dfs: dict[str, pd.DataFrame]) -> pd.DataFrame:
     return pd.DataFrame(rows)
 
 
+_TOPIC_DISPLAY = {
+    "employees": "Employees",
+    "commodities": "Commodities",
+    "comfort": "Comfort",
+    "cleaning": "Cleaning",
+    "quality_price": "Quality / Price",
+    "meals": "Meals",
+}
+
+
+def _load_reviews_json(path: Path) -> list[dict]:
+    if not path.exists():
+        return []
+    with open(path, encoding="utf-8") as f:
+        data = json.load(f)
+    return data.get("reviews", [])
+
+
+def _ytd_topic_summary(reviews: list[dict], hotel: str) -> pd.DataFrame:
+    current_year = str(datetime.now().year)
+    ytd = [
+        r for r in reviews
+        if r.get("hotel") == hotel
+        and r.get("published_date", "")[:4] == current_year
+        and r.get("classified", False)
+    ]
+    rows = []
+    for topic_key, topic_display in _TOPIC_DISPLAY.items():
+        pos = sum(
+            1 for r in ytd for t in r.get("topics", [])
+            if t["topic"] == topic_key and t["sentiment"] == "positive"
+        )
+        neg = sum(
+            1 for r in ytd for t in r.get("topics", [])
+            if t["topic"] == topic_key and t["sentiment"] == "negative"
+        )
+        rows.append({"Topic": topic_display, "Positive": pos, "Negative": neg})
+    return pd.DataFrame(rows)
+
+
+def _latest_top_reviews(reviews: list[dict], hotel: str, n: int = 3) -> list[dict]:
+    hotel_reviews = [r for r in reviews if r.get("hotel") == hotel]
+    hotel_reviews.sort(key=lambda r: r.get("published_date", ""), reverse=True)
+    return hotel_reviews[:n]
+
+
+def _check_password() -> bool:
+    """Verify the dashboard password before granting access.
+
+    The expected password is read from the ``DASHBOARD_PASSWORD`` environment
+    variable.  If the variable is not set the dashboard is left unprotected so
+    that local development is not blocked, but a sidebar warning is shown.
+
+    Returns ``True`` when the user is authenticated (or no password is
+    configured) and ``False`` otherwise.
+    """
+    expected = os.getenv("DASHBOARD_PASSWORD", "")
+    if not expected:
+        st.sidebar.warning("No DASHBOARD_PASSWORD env var set – dashboard is unprotected.")
+        return True
+
+    if st.session_state.get("authenticated"):
+        return True
+
+    st.title("Hotel Reputation Dashboard")
+    st.subheader("Login required")
+    password = st.text_input("Password", type="password", key="password_input")
+    if st.button("Log in", type="primary"):
+        if hmac.compare_digest(password, expected):
+            st.session_state["authenticated"] = True
+            st.rerun()
+        else:
+            st.error("Incorrect password.")
+    return False
+
+
 def main() -> None:
     st.set_page_config(page_title="Hotel Reputation Dashboard", layout="wide")
+
+    if not _check_password():
+        return
+
     st.title("Hotel Reputation Dashboard")
     st.caption("Biweekly reputation scores over time, pulled from source websites.")
 
@@ -422,6 +507,83 @@ def main() -> None:
             continue
         st.markdown(f"**{source}**")
         st.plotly_chart(fig, use_container_width=True)
+
+    # ---- TripAdvisor Review Analysis ---- #
+    st.subheader("TripAdvisor Review Analysis")
+    st.caption(f"YTD topic analysis based on TripAdvisor review text ({ANANEA_HOTEL}).")
+
+    reviews_data = _load_reviews_json(REVIEWS_JSON_PATH)
+    if not reviews_data:
+        st.info(
+            "No review data available yet. Run the reviews scraper to populate "
+            "data/tripadvisor_reviews.json."
+        )
+    else:
+        topic_df = _ytd_topic_summary(reviews_data, ANANEA_HOTEL)
+
+        if topic_df[["Positive", "Negative"]].sum().sum() == 0:
+            st.info("No classified reviews found for the current year.")
+        else:
+            fig = go.Figure()
+            fig.add_trace(go.Bar(
+                y=topic_df["Topic"],
+                x=topic_df["Positive"],
+                name="Positive",
+                orientation="h",
+                marker_color="#15803d",
+            ))
+            fig.add_trace(go.Bar(
+                y=topic_df["Topic"],
+                x=topic_df["Negative"],
+                name="Negative",
+                orientation="h",
+                marker_color="#b91c1c",
+            ))
+            fig.update_layout(
+                barmode="group",
+                margin={"l": 20, "r": 20, "t": 30, "b": 20},
+                height=320,
+                xaxis_title="Mention Count",
+                yaxis_title="",
+                title=f"YTD Topic Sentiment - {datetime.now().year}",
+            )
+            st.plotly_chart(fig, use_container_width=True)
+
+        st.markdown("**Latest Reviews**")
+        top_reviews = _latest_top_reviews(reviews_data, ANANEA_HOTEL, n=3)
+
+        if not top_reviews:
+            st.info("No reviews found.")
+        else:
+            cols = st.columns(len(top_reviews))
+            for col, review in zip(cols, top_reviews):
+                with col:
+                    rating = int(review.get("rating") or 0)
+                    stars = "\u2605" * rating + "\u2606" * (5 - rating)
+                    st.markdown(f"**{stars}** {rating}/5")
+                    st.markdown(f"**{review.get('title', 'No title')}**")
+                    text = review.get("text", "")
+                    display_text = text[:200] + "..." if len(text) > 200 else text
+                    st.caption(display_text)
+
+                    pub_date = review.get("published_date", "")
+                    trip_type = review.get("trip_type", "")
+                    meta_parts = []
+                    if pub_date:
+                        meta_parts.append(pub_date)
+                    if trip_type:
+                        meta_parts.append(trip_type.replace("_", " ").title())
+                    if meta_parts:
+                        st.caption(" | ".join(meta_parts))
+
+                    topics = review.get("topics", [])
+                    if topics:
+                        pills = " ".join(
+                            f"{'🟢' if t['sentiment'] == 'positive' else '🔴'} "
+                            f"{t['topic'].replace('_', ' ').title()}"
+                            for t in topics
+                        )
+                        st.caption(pills)
 
     st.subheader("Manual Missing Values")
     st.caption("Use this to fill scores when scraping failed. Changes are written directly to CSV files in data/.")
