@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import hashlib
 import hmac
 import json
 import os
@@ -374,12 +375,12 @@ def _load_reviews_json(path: Path) -> list[dict]:
     return data.get("reviews", [])
 
 
-def _ytd_topic_summary(reviews: list[dict], hotel: str) -> pd.DataFrame:
-    current_year = str(datetime.now().year)
+def _ytd_topic_summary(reviews: list[dict], hotel: str, year: int | None = None) -> pd.DataFrame:
+    target_year = str(year if year is not None else datetime.now().year)
     ytd = [
         r for r in reviews
         if r.get("hotel") == hotel
-        and r.get("published_date", "")[:4] == current_year
+        and r.get("published_date", "")[:4] == target_year
         and r.get("classified", False)
     ]
     rows = []
@@ -400,6 +401,26 @@ def _latest_top_reviews(reviews: list[dict], hotel: str, n: int = 3) -> list[dic
     hotel_reviews = [r for r in reviews if r.get("hotel") == hotel]
     hotel_reviews.sort(key=lambda r: r.get("published_date", ""), reverse=True)
     return hotel_reviews[:n]
+
+
+def _save_reviews_json(reviews: list[dict], path: Path) -> None:
+    """Write reviews list back to the JSON file."""
+    path.parent.mkdir(parents=True, exist_ok=True)
+    data = {
+        "meta": {
+            "last_updated": datetime.now().isoformat(timespec="seconds"),
+            "total_reviews": len(reviews),
+        },
+        "reviews": reviews,
+    }
+    with open(path, "w", encoding="utf-8") as f:
+        json.dump(data, f, indent=2, ensure_ascii=False)
+
+
+def _generate_manual_id(reviewer_name: str, published_date: str, title: str) -> str:
+    """Create a deterministic ID for a manual review."""
+    seed = f"{reviewer_name}_{published_date}_{title}"
+    return "manual_" + hashlib.sha256(seed.encode()).hexdigest()[:12]
 
 
 def _check_password() -> bool:
@@ -516,7 +537,6 @@ def main() -> None:
 
     # ---- TripAdvisor Review Analysis ---- #
     st.subheader("TripAdvisor Review Analysis")
-    st.caption(f"YTD topic analysis based on TripAdvisor review text ({ANANEA_HOTEL}).")
 
     reviews_data = _load_reviews_json(REVIEWS_JSON_PATH)
     if not reviews_data:
@@ -525,10 +545,19 @@ def main() -> None:
             "data/tripadvisor_reviews.json."
         )
     else:
-        topic_df = _ytd_topic_summary(reviews_data, ANANEA_HOTEL)
+        current_year = datetime.now().year
+        previous_year = current_year - 1
+        year_option = st.radio(
+            "Period",
+            [f"YTD {current_year}", f"Full Year {previous_year}"],
+            horizontal=True,
+            key="review_year_toggle",
+        )
+        selected_year = current_year if year_option.startswith("YTD") else previous_year
+        topic_df = _ytd_topic_summary(reviews_data, ANANEA_HOTEL, year=selected_year)
 
         if topic_df[["Positive", "Negative"]].sum().sum() == 0:
-            st.info("No classified reviews found for the current year.")
+            st.info(f"No classified reviews found for {selected_year}.")
         else:
             fig = go.Figure()
             fig.add_trace(go.Bar(
@@ -545,13 +574,14 @@ def main() -> None:
                 orientation="h",
                 marker_color="#b91c1c",
             ))
+            label = f"YTD {selected_year}" if selected_year == current_year else str(selected_year)
             fig.update_layout(
                 barmode="group",
                 margin={"l": 20, "r": 20, "t": 30, "b": 20},
                 height=320,
                 xaxis_title="Mention Count",
                 yaxis_title="",
-                title=f"YTD Topic Sentiment - {datetime.now().year}",
+                title=f"Topic Sentiment – {label}",
             )
             st.plotly_chart(fig, use_container_width=True)
 
@@ -590,6 +620,66 @@ def main() -> None:
                             for t in topics
                         )
                         st.caption(pills)
+
+    # ---- Manual Review Input ---- #
+    st.subheader("Add Review Manually")
+    st.caption(
+        "The TripAdvisor API returns a limited number of reviews. "
+        "Use this form to add reviews you found on the website that the API missed."
+    )
+
+    with st.form("manual_review_form", clear_on_submit=True):
+        mr_cols = st.columns([2, 1])
+        with mr_cols[0]:
+            mr_reviewer = st.text_input("Reviewer name", placeholder="e.g. John D.")
+            mr_title = st.text_input("Review title", placeholder="e.g. Amazing stay!")
+        with mr_cols[1]:
+            mr_rating = st.number_input("Rating", min_value=1, max_value=5, value=5, step=1)
+            mr_date = st.date_input("Review date")
+            mr_trip = st.selectbox(
+                "Trip type",
+                ["Couples", "Family", "Solo", "Business", "Friends"],
+                index=0,
+            )
+        mr_text = st.text_area("Review text", height=150, placeholder="Paste the full review text here...")
+        mr_submitted = st.form_submit_button("Add review", type="primary")
+
+    if mr_submitted:
+        if not mr_reviewer or not mr_text:
+            st.error("Reviewer name and review text are required.")
+        else:
+            pub_date_str = mr_date.strftime("%Y-%m-%d")
+            review_id = _generate_manual_id(mr_reviewer, pub_date_str, mr_title)
+            current_reviews = _load_reviews_json(REVIEWS_JSON_PATH)
+            existing_ids = {r["id"] for r in current_reviews}
+
+            if review_id in existing_ids:
+                st.warning("This review already exists (same name + date + title).")
+            else:
+                new_review = {
+                    "id": review_id,
+                    "hotel": ANANEA_HOTEL,
+                    "location_id": "",
+                    "rating": mr_rating,
+                    "title": mr_title,
+                    "text": mr_text,
+                    "published_date": f"{pub_date_str}T00:00:00Z",
+                    "travel_date": "",
+                    "trip_type": mr_trip,
+                    "subratings": {},
+                    "helpful_votes": 0,
+                    "scraped_date": datetime.now().strftime("%Y-%m-%d"),
+                    "topics": [],
+                    "classified": False,
+                    "source": "manual",
+                }
+                current_reviews.append(new_review)
+                _save_reviews_json(current_reviews, REVIEWS_JSON_PATH)
+                st.success(
+                    f"Review added (ID: {review_id}). "
+                    "Run the scraper with --reclassify to classify it with Ollama."
+                )
+                st.rerun()
 
     st.subheader("Manual Missing Values")
     st.caption("Use this to fill scores when scraping failed. Changes are written directly to CSV files in data/.")
