@@ -3,6 +3,7 @@ from __future__ import annotations
 import argparse
 import csv
 import json
+import logging
 import os
 import subprocess
 import sys
@@ -10,6 +11,8 @@ import time
 from dataclasses import asdict, dataclass
 from datetime import datetime
 from pathlib import Path
+
+logger = logging.getLogger(__name__)
 
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -144,7 +147,7 @@ def run_site(site: str, config: SiteConfig, date_col: str, python_cmd: str, time
         )
 
     cmd = [python_cmd, str(config.script), "--date", date_col]
-    print(f"[run] {site}: {' '.join(cmd)}")
+    logger.info("[run] %s: %s", site, " ".join(cmd))
 
     try:
         proc = subprocess.run(cmd, capture_output=True, text=True, timeout=timeout, check=False)
@@ -226,16 +229,17 @@ def run_site(site: str, config: SiteConfig, date_col: str, python_cmd: str, time
 
 
 def main() -> int:
+    logging.basicConfig(level=logging.INFO, format="%(levelname)s %(name)s: %(message)s")
     args = parse_args()
 
     sites = normalize_sites(args.sites)
     unknown_sites = [site for site in sites if site not in SITE_CONFIGS]
     if unknown_sites:
-        print(f"Unknown sites ignored: {', '.join(unknown_sites)}")
+        logger.warning("Unknown sites ignored: %s", ", ".join(unknown_sites))
     selected_sites = [site for site in sites if site in SITE_CONFIGS]
 
     if not selected_sites:
-        print("No valid sites selected.")
+        logger.error("No valid sites selected.")
         return 1
 
     results: list[SiteResult] = []
@@ -252,11 +256,11 @@ def main() -> int:
     failed = [r for r in results if r.status == "failed"]
     warned = [r for r in results if r.warning]
 
-    print("\nExecution summary:")
+    logger.info("Execution summary:")
     for result in results:
-        print(
-            f"- {result.site}: {result.status} | {result.message} "
-            f"({result.duration_seconds}s)"
+        logger.info(
+            "- %s: %s | %s (%.2fs)",
+            result.site, result.status, result.message, result.duration_seconds,
         )
 
     if args.summary_json:
@@ -269,7 +273,7 @@ def main() -> int:
             "warning_count": len(warned),
         }
         summary_path.write_text(json.dumps(summary, indent=2), encoding="utf-8")
-        print(f"Summary written to {summary_path}")
+        logger.info("Summary written to %s", summary_path)
 
     if failed:
         return 1
