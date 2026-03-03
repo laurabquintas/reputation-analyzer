@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import re
+from collections.abc import Callable
 from pathlib import Path
 
 import yaml
@@ -130,16 +131,29 @@ def latest_scorecard_table(history_df: pd.DataFrame, sources: list[str]) -> pd.D
         src = history_df[(history_df["Source"] == source) & history_df["Score"].notna()]
         if src.empty:
             continue
-        latest_date = src["Date"].max()
+        unique_dates = sorted(src["Date"].unique())
+        latest_date = unique_dates[-1]
+        prev_date = unique_dates[-2] if len(unique_dates) >= 2 else None
+
         latest = src[src["Date"] == latest_date]
         ananea = latest[latest["Hotel"] == ANANEA_HOTEL]
         if ananea.empty:
             continue
 
+        ananea_score = round(float(ananea["Score"].iloc[0]), 2)
+
+        # Compute Ananea delta vs previous date
+        ananea_delta = None
+        if prev_date is not None:
+            prev = src[(src["Date"] == prev_date) & (src["Hotel"] == ANANEA_HOTEL)]
+            if not prev.empty:
+                ananea_delta = round(ananea_score - float(prev["Score"].iloc[0]), 2)
+
         row: dict[str, object] = {
             "Source": source,
             "Date": latest_date.date().isoformat(),
-            ANANEA_HOTEL: round(float(ananea["Score"].iloc[0]), 2),
+            ANANEA_HOTEL: ananea_score,
+            "Ananea \u0394": ananea_delta,
         }
         for competitor in competitors:
             value = latest.loc[latest["Hotel"] == competitor, "Score"]
@@ -149,8 +163,22 @@ def latest_scorecard_table(history_df: pd.DataFrame, sources: list[str]) -> pd.D
     return pd.DataFrame(rows)
 
 
+def _format_delta(val: object) -> str:
+    """Format a delta value with ▲/▼ arrows."""
+    if pd.isna(val):
+        return "-"
+    v = float(val)
+    if v > 0:
+        return f"\u25b2 +{v:.2f}"
+    if v < 0:
+        return f"\u25bc {v:.2f}"
+    return "= 0.00"
+
+
 def style_scorecard(df: pd.DataFrame) -> pd.io.formats.style.Styler:
-    competitor_cols = [c for c in df.columns if c not in {"Source", "Date", ANANEA_HOTEL}]
+    delta_col = "Ananea \u0394"
+    meta_cols = {"Source", "Date", ANANEA_HOTEL, delta_col}
+    competitor_cols = [c for c in df.columns if c not in meta_cols]
 
     def style_row(row: pd.Series) -> list[str]:
         styles = []
@@ -160,6 +188,16 @@ def style_scorecard(df: pd.DataFrame) -> pd.io.formats.style.Styler:
                 styles.append("")
             elif col == ANANEA_HOTEL:
                 styles.append("font-weight: 700;")
+            elif col == delta_col:
+                delta = pd.to_numeric(pd.Series([row.get(col)]), errors="coerce").iloc[0]
+                if pd.isna(delta):
+                    styles.append("")
+                elif delta > 0:
+                    styles.append("color: #15803d; font-weight: 600;")
+                elif delta < 0:
+                    styles.append("color: #b91c1c; font-weight: 600;")
+                else:
+                    styles.append("")
             else:
                 value = pd.to_numeric(pd.Series([row.get(col)]), errors="coerce").iloc[0]
                 if pd.isna(value) or pd.isna(ananea):
@@ -172,9 +210,16 @@ def style_scorecard(df: pd.DataFrame) -> pd.io.formats.style.Styler:
                     styles.append("")
         return styles
 
+    format_dict: dict[str, str | Callable] = {
+        ANANEA_HOTEL: "{:.2f}",
+        **{c: "{:.2f}" for c in competitor_cols},
+    }
+    if delta_col in df.columns:
+        format_dict[delta_col] = _format_delta
+
     return (
         df.style.apply(style_row, axis=1)
-        .format(precision=2, na_rep="-", subset=[ANANEA_HOTEL, *competitor_cols])
+        .format(format_dict, na_rep="-", subset=[ANANEA_HOTEL, delta_col, *competitor_cols] if delta_col in df.columns else [ANANEA_HOTEL, *competitor_cols])
     )
 
 

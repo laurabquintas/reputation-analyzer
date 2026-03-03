@@ -37,6 +37,7 @@ PyYAML
 
 from __future__ import annotations
 
+import logging
 import os
 import re
 import argparse
@@ -48,6 +49,8 @@ import yaml
 import pandas as pd
 import requests
 from bs4 import BeautifulSoup
+
+logger = logging.getLogger(__name__)
 
 
 # ---------------------- Default configuration ---------------------- #
@@ -167,7 +170,7 @@ def ensure_csv(csv_path: str, sep: str, hotels: list[str]) -> pd.DataFrame:
     that an 'Average Score' column exists.
     """
     if not os.path.exists(csv_path):
-        print(f"Creating {csv_path} …")
+        logger.info("Creating %s", csv_path)
         df = pd.DataFrame(index=hotels)
         df.index.name = "Hotel"
         df["Average Score"] = pd.NA
@@ -209,6 +212,7 @@ def parse_args() -> argparse.Namespace:
 
 
 def main():
+    logging.basicConfig(level=logging.INFO, format="%(levelname)s %(name)s: %(message)s")
     args = parse_args()
 
     # Validate date format early
@@ -221,21 +225,21 @@ def main():
     today_col = args.date
     new_scores: dict[str, float | None] = {}
 
-    print(f"Writing scores into column: {today_col}\n")
+    logger.info("Writing scores into column: %s", today_col)
 
     for i, (hotel, url) in enumerate(URLS.items(), start=1):
-        print(f"{i:02d}/{len(URLS)} → {hotel}")
+        logger.info("%02d/%d → %s", i, len(URLS), hotel)
         try:
             score = get_holidaycheck_score(url, timeout=args.timeout)
         except Exception as exc:
-            print(f"   ERROR: {exc}")
+            logger.error("  %s", exc)
             score = None
         score = sanitize_holidaycheck_score(score)
         new_scores[hotel] = score
         if score is not None:
-            print(f"   {score}/6")
+            logger.info("  %s/6", score)
         else:
-            print("   (no score)")
+            logger.warning("  (no score)")
 
         # be polite; jitter within [min-delay, max-delay]
         delay = random.uniform(args.min_delay, args.max_delay)
@@ -247,10 +251,7 @@ def main():
 
     # Save
     df.to_csv(args.csv, sep=args.sep, index_label="Hotel")
-    print(f"\nSaved {args.csv}. Added/updated column: {today_col}")
-    # Show non-null for this run
-    with pd.option_context("display.max_rows", None, "display.width", 120):
-        print(df[[today_col]].dropna())
+    logger.info("Saved %s. Added/updated column: %s", args.csv, today_col)
 
 
 if __name__ == "__main__":

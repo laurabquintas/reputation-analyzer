@@ -42,6 +42,7 @@ NOTES
 
 from __future__ import annotations
 
+import logging
 import os
 import re
 import json
@@ -52,6 +53,8 @@ from typing import Dict
 import yaml
 import pandas as pd
 import requests
+
+logger = logging.getLogger(__name__)
 
 
 # ---------------------- Default configuration ---------------------- #
@@ -90,7 +93,7 @@ def sanitize_google_score(score: float | None) -> float | None:
         return None
     if 0.0 <= value <= 5.0:
         return value
-    print(f"[warn] google score out of expected range 0-5: {value}. Ignoring value.")
+    logger.warning("Google score out of expected range 0-5: %s. Ignoring value.", value)
     return None
 
 def get_google_rating(query: str, api_key: str, timeout: int = DEFAULT_TIMEOUT) -> float | None:
@@ -148,7 +151,7 @@ def ensure_csv(csv_path: str, sep: str, hotels: list[str]) -> pd.DataFrame:
     that an 'Average Score' column exists.
     """
     if not os.path.exists(csv_path):
-        print(f"Creating {csv_path} …")
+        logger.info("Creating %s", csv_path)
         df = pd.DataFrame(index=hotels)
         df.index.name = "Hotel"
         df["Average Score"] = pd.NA
@@ -214,6 +217,7 @@ def parse_args() -> argparse.Namespace:
 
 
 def main():
+    logging.basicConfig(level=logging.INFO, format="%(levelname)s %(name)s: %(message)s")
     args = parse_args()
 
     # Validate date format early
@@ -233,23 +237,23 @@ def main():
     today_col = args.date
     new_scores: dict[str, float | None] = {}
 
-    print(f"Writing Google ratings into column: {today_col}\n")
+    logger.info("Writing Google ratings into column: %s", today_col)
 
     for i, (hotel, query) in enumerate(HOTEL_QUERIES.items(), start=1):
-        print(f"{i:02d}/{len(HOTEL_QUERIES)} → {hotel}")
+        logger.info("%02d/%d → %s", i, len(HOTEL_QUERIES), hotel)
         try:
             score = get_google_rating(query, api_key=api_key, timeout=args.timeout)
         except Exception as e:
-            print(f"   ERROR: {e}")
+            logger.error("  %s", e)
             score = None
 
         score = sanitize_google_score(score)
         new_scores[hotel] = score
 
         if score is not None:
-            print(f"   {score}/5")
+            logger.info("  %s/5", score)
         else:
-            print("   (no score)")
+            logger.warning("  (no score)")
 
     # Write column & update average
     df[today_col] = pd.Series(new_scores)
@@ -257,11 +261,7 @@ def main():
 
     # Save
     df.to_csv(args.csv, sep=args.sep, index_label="Hotel")
-    print(f"\nSaved {args.csv}. Added/updated column: {today_col}")
-
-    # Show non-null for this run
-    with pd.option_context("display.max_rows", None, "display.width", 120):
-        print(df[[today_col]].dropna())
+    logger.info("Saved %s. Added/updated column: %s", args.csv, today_col)
 
 
 if __name__ == "__main__":
