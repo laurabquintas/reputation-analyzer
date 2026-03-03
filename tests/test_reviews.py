@@ -127,8 +127,8 @@ class TestYtdTopicSummary:
 
     def test_all_topics_present(self):
         df = ytd_topic_summary(SAMPLE_REVIEWS, "Ananea Castelo Suites Hotel")
-        assert len(df) == 6
-        expected_topics = {"Employees", "Commodities", "Comfort", "Cleaning", "Quality / Price", "Meals"}
+        assert len(df) == 7
+        expected_topics = {"Employees", "Commodities", "Comfort", "Cleaning", "Quality / Price", "Meals", "Would Return"}
         assert set(df["Topic"].tolist()) == expected_topics
 
 

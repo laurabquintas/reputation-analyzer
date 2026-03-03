@@ -364,6 +364,7 @@ _TOPIC_DISPLAY = {
     "cleaning": "Cleaning",
     "quality_price": "Quality / Price",
     "meals": "Meals",
+    "return": "Would Return",
 }
 
 
