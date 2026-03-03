@@ -91,7 +91,7 @@ def is_ollama_available(ollama_url: str = "http://localhost:11434") -> bool:
     try:
         resp = requests.get(f"{ollama_url}/api/tags", timeout=5)
         return resp.status_code == 200
-    except (requests.ConnectionError, requests.Timeout):
+    except Exception:
         return False
 
 
