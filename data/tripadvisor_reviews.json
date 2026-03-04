@@ -1,6 +1,6 @@
 {
   "meta": {
-    "last_updated": "2026-03-04T00:35:09",
+    "last_updated": "2026-03-04T22:58:15",
     "total_reviews": 11
   },
   "reviews": [
@@ -27,10 +27,6 @@
           "sentiment": "negative"
         },
         {
-          "topic": "comfort",
-          "sentiment": "positive"
-        },
-        {
           "topic": "cleaning",
           "sentiment": "positive"
         },
@@ -40,10 +36,6 @@
         },
         {
           "topic": "return",
-          "sentiment": "positive"
-        },
-        {
-          "topic": "commodities",
           "sentiment": "positive"
         }
       ],
@@ -80,8 +72,12 @@
           "sentiment": "positive"
         },
         {
-          "topic": "comfort",
-          "sentiment": "positive"
+          "topic": "meals",
+          "sentiment": "negative"
+        },
+        {
+          "topic": "commodities",
+          "sentiment": "negative"
         },
         {
           "topic": "return",
@@ -183,6 +179,10 @@
           "sentiment": "positive"
         },
         {
+          "topic": "commodities",
+          "sentiment": "negative"
+        },
+        {
           "topic": "meals",
           "sentiment": "positive"
         }
@@ -224,6 +224,14 @@
           "sentiment": "negative"
         },
         {
+          "topic": "meals",
+          "sentiment": "negative"
+        },
+        {
+          "topic": "return",
+          "sentiment": "negative"
+        },
+        {
           "topic": "employees",
           "sentiment": "negative"
         }
@@ -247,6 +255,10 @@
         {
           "topic": "employees",
           "sentiment": "negative"
+        },
+        {
+          "topic": "commodities",
+          "sentiment": "positive"
         },
         {
           "topic": "quality_price",
@@ -287,11 +299,11 @@
           "sentiment": "positive"
         },
         {
-          "topic": "comfort",
+          "topic": "cleaning",
           "sentiment": "positive"
         },
         {
-          "topic": "cleaning",
+          "topic": "comfort",
           "sentiment": "positive"
         }
       ],
@@ -314,10 +326,6 @@
       "topics": [
         {
           "topic": "commodities",
-          "sentiment": "positive"
-        },
-        {
-          "topic": "comfort",
           "sentiment": "positive"
         },
         {
@@ -377,7 +385,7 @@
           "sentiment": "negative"
         },
         {
-          "topic": "comfort",
+          "topic": "commodities",
           "sentiment": "positive"
         },
         {
@@ -385,11 +393,19 @@
           "sentiment": "negative"
         },
         {
+          "topic": "quality_price",
+          "sentiment": "negative"
+        },
+        {
           "topic": "meals",
           "sentiment": "positive"
         },
         {
-          "topic": "quality_price",
+          "topic": "meals",
+          "sentiment": "negative"
+        },
+        {
+          "topic": "commodities",
           "sentiment": "negative"
         }
       ],
@@ -427,16 +443,12 @@
           "sentiment": "negative"
         },
         {
-          "topic": "meals",
-          "sentiment": "positive"
-        },
-        {
-          "topic": "return",
-          "sentiment": "positive"
-        },
-        {
           "topic": "commodities",
           "sentiment": "negative"
+        },
+        {
+          "topic": "meals",
+          "sentiment": "positive"
         }
       ],
       "classified": true,
