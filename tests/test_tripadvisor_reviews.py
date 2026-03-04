@@ -17,6 +17,7 @@ from src.sites.tripadvisor_reviews import (
     load_reviews,
     save_reviews,
     ta_get_reviews,
+    ta_get_reviews_page,
 )
 
 
@@ -139,32 +140,81 @@ SAMPLE_API_RESPONSE = {
             ],
             "helpful_votes": 2,
         }
-    ]
+    ],
+    "paging": {"total_results": 1, "results": 1},
 }
 
 
-class TestTaGetReviews:
-    def test_returns_reviews(self):
+class TestTaGetReviewsPage:
+    def test_returns_reviews_and_total(self):
         resp = MagicMock()
         resp.status_code = 200
         resp.raise_for_status = MagicMock()
         resp.json.return_value = SAMPLE_API_RESPONSE
 
         with patch("src.sites.tripadvisor_reviews.requests.get", return_value=resp):
-            reviews = ta_get_reviews("33299137", api_key="test-key")
+            reviews, total = ta_get_reviews_page("33299137", api_key="test-key")
 
         assert len(reviews) == 1
         assert reviews[0]["id"] == 12345
-        assert reviews[0]["rating"] == 5
+        assert total == 1
 
     def test_empty_response(self):
         resp = MagicMock()
         resp.status_code = 200
         resp.raise_for_status = MagicMock()
-        resp.json.return_value = {"data": []}
+        resp.json.return_value = {"data": [], "paging": {"total_results": 0}}
 
         with patch("src.sites.tripadvisor_reviews.requests.get", return_value=resp):
-            reviews = ta_get_reviews("33299137", api_key="test-key")
+            reviews, total = ta_get_reviews_page("33299137", api_key="test-key")
+
+        assert reviews == []
+        assert total == 0
+
+
+class TestTaGetReviews:
+    def test_returns_reviews_across_languages(self):
+        resp = MagicMock()
+        resp.status_code = 200
+        resp.raise_for_status = MagicMock()
+        resp.json.return_value = SAMPLE_API_RESPONSE
+
+        with patch("src.sites.tripadvisor_reviews.requests.get", return_value=resp):
+            with patch("src.sites.tripadvisor_reviews.sleep"):
+                reviews = ta_get_reviews(
+                    "33299137", api_key="test-key", languages=["en"]
+                )
+
+        assert len(reviews) == 1
+        assert reviews[0]["id"] == 12345
+        assert reviews[0]["_language"] == "en"
+
+    def test_deduplicates_across_languages(self):
+        """Same review ID returned in en and pt should appear only once."""
+        resp = MagicMock()
+        resp.status_code = 200
+        resp.raise_for_status = MagicMock()
+        resp.json.return_value = SAMPLE_API_RESPONSE
+
+        with patch("src.sites.tripadvisor_reviews.requests.get", return_value=resp):
+            with patch("src.sites.tripadvisor_reviews.sleep"):
+                reviews = ta_get_reviews(
+                    "33299137", api_key="test-key", languages=["en", "pt"]
+                )
+
+        assert len(reviews) == 1
+
+    def test_empty_response(self):
+        resp = MagicMock()
+        resp.status_code = 200
+        resp.raise_for_status = MagicMock()
+        resp.json.return_value = {"data": [], "paging": {"total_results": 0}}
+
+        with patch("src.sites.tripadvisor_reviews.requests.get", return_value=resp):
+            with patch("src.sites.tripadvisor_reviews.sleep"):
+                reviews = ta_get_reviews(
+                    "33299137", api_key="test-key", languages=["en"]
+                )
 
         assert reviews == []
 
