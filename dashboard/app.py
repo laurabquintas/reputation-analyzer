@@ -748,11 +748,17 @@ def main() -> None:
     # ---- Manual Review Input ---- #
     with st.expander("Add Review Manually"):
         st.caption(
-            "The TripAdvisor API returns a limited number of reviews. "
+            "Review APIs return a limited number of reviews. "
             "Use this form to add reviews you found on the website that the API missed."
         )
 
         with st.form("manual_review_form", clear_on_submit=True):
+            mr_source = st.selectbox(
+                "Source",
+                ["TripAdvisor"],
+                index=0,
+                key="mr_source",
+            )
             mr_cols = st.columns([2, 1])
             with mr_cols[0]:
                 mr_reviewer = st.text_input("Reviewer name", placeholder="e.g. John D.")
@@ -810,6 +816,7 @@ def main() -> None:
                         "topics": topics,
                         "classified": classified,
                         "source": "manual",
+                        "review_source": mr_source,
                     }
                     current_reviews.append(new_review)
                     _save_reviews_json(current_reviews, REVIEWS_JSON_PATH)
