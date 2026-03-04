@@ -439,16 +439,14 @@ def _quarter_topic_comparison(reviews: list[dict], hotel: str) -> pd.DataFrame |
         pq_pos_pct = round(pq_pos / pq_total * 100, 1) if pq_total else 0
         pq_neg_pct = round(pq_neg / pq_total * 100, 1) if pq_total else 0
 
-        pos_delta = round(cq_pos_pct - pq_pos_pct, 1)
-        neg_delta = round(cq_neg_pct - pq_neg_pct, 1)
+        # None means we can't compare (one quarter has 0 reviews)
+        can_compare = cq_total > 0 and pq_total > 0
+        pos_delta = round(cq_pos_pct - pq_pos_pct, 1) if can_compare else None
+        neg_delta = round(cq_neg_pct - pq_neg_pct, 1) if can_compare else None
 
         rows.append({
             "Topic": topic_display,
-            f"Pos {pq_label}": f"{pq_pos_pct}%",
-            f"Pos {cq_label}": f"{cq_pos_pct}%",
             "Pos Δ": pos_delta,
-            f"Neg {pq_label}": f"{pq_neg_pct}%",
-            f"Neg {cq_label}": f"{cq_neg_pct}%",
             "Neg Δ": neg_delta,
         })
 
@@ -479,30 +477,34 @@ def _render_quarter_comparison(df: pd.DataFrame | None) -> None:
         pos_delta = row["Pos Δ"]
         neg_delta = row["Neg Δ"]
 
-        # Positive: up is good (green), down is bad (red)
-        if pos_delta > 0:
-            pos_color = "#15803d"
-            pos_arrow = "▲"
-        elif pos_delta < 0:
-            pos_color = "#b91c1c"
-            pos_arrow = "▼"
-        else:
+        if pos_delta is None:
+            # Can't compare – one quarter has 0 reviews
+            pos_text = "--"
             pos_color = "#6b7280"
-            pos_arrow = "–"
-
-        # Negative: down is good (green), up is bad (red)
-        if neg_delta < 0:
-            neg_color = "#15803d"
-            neg_arrow = "▼"
-        elif neg_delta > 0:
-            neg_color = "#b91c1c"
-            neg_arrow = "▲"
-        else:
+            neg_text = "--"
             neg_color = "#6b7280"
-            neg_arrow = "–"
+        else:
+            # Positive: up is good (green), down is bad (red)
+            if pos_delta > 0:
+                pos_color = "#15803d"
+                pos_text = f"▲ +{pos_delta}pp"
+            elif pos_delta < 0:
+                pos_color = "#b91c1c"
+                pos_text = f"▼ {pos_delta}pp"
+            else:
+                pos_color = "#6b7280"
+                pos_text = "– 0pp"
 
-        pos_sign = "+" if pos_delta > 0 else ""
-        neg_sign = "+" if neg_delta > 0 else ""
+            # Negative: down is good (green), up is bad (red)
+            if neg_delta < 0:
+                neg_color = "#15803d"
+                neg_text = f"▼ {neg_delta}pp"
+            elif neg_delta > 0:
+                neg_color = "#b91c1c"
+                neg_text = f"▲ +{neg_delta}pp"
+            else:
+                neg_color = "#6b7280"
+                neg_text = "– 0pp"
 
         card_html = f"""
         <div style="background:#f9fafb;border:1px solid #e5e7eb;border-radius:8px;
@@ -515,14 +517,14 @@ def _render_quarter_comparison(df: pd.DataFrame | None) -> None:
                     <span style="color:#b91c1c;font-size:0.75rem;">&#11044;</span>
                     <span style="font-size:0.7rem;color:#6b7280;">Neg</span>
                     <div style="color:{neg_color};font-weight:600;font-size:0.85rem;">
-                        {neg_arrow} {neg_sign}{neg_delta}pp
+                        {neg_text}
                     </div>
                 </div>
                 <div>
                     <span style="color:#15803d;font-size:0.75rem;">&#11044;</span>
                     <span style="font-size:0.7rem;color:#6b7280;">Pos</span>
                     <div style="color:{pos_color};font-weight:600;font-size:0.85rem;">
-                        {pos_arrow} {pos_sign}{pos_delta}pp
+                        {pos_text}
                     </div>
                 </div>
             </div>
