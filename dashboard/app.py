@@ -9,10 +9,14 @@ from collections.abc import Callable
 from datetime import datetime
 from pathlib import Path
 
+import sys
 import yaml
 import pandas as pd
 import plotly.graph_objects as go
 import streamlit as st
+
+sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "src"))
+from sites.tripadvisor_reviews import classify_review, is_ollama_available
 
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -277,14 +281,14 @@ def ananea_competitive_index(history_df: pd.DataFrame, sources: list[str]) -> di
     }
 
 
-def source_one_year_figure(history_df: pd.DataFrame, source: str) -> go.Figure | None:
+def source_year_figure(history_df: pd.DataFrame, source: str, year: int) -> go.Figure | None:
     src = history_df[(history_df["Source"] == source) & history_df["Score"].notna()].copy()
     if src.empty:
         return None
 
-    max_date = src["Date"].max()
-    min_date = max_date - pd.DateOffset(years=1)
-    src = src[src["Date"] >= min_date].sort_values("Date")
+    min_date = pd.Timestamp(year, 1, 1)
+    max_date = pd.Timestamp(year, 12, 31)
+    src = src[(src["Date"] >= min_date) & (src["Date"] <= max_date)].sort_values("Date")
     if src.empty:
         return None
 
@@ -494,6 +498,11 @@ def main() -> None:
         st.warning("No data for the selected filters.")
         return
 
+    # ================================================================== #
+    # Competition Comparison
+    # ================================================================== #
+    st.header("Competition Comparison")
+
     st.subheader("Ananea Scorecard")
     st.caption("Latest available score per source. Competitor values are red when higher than Ananea and green when lower.")
     scorecard = latest_scorecard_table(history_df, selected_sources)
@@ -526,63 +535,177 @@ def main() -> None:
     else:
         st.dataframe(style_scorecard(scorecard.sort_values("Source")), use_container_width=True)
 
-    st.subheader("Source Trends (Last 12 Months)")
+    current_year = datetime.now().year
+    previous_year = current_year - 1
+    trends_option = st.radio(
+        "Period",
+        [f"YTD {current_year}", f"Full Year {previous_year}"],
+        horizontal=True,
+        key="trends_year_toggle",
+    )
+    trends_year = current_year if trends_option.startswith("YTD") else previous_year
+    trends_label = f"YTD {current_year}" if trends_year == current_year else str(previous_year)
+
+    st.subheader(f"Source Trends ({trends_label})")
     st.caption("One chart per selected source. Points mark collection dates.")
     for source in selected_sources:
-        fig = source_one_year_figure(history_df, source)
+        fig = source_year_figure(history_df, source, trends_year)
         if fig is None:
-            st.warning(f"{source}: no score history available in the last year.")
+            st.warning(f"{source}: no score history available for {trends_year}.")
             continue
         st.markdown(f"**{source}**")
         st.plotly_chart(fig, use_container_width=True)
 
-    # ---- TripAdvisor Review Analysis ---- #
-    st.subheader("TripAdvisor Review Analysis")
+    # ================================================================== #
+    # Manual Missing Values (collapsible)
+    # ================================================================== #
+    with st.expander("Manual Missing Values"):
+        st.caption("Use this to fill scores when scraping failed. Changes are written directly to CSV files in data/.")
+
+        pending = manual_pending_summary(source_dfs)
+        if pending.empty:
+            st.success("No missing or zero values pending on the latest date for each source.")
+        else:
+            st.warning("Missing/zero values detected (latest date per source):")
+            st.dataframe(pending.sort_values(["Source", "Issue", "Hotel"]), use_container_width=True)
+
+        editable_sources = [s for s in SOURCES if s in source_dfs]
+        mv_source = st.selectbox("Source", editable_sources, index=0, key="mv_source")
+        mv_src_df = source_dfs[mv_source]
+
+        date_options = source_date_columns(mv_src_df)
+        if not date_options:
+            st.warning(f"No date columns found for {mv_source}.")
+        else:
+            selected_date = st.selectbox("Date", list(reversed(date_options)), index=0, key="mv_date")
+            flagged_rows = missing_or_zero_rows(mv_src_df, selected_date)
+            missing_hotels = flagged_rows["Hotel"].astype(str).tolist()
+            hotel_options = missing_hotels if missing_hotels else sorted(mv_src_df["Hotel"].astype(str).tolist())
+            hotel = st.selectbox("Hotel", hotel_options, index=0, key="mv_hotel")
+            hotel_link = HOTEL_LINKS.get(mv_source, {}).get(hotel)
+
+            if hotel_link:
+                st.markdown(f"Hotel link: [{hotel_link}]({hotel_link})")
+            else:
+                st.caption("No direct hotel link configured for this source/hotel.")
+
+            if missing_hotels:
+                st.info(
+                    f"Needs input for {mv_source} on {selected_date}: "
+                    + ", ".join(missing_hotels)
+                )
+                st.dataframe(flagged_rows, use_container_width=True)
+            else:
+                st.info(f"No missing/zero values for {mv_source} on {selected_date}. You can still overwrite an existing value.")
+
+            max_scale = SCALE_MAX.get(mv_source, 10.0)
+            score = st.number_input(
+                "Score",
+                min_value=0.0,
+                max_value=max_scale,
+                value=0.0,
+                step=0.1,
+                format="%.1f",
+                key="mv_score",
+            )
+
+            if st.button("Save score", key="mv_save"):
+                try:
+                    set_manual_score(source=mv_source, hotel=hotel, date_col=selected_date, score=float(score))
+                    st.success(f"Saved {score:.1f} for {hotel} in {mv_source} ({selected_date}).")
+                    st.rerun()
+                except Exception as exc:
+                    st.error(f"Failed to save score: {exc}")
+
+    # ================================================================== #
+    # Internal Analysis – Reviews
+    # ================================================================== #
+    st.header("Internal Analysis - Reviews")
 
     reviews_data = _load_reviews_json(REVIEWS_JSON_PATH)
+
+    # ---- Overall Sources Topic Sentiment ---- #
+    st.subheader("Overall Sources Topic Sentiment")
+    st.caption("Aggregated topic sentiment across all review sources.")
+
     if not reviews_data:
-        st.info(
-            "No review data available yet. Run the reviews scraper to populate "
-            "data/tripadvisor_reviews.json."
-        )
+        st.info("No review data available yet.")
     else:
-        current_year = datetime.now().year
-        previous_year = current_year - 1
-        year_option = st.radio(
+        review_year_option = st.radio(
             "Period",
             [f"YTD {current_year}", f"Full Year {previous_year}"],
             horizontal=True,
             key="review_year_toggle",
         )
-        selected_year = current_year if year_option.startswith("YTD") else previous_year
-        topic_df = _ytd_topic_summary(reviews_data, ANANEA_HOTEL, year=selected_year)
+        selected_year = current_year if review_year_option.startswith("YTD") else previous_year
+        overall_topic_df = _ytd_topic_summary(reviews_data, ANANEA_HOTEL, year=selected_year)
 
-        if topic_df[["Positive", "Negative"]].sum().sum() == 0:
+        if overall_topic_df[["Positive", "Negative"]].sum().sum() == 0:
             st.info(f"No classified reviews found for {selected_year}.")
         else:
+            overall_label = f"YTD {selected_year}" if selected_year == current_year else str(selected_year)
             fig = go.Figure()
             fig.add_trace(go.Bar(
-                y=topic_df["Topic"],
-                x=topic_df["Positive"],
+                y=overall_topic_df["Topic"],
+                x=overall_topic_df["Positive"],
                 name="Positive",
                 orientation="h",
                 marker_color="#15803d",
             ))
             fig.add_trace(go.Bar(
-                y=topic_df["Topic"],
-                x=topic_df["Negative"],
+                y=overall_topic_df["Topic"],
+                x=overall_topic_df["Negative"],
                 name="Negative",
                 orientation="h",
                 marker_color="#b91c1c",
             ))
-            label = f"YTD {selected_year}" if selected_year == current_year else str(selected_year)
             fig.update_layout(
                 barmode="group",
                 margin={"l": 20, "r": 20, "t": 30, "b": 20},
                 height=320,
                 xaxis_title="Mention Count",
                 yaxis_title="",
-                title=f"Topic Sentiment – {label}",
+                title=f"Overall Topic Sentiment – {overall_label}",
+            )
+            st.plotly_chart(fig, use_container_width=True)
+
+    # ---- TripAdvisor ---- #
+    st.subheader("TripAdvisor")
+
+    if not reviews_data:
+        st.info(
+            "No review data available yet. Run the reviews scraper to populate "
+            "data/tripadvisor_reviews.json."
+        )
+    else:
+        ta_topic_df = _ytd_topic_summary(reviews_data, ANANEA_HOTEL, year=selected_year)
+
+        if ta_topic_df[["Positive", "Negative"]].sum().sum() == 0:
+            st.info(f"No classified TripAdvisor reviews found for {selected_year}.")
+        else:
+            ta_label = f"YTD {selected_year}" if selected_year == current_year else str(selected_year)
+            fig = go.Figure()
+            fig.add_trace(go.Bar(
+                y=ta_topic_df["Topic"],
+                x=ta_topic_df["Positive"],
+                name="Positive",
+                orientation="h",
+                marker_color="#15803d",
+            ))
+            fig.add_trace(go.Bar(
+                y=ta_topic_df["Topic"],
+                x=ta_topic_df["Negative"],
+                name="Negative",
+                orientation="h",
+                marker_color="#b91c1c",
+            ))
+            fig.update_layout(
+                barmode="group",
+                margin={"l": 20, "r": 20, "t": 30, "b": 20},
+                height=320,
+                xaxis_title="Mention Count",
+                yaxis_title="",
+                title=f"TripAdvisor Topic Sentiment – {ta_label}",
             )
             st.plotly_chart(fig, use_container_width=True)
 
@@ -623,122 +746,83 @@ def main() -> None:
                         st.caption(pills)
 
     # ---- Manual Review Input ---- #
-    st.subheader("Add Review Manually")
-    st.caption(
-        "The TripAdvisor API returns a limited number of reviews. "
-        "Use this form to add reviews you found on the website that the API missed."
-    )
-
-    with st.form("manual_review_form", clear_on_submit=True):
-        mr_cols = st.columns([2, 1])
-        with mr_cols[0]:
-            mr_reviewer = st.text_input("Reviewer name", placeholder="e.g. John D.")
-            mr_title = st.text_input("Review title", placeholder="e.g. Amazing stay!")
-        with mr_cols[1]:
-            mr_rating = st.number_input("Rating", min_value=1, max_value=5, value=5, step=1)
-            mr_date = st.date_input("Review date")
-            mr_trip = st.selectbox(
-                "Trip type",
-                ["Couples", "Family", "Solo", "Business", "Friends"],
-                index=0,
-            )
-        mr_text = st.text_area("Review text", height=150, placeholder="Paste the full review text here...")
-        mr_submitted = st.form_submit_button("Add review", type="primary")
-
-    if mr_submitted:
-        if not mr_reviewer or not mr_text:
-            st.error("Reviewer name and review text are required.")
-        else:
-            pub_date_str = mr_date.strftime("%Y-%m-%d")
-            review_id = _generate_manual_id(mr_reviewer, pub_date_str, mr_title)
-            current_reviews = _load_reviews_json(REVIEWS_JSON_PATH)
-            existing_ids = {r["id"] for r in current_reviews}
-
-            if review_id in existing_ids:
-                st.warning("This review already exists (same name + date + title).")
-            else:
-                new_review = {
-                    "id": review_id,
-                    "hotel": ANANEA_HOTEL,
-                    "location_id": "",
-                    "rating": mr_rating,
-                    "title": mr_title,
-                    "text": mr_text,
-                    "published_date": f"{pub_date_str}T00:00:00Z",
-                    "travel_date": "",
-                    "trip_type": mr_trip,
-                    "subratings": {},
-                    "helpful_votes": 0,
-                    "scraped_date": datetime.now().strftime("%Y-%m-%d"),
-                    "topics": [],
-                    "classified": False,
-                    "source": "manual",
-                }
-                current_reviews.append(new_review)
-                _save_reviews_json(current_reviews, REVIEWS_JSON_PATH)
-                st.success(
-                    f"Review added (ID: {review_id}). "
-                    "Run the scraper with --reclassify to classify it with Ollama."
-                )
-                st.rerun()
-
-    st.subheader("Manual Missing Values")
-    st.caption("Use this to fill scores when scraping failed. Changes are written directly to CSV files in data/.")
-
-    pending = manual_pending_summary(source_dfs)
-    if pending.empty:
-        st.success("No missing or zero values pending on the latest date for each source.")
-    else:
-        st.warning("Missing/zero values detected (latest date per source):")
-        st.dataframe(pending.sort_values(["Source", "Issue", "Hotel"]), use_container_width=True)
-
-    editable_sources = [s for s in SOURCES if s in source_dfs]
-    source = st.selectbox("Source", editable_sources, index=0)
-    src_df = source_dfs[source]
-
-    date_options = source_date_columns(src_df)
-    if not date_options:
-        st.warning(f"No date columns found for {source}.")
-        return
-
-    selected_date = st.selectbox("Date", list(reversed(date_options)), index=0)
-    flagged_rows = missing_or_zero_rows(src_df, selected_date)
-    missing_hotels = flagged_rows["Hotel"].astype(str).tolist()
-    hotel_options = missing_hotels if missing_hotels else sorted(src_df["Hotel"].astype(str).tolist())
-    hotel = st.selectbox("Hotel", hotel_options, index=0)
-    hotel_link = HOTEL_LINKS.get(source, {}).get(hotel)
-
-    if hotel_link:
-        st.markdown(f"Hotel link: [{hotel_link}]({hotel_link})")
-    else:
-        st.caption("No direct hotel link configured for this source/hotel.")
-
-    if missing_hotels:
-        st.info(
-            f"Needs input for {source} on {selected_date}: "
-            + ", ".join(missing_hotels)
+    with st.expander("Add Review Manually"):
+        st.caption(
+            "Review APIs return a limited number of reviews. "
+            "Use this form to add reviews you found on the website that the API missed."
         )
-        st.dataframe(flagged_rows, use_container_width=True)
-    else:
-        st.info(f"No missing/zero values for {source} on {selected_date}. You can still overwrite an existing value.")
 
-    max_scale = SCALE_MAX.get(source, 10.0)
-    score = st.number_input(
-        "Score",
-        min_value=0.0,
-        max_value=max_scale,
-        value=0.0,
-        step=0.1,
-        format="%.1f",
-    )
+        with st.form("manual_review_form", clear_on_submit=True):
+            mr_source = st.selectbox(
+                "Source",
+                ["TripAdvisor"],
+                index=0,
+                key="mr_source",
+            )
+            mr_cols = st.columns([2, 1])
+            with mr_cols[0]:
+                mr_reviewer = st.text_input("Reviewer name", placeholder="e.g. John D.")
+                mr_title = st.text_input("Review title", placeholder="e.g. Amazing stay!")
+            with mr_cols[1]:
+                mr_rating = st.number_input("Rating", min_value=1, max_value=5, value=5, step=1)
+                mr_date = st.date_input("Review date")
+                mr_trip = st.selectbox(
+                    "Trip type",
+                    ["Couples", "Family", "Solo", "Business", "Friends"],
+                    index=0,
+                )
+            mr_text = st.text_area("Review text", height=150, placeholder="Paste the full review text here...")
+            mr_submitted = st.form_submit_button("Add review", type="primary")
 
-    if st.button("Save score"):
-        try:
-            set_manual_score(source=source, hotel=hotel, date_col=selected_date, score=float(score))
-            st.success(f"Saved {score:.1f} for {hotel} in {source} ({selected_date}).")
-            st.rerun()
-        except Exception as exc:
-            st.error(f"Failed to save score: {exc}")
+        if mr_submitted:
+            if not mr_reviewer or not mr_text:
+                st.error("Reviewer name and review text are required.")
+            else:
+                pub_date_str = mr_date.strftime("%Y-%m-%d")
+                review_id = _generate_manual_id(mr_reviewer, pub_date_str, mr_title)
+                current_reviews = _load_reviews_json(REVIEWS_JSON_PATH)
+                existing_ids = {r["id"] for r in current_reviews}
+
+                if review_id in existing_ids:
+                    st.warning("This review already exists (same name + date + title).")
+                else:
+                    # Try to classify automatically via Ollama
+                    topics: list[dict] = []
+                    classified = False
+                    ollama_msg = ""
+                    if is_ollama_available():
+                        try:
+                            topics = classify_review(mr_text)
+                            classified = True
+                            ollama_msg = f" Classified with {len(topics)} topics."
+                        except Exception:
+                            ollama_msg = " Ollama classification failed; saved without topics."
+                    else:
+                        ollama_msg = " Ollama not available; saved without classification."
+
+                    new_review = {
+                        "id": review_id,
+                        "hotel": ANANEA_HOTEL,
+                        "location_id": "",
+                        "rating": mr_rating,
+                        "title": mr_title,
+                        "text": mr_text,
+                        "published_date": f"{pub_date_str}T00:00:00Z",
+                        "travel_date": "",
+                        "trip_type": mr_trip,
+                        "subratings": {},
+                        "helpful_votes": 0,
+                        "scraped_date": datetime.now().strftime("%Y-%m-%d"),
+                        "topics": topics,
+                        "classified": classified,
+                        "source": "manual",
+                        "review_source": mr_source,
+                    }
+                    current_reviews.append(new_review)
+                    _save_reviews_json(current_reviews, REVIEWS_JSON_PATH)
+                    st.success(f"Review added (ID: {review_id}).{ollama_msg}")
+                    st.rerun()
+
 
 
 if __name__ == "__main__":
