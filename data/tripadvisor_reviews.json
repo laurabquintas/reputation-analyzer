@@ -1,7 +1,7 @@
 {
   "meta": {
-    "last_updated": "2026-03-03T18:35:10",
-    "total_reviews": 3
+    "last_updated": "2026-03-04T00:07:23",
+    "total_reviews": 5
   },
   "reviews": [
     {
@@ -16,8 +16,37 @@
       "trip_type": "Family",
       "subratings": {},
       "helpful_votes": 0,
-      "scraped_date": "2026-03-03",
-      "topics": [],
+      "scraped_date": "2026-03-04",
+      "topics": [
+        {
+          "topic": "employees",
+          "sentiment": "positive"
+        },
+        {
+          "topic": "commodities",
+          "sentiment": "negative"
+        },
+        {
+          "topic": "comfort",
+          "sentiment": "positive"
+        },
+        {
+          "topic": "cleaning",
+          "sentiment": "positive"
+        },
+        {
+          "topic": "meals",
+          "sentiment": "positive"
+        },
+        {
+          "topic": "return",
+          "sentiment": "positive"
+        },
+        {
+          "topic": "commodities",
+          "sentiment": "positive"
+        }
+      ],
       "classified": true
     },
     {
@@ -32,7 +61,147 @@
       "trip_type": "Couples",
       "subratings": {},
       "helpful_votes": 0,
-      "scraped_date": "2026-03-03",
+      "scraped_date": "2026-03-04",
+      "topics": [
+        {
+          "topic": "employees",
+          "sentiment": "positive"
+        },
+        {
+          "topic": "commodities",
+          "sentiment": "positive"
+        },
+        {
+          "topic": "cleaning",
+          "sentiment": "positive"
+        },
+        {
+          "topic": "meals",
+          "sentiment": "positive"
+        },
+        {
+          "topic": "comfort",
+          "sentiment": "positive"
+        },
+        {
+          "topic": "return",
+          "sentiment": "positive"
+        }
+      ],
+      "classified": true
+    },
+    {
+      "id": "1033043012",
+      "hotel": "Ananea Castelo Suites Hotel",
+      "location_id": "33299137",
+      "rating": 5,
+      "title": "Wonderful week with wonderful staff",
+      "text": "We have just checked out after a wonderful week in this hotel. The rooms are lovely, the staff are amazing and friendly. For such a young team of people they have the most excellent customer service skills. The breakfast was lovely too. We would definitely come back to this lovely place. Thank you x",
+      "published_date": "2025-10-02T03:03:08Z",
+      "travel_date": "2025-09-30",
+      "trip_type": "Couples",
+      "subratings": {},
+      "helpful_votes": 0,
+      "scraped_date": "2026-03-04",
+      "topics": [
+        {
+          "topic": "employees",
+          "sentiment": "positive"
+        },
+        {
+          "topic": "meals",
+          "sentiment": "positive"
+        },
+        {
+          "topic": "return",
+          "sentiment": "positive"
+        }
+      ],
+      "classified": true
+    },
+    {
+      "id": "1037859495",
+      "hotel": "Ananea Castelo Suites Hotel",
+      "location_id": "33299137",
+      "rating": 5,
+      "title": "Wunderschöne Luxus Oase zur perfekten Entspannung",
+      "text": "Dieses Hotel ist ein wunderschöner Ort, um eine entspannte und erholsame Zeit an der Algarve zu verbringen. Das moderne und sehr exklusive Hotel unter einer sehr herzlichen und aufmerksamen Hotelmanagerin ist wirklich aussergewöhnlich geschmackvoll eingerichtet und bis ins kleinste Detail liebevoll gestaltet, so dass man die Harmonie des Hauses ständig spürt und erlebt! Die Farben und Materialen der Zimmer und des Interieurs greifen die Farben der Algarve perfekt auf und verschmelzen mit der wunderschönen Natur. Die Zimmer sind mit High-Tech und sehr hochwertigen Design-Möbeln ausgestattet, welche einen sofort in einen luxuriösen Urlaubsmodus versetzen. Der Aussenbereich war noch in Arbeit, aber man konnte auch hier schon die außergewöhnlich geschmackvolle und harmonische Bepflanzung erkennen. Auch das Frühstück war so liebevoll und reichhaltig mit lauter gesunden und frischen Köstlichkeiten dargeboten, dass alle Wünsche erfüllt wurden.",
+      "published_date": "2025-11-05T12:52:34Z",
+      "travel_date": "2025-10-31",
+      "trip_type": "Paare",
+      "subratings": {
+        "0": {
+          "name": "RATE_VALUE",
+          "rating_image_url": "https://www.tripadvisor.com/img/cdsi/img2/ratings/traveler/s5.0-66827-5.svg",
+          "value": 5,
+          "localized_name": "Preis/Leistung"
+        },
+        "1": {
+          "name": "RATE_ROOM",
+          "rating_image_url": "https://www.tripadvisor.com/img/cdsi/img2/ratings/traveler/s5.0-66827-5.svg",
+          "value": 5,
+          "localized_name": "Zimmer"
+        },
+        "2": {
+          "name": "RATE_LOCATION",
+          "rating_image_url": "https://www.tripadvisor.com/img/cdsi/img2/ratings/traveler/s5.0-66827-5.svg",
+          "value": 5,
+          "localized_name": "Lage"
+        },
+        "3": {
+          "name": "RATE_CLEANLINESS",
+          "rating_image_url": "https://www.tripadvisor.com/img/cdsi/img2/ratings/traveler/s5.0-66827-5.svg",
+          "value": 5,
+          "localized_name": "Sauberkeit"
+        },
+        "4": {
+          "name": "RATE_SERVICE",
+          "rating_image_url": "https://www.tripadvisor.com/img/cdsi/img2/ratings/traveler/s5.0-66827-5.svg",
+          "value": 5,
+          "localized_name": "Service"
+        },
+        "5": {
+          "name": "RATE_SLEEP",
+          "rating_image_url": "https://www.tripadvisor.com/img/cdsi/img2/ratings/traveler/s5.0-66827-5.svg",
+          "value": 5,
+          "localized_name": "Schlafqualität"
+        }
+      },
+      "helpful_votes": 0,
+      "scraped_date": "2026-03-04",
+      "topics": [
+        {
+          "topic": "employees",
+          "sentiment": "positive"
+        },
+        {
+          "topic": "commodities",
+          "sentiment": "positive"
+        },
+        {
+          "topic": "comfort",
+          "sentiment": "positive"
+        },
+        {
+          "topic": "meals",
+          "sentiment": "positive"
+        }
+      ],
+      "classified": true
+    },
+    {
+      "id": "1033204276",
+      "hotel": "Ananea Castelo Suites Hotel",
+      "location_id": "33299137",
+      "rating": 4,
+      "title": "Joa, es geht auch besser....",
+      "text": "Wir waren ende September im Hotel. Bauarbeiten, die aber nicht sonderlich störten. Bis auf die erheblichen Arbeitssicherheitsmängel!!!! So wurde vor dem Haupteingang der Schriftzug des Hotels angebracht, mit einem Hubsteiger. Fangnetz, Fallschutz, Sicherheitsnetz für herabfallende Gegenstände; KEINE!\nDie Zimmer groß, geräumig, leider wenig  Stauraum. TV sehr intelligent untergebracht, fantastisch!!! Dusche + Toilette; EINE Schiebetür für Beides! Wenn einer duscht und der andere hat einen Toilettengang----->  je nachdem, wer die Schiebetür für sich beansprucht....  einer ist \"praktisch\" IM Zimmer. \nAusreichend Steckdosen und Lademöglichkeiten vorhanden.  Beim Verlassen des Zimmers wird ein blickdichter wärmeabweisender Vorhang autom. an der Fensterfront zugezogen, Sehr sehr gut! Spart Energie, die Klima hat weniger zu leisten! Top! Poolbereiche super gepflegt. Es werden Getränke und Snacks am Poolbereich serviert. Sehr ruhiges Hotel, auch der Gäste wegen. Kein Schlagen der Türen, Keine lautstarken Unterhaltungen auf den Fluren, keine deutlich wahrnehmbaren Toilettenspülgeräusche. Wenn die Fenster Nachts verschlossen sind ist Ruhe. Sonst die üblichen Vogelstimmen.  Die Gäste(80%) waren überwiegend ü50 und ohne Kinder.   Ja, die Drehtüren bereiteten immer noch Schwierigkeiten. Es ging nur einer von zwei Aufzügen.  Personal ist sehr freundlich und zuvorkommend. Sprachschwierigkeiten (Englisch,  mein level= B2) Das Personal spricht oft kein gutes englisch. Portugiesisch/Spanisch spreche ich nicht. Beim Personal wird dann sehr oft das Handy gezückt und mit \"goo...-translate\" weitergemacht. Nicht schön. \nAuch wir waren zu früh im Hotel und konnten das Zimmer erst nach 4h beziehen. Nervige Wartezeit. Hier hätten wir uns gewünscht, die Möglichkeit,  Badesachen aus \ndem Koffer nehmen zu können. So liefen wir sinn und planlos die Wartezeit umher.",
+      "published_date": "2025-10-03T08:18:48Z",
+      "travel_date": "2025-09-30",
+      "trip_type": "Paare",
+      "subratings": {},
+      "helpful_votes": 0,
+      "scraped_date": "2026-03-04",
       "topics": [
         {
           "topic": "employees",
@@ -51,41 +220,12 @@
           "sentiment": "positive"
         },
         {
-          "topic": "meals",
-          "sentiment": "positive"
-        },
-        {
           "topic": "commodities",
           "sentiment": "negative"
-        }
-      ],
-      "classified": true
-    },
-    {
-      "id": "1033043012",
-      "hotel": "Ananea Castelo Suites Hotel",
-      "location_id": "33299137",
-      "rating": 5,
-      "title": "Wonderful week with wonderful staff",
-      "text": "We have just checked out after a wonderful week in this hotel. The rooms are lovely, the staff are amazing and friendly. For such a young team of people they have the most excellent customer service skills. The breakfast was lovely too. We would definitely come back to this lovely place. Thank you x",
-      "published_date": "2025-10-02T03:03:08Z",
-      "travel_date": "2025-09-30",
-      "trip_type": "Couples",
-      "subratings": {},
-      "helpful_votes": 0,
-      "scraped_date": "2026-03-03",
-      "topics": [
+        },
         {
           "topic": "employees",
-          "sentiment": "positive"
-        },
-        {
-          "topic": "comfort",
-          "sentiment": "positive"
-        },
-        {
-          "topic": "meals",
-          "sentiment": "positive"
+          "sentiment": "negative"
         }
       ],
       "classified": true
