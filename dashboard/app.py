@@ -679,6 +679,7 @@ def main() -> None:
                 margin={"l": 20, "r": 20, "t": 30, "b": 20},
                 height=320,
                 xaxis_title="% of Reviews",
+                xaxis_range=[0, 100],
                 yaxis_title="",
                 title=f"Overall Topic Sentiment – {overall_label} ({overall_total} reviews)",
             )
@@ -724,6 +725,7 @@ def main() -> None:
                     margin={"l": 20, "r": 20, "t": 30, "b": 20},
                     height=320,
                     xaxis_title="% of Reviews",
+                    xaxis_range=[0, 100],
                     yaxis_title="",
                     title=f"TripAdvisor Topic Sentiment – {ta_label} ({ta_total} reviews)",
                 )
@@ -805,6 +807,7 @@ def main() -> None:
                     margin={"l": 20, "r": 20, "t": 30, "b": 20},
                     height=320,
                     xaxis_title="% of Reviews",
+                    xaxis_range=[0, 100],
                     yaxis_title="",
                     title=f"Google Topic Sentiment – {google_label} ({google_total} reviews)",
                 )
