@@ -277,14 +277,14 @@ def ananea_competitive_index(history_df: pd.DataFrame, sources: list[str]) -> di
     }
 
 
-def source_one_year_figure(history_df: pd.DataFrame, source: str) -> go.Figure | None:
+def source_year_figure(history_df: pd.DataFrame, source: str, year: int) -> go.Figure | None:
     src = history_df[(history_df["Source"] == source) & history_df["Score"].notna()].copy()
     if src.empty:
         return None
 
-    max_date = src["Date"].max()
-    min_date = max_date - pd.DateOffset(years=1)
-    src = src[src["Date"] >= min_date].sort_values("Date")
+    min_date = pd.Timestamp(year, 1, 1)
+    max_date = pd.Timestamp(year, 12, 31)
+    src = src[(src["Date"] >= min_date) & (src["Date"] <= max_date)].sort_values("Date")
     if src.empty:
         return None
 
@@ -526,12 +526,23 @@ def main() -> None:
     else:
         st.dataframe(style_scorecard(scorecard.sort_values("Source")), use_container_width=True)
 
-    st.subheader("Source Trends (Last 12 Months)")
+    current_year = datetime.now().year
+    previous_year = current_year - 1
+    trends_option = st.radio(
+        "Period",
+        [f"YTD {current_year}", f"Full Year {previous_year}"],
+        horizontal=True,
+        key="trends_year_toggle",
+    )
+    trends_year = current_year if trends_option.startswith("YTD") else previous_year
+    trends_label = f"YTD {current_year}" if trends_year == current_year else str(previous_year)
+
+    st.subheader(f"Source Trends ({trends_label})")
     st.caption("One chart per selected source. Points mark collection dates.")
     for source in selected_sources:
-        fig = source_one_year_figure(history_df, source)
+        fig = source_year_figure(history_df, source, trends_year)
         if fig is None:
-            st.warning(f"{source}: no score history available in the last year.")
+            st.warning(f"{source}: no score history available for {trends_year}.")
             continue
         st.markdown(f"**{source}**")
         st.plotly_chart(fig, use_container_width=True)
