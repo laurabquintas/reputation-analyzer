@@ -1,7 +1,7 @@
 {
   "meta": {
-    "last_updated": "2026-03-04T00:20:52",
-    "total_reviews": 6
+    "last_updated": "2026-03-04T00:35:09",
+    "total_reviews": 11
   },
   "reviews": [
     {
@@ -254,6 +254,188 @@
         },
         {
           "topic": "return",
+          "sentiment": "negative"
+        }
+      ],
+      "classified": true,
+      "source": "manual"
+    },
+    {
+      "id": "manual_381572d9f724",
+      "hotel": "Ananea Castelo Suites Hotel",
+      "location_id": "33299137",
+      "rating": 5,
+      "title": "Comfortable modern hotel",
+      "text": "Just returned from a comfortable week in this modern hotel. Only issue we had was on our arrival (which we were aware was too early to check in) we were met by two young male staff members who provided no welcome or information they made it feel like we were entering 'Fawlty Towers'. We left our bags at reception and retreated to the pool bar for a refreshment. After a short time we were contacted by a lovely female guest service agent who welcomed us and checked us into our room providing hotel information. Nice new clean room serviced daily. Top tip: take coat hangers.",
+      "published_date": "2025-09-01T00:00:00Z",
+      "travel_date": "",
+      "trip_type": "Couple",
+      "subratings": {},
+      "helpful_votes": 0,
+      "scraped_date": "2026-03-04",
+      "topics": [
+        {
+          "topic": "employees",
+          "sentiment": "negative"
+        },
+        {
+          "topic": "employees",
+          "sentiment": "positive"
+        },
+        {
+          "topic": "commodities",
+          "sentiment": "positive"
+        },
+        {
+          "topic": "comfort",
+          "sentiment": "positive"
+        },
+        {
+          "topic": "cleaning",
+          "sentiment": "positive"
+        }
+      ],
+      "classified": true,
+      "source": "manual"
+    },
+    {
+      "id": "manual_dc5f72ffedf3",
+      "hotel": "Ananea Castelo Suites Hotel",
+      "location_id": "33299137",
+      "rating": 5,
+      "title": "Prima",
+      "text": "New hotel. Fantastic experience. Dinner is very good. Nice swimming pool. Rooms are great. Spacious set up. Excellent parking possibility. Within walking distance several beaches. Toppie!",
+      "published_date": "2025-09-01T00:00:00Z",
+      "travel_date": "",
+      "trip_type": "Couple",
+      "subratings": {},
+      "helpful_votes": 0,
+      "scraped_date": "2026-03-04",
+      "topics": [
+        {
+          "topic": "commodities",
+          "sentiment": "positive"
+        },
+        {
+          "topic": "comfort",
+          "sentiment": "positive"
+        },
+        {
+          "topic": "meals",
+          "sentiment": "positive"
+        }
+      ],
+      "classified": true,
+      "source": "manual"
+    },
+    {
+      "id": "manual_229d2c6409ad",
+      "hotel": "Ananea Castelo Suites Hotel",
+      "location_id": "33299137",
+      "rating": 5,
+      "title": "Best hotel in Albufeira for a calm and relaxing trip",
+      "text": "The hotel is very modern and well decorated. It’s the perfect place to spend some time relaxing by the pool. The views are amazing, either from the rooms or the rooftop bar. The service was outstanding, every employee is friendly and caring, always available. During breakfast and dinner you have a wide range of delicious food. Really recommend for a calm vacation by the beach.",
+      "published_date": "2025-08-01T00:00:00Z",
+      "travel_date": "",
+      "trip_type": "Friends",
+      "subratings": {},
+      "helpful_votes": 0,
+      "scraped_date": "2026-03-04",
+      "topics": [
+        {
+          "topic": "employees",
+          "sentiment": "positive"
+        },
+        {
+          "topic": "commodities",
+          "sentiment": "positive"
+        },
+        {
+          "topic": "meals",
+          "sentiment": "positive"
+        }
+      ],
+      "classified": true,
+      "source": "manual"
+    },
+    {
+      "id": "manual_f8e7cf3b93b4",
+      "hotel": "Ananea Castelo Suites Hotel",
+      "location_id": "33299137",
+      "rating": 3,
+      "title": "4-star hotel in the Algarve in need of improvement",
+      "text": "Lots of room for improvement!\n\nPros:\n- Beautiful lobby/bar area with high quality furniture\n- Beautiful room design with comfortable bed, extravagant TV mirror, chic bathroom niche and high quality materials\n- nice balcony with quite comfortable and high-quality chairs\n- comfortable pool loungers with high-quality lounger pads and aluminium frame\n- excellent (!) Breakfast with fresh (!) and ripe fruit and unadulterated juices as well as very good, fresh Nespresso coffee (!) at the vending machine and delicious, fresh, diverse baked goods\n- good starting point for excursions by car (without car only partially recommended)\n- beautiful bay in a great setting just 1 km away\n\nCons:\n- more than one month after opening (as of 09/25) construction work is still taking place in the hotel (e.g. underground garage not completed) -> construction noise audible everywhere during the day\n- the ugly exterior of a luxury hotel I've seen so far -> plant life present only in accents and partially dead; there is no concept and harmony; no wayside outdoor lighting\n- pools are not heated and are already very cold at 28 degrees outside temperature and sun\n- there is no fitness area, just a kind of lovelessly designed trim-you-path\n- room cleaning miserable with cleanliness deficits\n- the entire staff cannot reflect the elegant, sometimes luxurious character of the hotel -> often unprofessional, inattentive and insecure\n- far too little storage space for clothes in the room\n- TV without German channels and option to connect something\n- safe is loose in drawer\n- all window surfaces are dirty (room, balcony, outdoor areas)\n- if the hotel is fully occupied there are breakfast time slots\n- the restaurant is designed much too small when fully occupied\n- no changing breakfast dishes\n- dinner food selection is limited and less convincing compared to breakfast\n- rooftop bar not in operation\n\nConclusion:\nThere are haphazards at all corners and ends of ananea Castelo Suites. The management of the hotel appears inexperienced and lacks the necessary skill to make the potential hotel a good 4-star hotel. Overall, the value for money is not good, although it takes little to make a nice and satisfying stay possible. All of the points mentioned were already discussed with the management during the stay and we have already been accommodated. Therefore, we award a well-intentioned 3 out of 5 stars.",
+      "published_date": "2025-09-01T00:00:00Z",
+      "travel_date": "",
+      "trip_type": "Couple",
+      "subratings": {},
+      "helpful_votes": 0,
+      "scraped_date": "2026-03-04",
+      "topics": [
+        {
+          "topic": "employees",
+          "sentiment": "negative"
+        },
+        {
+          "topic": "comfort",
+          "sentiment": "positive"
+        },
+        {
+          "topic": "cleaning",
+          "sentiment": "negative"
+        },
+        {
+          "topic": "meals",
+          "sentiment": "positive"
+        },
+        {
+          "topic": "quality_price",
+          "sentiment": "negative"
+        }
+      ],
+      "classified": true,
+      "source": "manual"
+    },
+    {
+      "id": "manual_c18301c300c7",
+      "hotel": "Ananea Castelo Suites Hotel",
+      "location_id": "33299137",
+      "rating": 5,
+      "title": "Really great",
+      "text": "A truly wonderful hotel! The hotel only opened at the end of July 2025 and is therefore completely new. You hardly notice the recent reopening, rather the procedures have already settled in very well. However, not all areas of the hotel are currently open, in particular the spa area is apparently not ready yet.\n\nThe location of the hotel is good: There are several very nice beach sections of the Algarve within 15-20 minutes walking distance and there are also plenty of restaurants in the area, whereby you should inform yourself in advance when choosing based on reviews (there are also some rather bad ones).\n\nThe rooms of the hotel are very nice, bright, all equipped with a balcony and - at least on the upper floors - all have sea views. There are still a few minor 'children’s diseases' in the rooms, such as a balcony partition still chattering in the wind or a slightly dripping siphon at the sink - but these should surely be fixed very quickly.\n\nPool is very large and has a - at least currently - more than sufficient number of loungers.\n\nVery convincing has us the breakfast, which really leaves nothing to be desired. Even more convincing was the dinner, for which a rich buffet from daily changing culinary regions is offered for a relatively small amount of €30.\n\nFinally, we were extremely enthusiastic about the extraordinarily friendly and competent staff who really try everything to make the guest a nice stay. We felt very comfortable and would love to come back!",
+      "published_date": "2025-08-01T00:00:00Z",
+      "travel_date": "",
+      "trip_type": "Couple",
+      "subratings": {},
+      "helpful_votes": 0,
+      "scraped_date": "2026-03-04",
+      "topics": [
+        {
+          "topic": "employees",
+          "sentiment": "positive"
+        },
+        {
+          "topic": "commodities",
+          "sentiment": "positive"
+        },
+        {
+          "topic": "comfort",
+          "sentiment": "positive"
+        },
+        {
+          "topic": "cleaning",
+          "sentiment": "negative"
+        },
+        {
+          "topic": "meals",
+          "sentiment": "positive"
+        },
+        {
+          "topic": "return",
+          "sentiment": "positive"
+        },
+        {
+          "topic": "commodities",
           "sentiment": "negative"
         }
       ],
