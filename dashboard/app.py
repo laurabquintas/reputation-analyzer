@@ -623,16 +623,16 @@ def main() -> None:
     # ================================================================== #
     st.header("Internal Analysis - Reviews")
 
-    # Load all review sources
-    reviews_data = _load_reviews_json(REVIEWS_JSON_PATH)
-    google_reviews_data = _load_reviews_json(GOOGLE_REVIEWS_JSON_PATH)
+    # Load review sources based on selection
+    reviews_data = _load_reviews_json(REVIEWS_JSON_PATH) if "Tripadvisor" in selected_sources else []
+    google_reviews_data = _load_reviews_json(GOOGLE_REVIEWS_JSON_PATH) if "Google" in selected_sources else []
 
-    # Combine all review sources for overall summary
+    # Combine selected review sources for overall summary
     all_reviews_data = reviews_data + google_reviews_data
 
     # ---- Overall Sources Topic Sentiment ---- #
     st.subheader("Overall Sources Topic Sentiment")
-    st.caption("Aggregated topic sentiment across all review sources.")
+    st.caption("Aggregated topic sentiment across selected review sources.")
 
     if not all_reviews_data:
         st.info("No review data available yet.")
