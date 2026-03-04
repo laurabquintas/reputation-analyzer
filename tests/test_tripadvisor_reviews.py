@@ -8,12 +8,14 @@ from unittest.mock import MagicMock, patch
 
 import pytest
 
-from src.sites.tripadvisor_reviews import (
+from src.classification import (
     VALID_SENTIMENTS,
     VALID_TOPICS,
     _parse_classification,
-    deduplicate_reviews,
     is_ollama_available,
+)
+from src.sites.tripadvisor_reviews import (
+    deduplicate_reviews,
     load_reviews,
     save_reviews,
     ta_get_reviews,
@@ -223,11 +225,11 @@ class TestTaGetReviews:
 
 class TestIsOllamaAvailable:
     def test_returns_false_on_connection_error(self):
-        with patch("src.sites.tripadvisor_reviews.requests.get", side_effect=Exception("refused")):
+        with patch("src.classification.requests.get", side_effect=Exception("refused")):
             assert is_ollama_available("http://localhost:11434") is False
 
     def test_returns_true_on_success(self):
         resp = MagicMock()
         resp.status_code = 200
-        with patch("src.sites.tripadvisor_reviews.requests.get", return_value=resp):
+        with patch("src.classification.requests.get", return_value=resp):
             assert is_ollama_available("http://localhost:11434") is True
