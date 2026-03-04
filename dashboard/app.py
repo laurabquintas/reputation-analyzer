@@ -746,75 +746,75 @@ def main() -> None:
                         st.caption(pills)
 
     # ---- Manual Review Input ---- #
-    st.subheader("Add Review Manually")
-    st.caption(
-        "The TripAdvisor API returns a limited number of reviews. "
-        "Use this form to add reviews you found on the website that the API missed."
-    )
+    with st.expander("Add Review Manually"):
+        st.caption(
+            "The TripAdvisor API returns a limited number of reviews. "
+            "Use this form to add reviews you found on the website that the API missed."
+        )
 
-    with st.form("manual_review_form", clear_on_submit=True):
-        mr_cols = st.columns([2, 1])
-        with mr_cols[0]:
-            mr_reviewer = st.text_input("Reviewer name", placeholder="e.g. John D.")
-            mr_title = st.text_input("Review title", placeholder="e.g. Amazing stay!")
-        with mr_cols[1]:
-            mr_rating = st.number_input("Rating", min_value=1, max_value=5, value=5, step=1)
-            mr_date = st.date_input("Review date")
-            mr_trip = st.selectbox(
-                "Trip type",
-                ["Couples", "Family", "Solo", "Business", "Friends"],
-                index=0,
-            )
-        mr_text = st.text_area("Review text", height=150, placeholder="Paste the full review text here...")
-        mr_submitted = st.form_submit_button("Add review", type="primary")
+        with st.form("manual_review_form", clear_on_submit=True):
+            mr_cols = st.columns([2, 1])
+            with mr_cols[0]:
+                mr_reviewer = st.text_input("Reviewer name", placeholder="e.g. John D.")
+                mr_title = st.text_input("Review title", placeholder="e.g. Amazing stay!")
+            with mr_cols[1]:
+                mr_rating = st.number_input("Rating", min_value=1, max_value=5, value=5, step=1)
+                mr_date = st.date_input("Review date")
+                mr_trip = st.selectbox(
+                    "Trip type",
+                    ["Couples", "Family", "Solo", "Business", "Friends"],
+                    index=0,
+                )
+            mr_text = st.text_area("Review text", height=150, placeholder="Paste the full review text here...")
+            mr_submitted = st.form_submit_button("Add review", type="primary")
 
-    if mr_submitted:
-        if not mr_reviewer or not mr_text:
-            st.error("Reviewer name and review text are required.")
-        else:
-            pub_date_str = mr_date.strftime("%Y-%m-%d")
-            review_id = _generate_manual_id(mr_reviewer, pub_date_str, mr_title)
-            current_reviews = _load_reviews_json(REVIEWS_JSON_PATH)
-            existing_ids = {r["id"] for r in current_reviews}
-
-            if review_id in existing_ids:
-                st.warning("This review already exists (same name + date + title).")
+        if mr_submitted:
+            if not mr_reviewer or not mr_text:
+                st.error("Reviewer name and review text are required.")
             else:
-                # Try to classify automatically via Ollama
-                topics: list[dict] = []
-                classified = False
-                ollama_msg = ""
-                if is_ollama_available():
-                    try:
-                        topics = classify_review(mr_text)
-                        classified = True
-                        ollama_msg = f" Classified with {len(topics)} topics."
-                    except Exception:
-                        ollama_msg = " Ollama classification failed; saved without topics."
-                else:
-                    ollama_msg = " Ollama not available; saved without classification."
+                pub_date_str = mr_date.strftime("%Y-%m-%d")
+                review_id = _generate_manual_id(mr_reviewer, pub_date_str, mr_title)
+                current_reviews = _load_reviews_json(REVIEWS_JSON_PATH)
+                existing_ids = {r["id"] for r in current_reviews}
 
-                new_review = {
-                    "id": review_id,
-                    "hotel": ANANEA_HOTEL,
-                    "location_id": "",
-                    "rating": mr_rating,
-                    "title": mr_title,
-                    "text": mr_text,
-                    "published_date": f"{pub_date_str}T00:00:00Z",
-                    "travel_date": "",
-                    "trip_type": mr_trip,
-                    "subratings": {},
-                    "helpful_votes": 0,
-                    "scraped_date": datetime.now().strftime("%Y-%m-%d"),
-                    "topics": topics,
-                    "classified": classified,
-                    "source": "manual",
-                }
-                current_reviews.append(new_review)
-                _save_reviews_json(current_reviews, REVIEWS_JSON_PATH)
-                st.success(f"Review added (ID: {review_id}).{ollama_msg}")
-                st.rerun()
+                if review_id in existing_ids:
+                    st.warning("This review already exists (same name + date + title).")
+                else:
+                    # Try to classify automatically via Ollama
+                    topics: list[dict] = []
+                    classified = False
+                    ollama_msg = ""
+                    if is_ollama_available():
+                        try:
+                            topics = classify_review(mr_text)
+                            classified = True
+                            ollama_msg = f" Classified with {len(topics)} topics."
+                        except Exception:
+                            ollama_msg = " Ollama classification failed; saved without topics."
+                    else:
+                        ollama_msg = " Ollama not available; saved without classification."
+
+                    new_review = {
+                        "id": review_id,
+                        "hotel": ANANEA_HOTEL,
+                        "location_id": "",
+                        "rating": mr_rating,
+                        "title": mr_title,
+                        "text": mr_text,
+                        "published_date": f"{pub_date_str}T00:00:00Z",
+                        "travel_date": "",
+                        "trip_type": mr_trip,
+                        "subratings": {},
+                        "helpful_votes": 0,
+                        "scraped_date": datetime.now().strftime("%Y-%m-%d"),
+                        "topics": topics,
+                        "classified": classified,
+                        "source": "manual",
+                    }
+                    current_reviews.append(new_review)
+                    _save_reviews_json(current_reviews, REVIEWS_JSON_PATH)
+                    st.success(f"Review added (ID: {review_id}).{ollama_msg}")
+                    st.rerun()
 
 
 
