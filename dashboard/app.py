@@ -498,6 +498,11 @@ def main() -> None:
         st.warning("No data for the selected filters.")
         return
 
+    # ================================================================== #
+    # Competition Comparison
+    # ================================================================== #
+    st.header("Competition Comparison")
+
     st.subheader("Ananea Scorecard")
     st.caption("Latest available score per source. Competitor values are red when higher than Ananea and green when lower.")
     scorecard = latest_scorecard_table(history_df, selected_sources)
@@ -551,53 +556,95 @@ def main() -> None:
         st.markdown(f"**{source}**")
         st.plotly_chart(fig, use_container_width=True)
 
-    # ---- TripAdvisor Review Analysis ---- #
-    st.subheader("TripAdvisor Review Analysis")
+    # ================================================================== #
+    # Internal Analysis – Reviews
+    # ================================================================== #
+    st.header("Internal Analysis - Reviews")
 
     reviews_data = _load_reviews_json(REVIEWS_JSON_PATH)
+
+    # ---- Overall Sources Topic Sentiment ---- #
+    st.subheader("Overall Sources Topic Sentiment")
+    st.caption("Aggregated topic sentiment across all review sources.")
+
     if not reviews_data:
-        st.info(
-            "No review data available yet. Run the reviews scraper to populate "
-            "data/tripadvisor_reviews.json."
-        )
+        st.info("No review data available yet.")
     else:
-        current_year = datetime.now().year
-        previous_year = current_year - 1
-        year_option = st.radio(
+        review_year_option = st.radio(
             "Period",
             [f"YTD {current_year}", f"Full Year {previous_year}"],
             horizontal=True,
             key="review_year_toggle",
         )
-        selected_year = current_year if year_option.startswith("YTD") else previous_year
-        topic_df = _ytd_topic_summary(reviews_data, ANANEA_HOTEL, year=selected_year)
+        selected_year = current_year if review_year_option.startswith("YTD") else previous_year
+        overall_topic_df = _ytd_topic_summary(reviews_data, ANANEA_HOTEL, year=selected_year)
 
-        if topic_df[["Positive", "Negative"]].sum().sum() == 0:
+        if overall_topic_df[["Positive", "Negative"]].sum().sum() == 0:
             st.info(f"No classified reviews found for {selected_year}.")
         else:
+            overall_label = f"YTD {selected_year}" if selected_year == current_year else str(selected_year)
             fig = go.Figure()
             fig.add_trace(go.Bar(
-                y=topic_df["Topic"],
-                x=topic_df["Positive"],
+                y=overall_topic_df["Topic"],
+                x=overall_topic_df["Positive"],
                 name="Positive",
                 orientation="h",
                 marker_color="#15803d",
             ))
             fig.add_trace(go.Bar(
-                y=topic_df["Topic"],
-                x=topic_df["Negative"],
+                y=overall_topic_df["Topic"],
+                x=overall_topic_df["Negative"],
                 name="Negative",
                 orientation="h",
                 marker_color="#b91c1c",
             ))
-            label = f"YTD {selected_year}" if selected_year == current_year else str(selected_year)
             fig.update_layout(
                 barmode="group",
                 margin={"l": 20, "r": 20, "t": 30, "b": 20},
                 height=320,
                 xaxis_title="Mention Count",
                 yaxis_title="",
-                title=f"Topic Sentiment – {label}",
+                title=f"Overall Topic Sentiment – {overall_label}",
+            )
+            st.plotly_chart(fig, use_container_width=True)
+
+    # ---- TripAdvisor ---- #
+    st.subheader("TripAdvisor")
+
+    if not reviews_data:
+        st.info(
+            "No review data available yet. Run the reviews scraper to populate "
+            "data/tripadvisor_reviews.json."
+        )
+    else:
+        ta_topic_df = _ytd_topic_summary(reviews_data, ANANEA_HOTEL, year=selected_year)
+
+        if ta_topic_df[["Positive", "Negative"]].sum().sum() == 0:
+            st.info(f"No classified TripAdvisor reviews found for {selected_year}.")
+        else:
+            ta_label = f"YTD {selected_year}" if selected_year == current_year else str(selected_year)
+            fig = go.Figure()
+            fig.add_trace(go.Bar(
+                y=ta_topic_df["Topic"],
+                x=ta_topic_df["Positive"],
+                name="Positive",
+                orientation="h",
+                marker_color="#15803d",
+            ))
+            fig.add_trace(go.Bar(
+                y=ta_topic_df["Topic"],
+                x=ta_topic_df["Negative"],
+                name="Negative",
+                orientation="h",
+                marker_color="#b91c1c",
+            ))
+            fig.update_layout(
+                barmode="group",
+                margin={"l": 20, "r": 20, "t": 30, "b": 20},
+                height=320,
+                xaxis_title="Mention Count",
+                yaxis_title="",
+                title=f"TripAdvisor Topic Sentiment – {ta_label}",
             )
             st.plotly_chart(fig, use_container_width=True)
 
