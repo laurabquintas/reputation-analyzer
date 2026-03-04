@@ -81,21 +81,36 @@ def _parse_classification(raw: str) -> list[dict]:
             cleaned = cleaned[:-3]
         cleaned = cleaned.strip()
 
+    items = None
+
+    # Try 1: parse the whole string as JSON
     try:
         items = json.loads(cleaned)
     except json.JSONDecodeError:
+        pass
+
+    # Try 2: extract a JSON array from the string
+    if items is None:
         match = re.search(r"\[.*\]", cleaned, re.DOTALL)
         if match:
             try:
                 items = json.loads(match.group())
             except json.JSONDecodeError:
-                logger.warning("Failed to parse Ollama response: %s", raw[:200])
-                return []
-        else:
-            logger.warning("Failed to parse Ollama response: %s", raw[:200])
-            return []
+                pass
 
-    if not isinstance(items, list):
+    # Try 3: extract individual {"topic":"...","sentiment":"..."} objects via regex
+    # This handles malformed arrays like [{"topic":"x","sentiment":"y"},{"topic":"z":null}]
+    if items is None:
+        pair_matches = re.findall(
+            r'\{\s*"topic"\s*:\s*"([^"]+)"\s*,\s*"sentiment"\s*:\s*"([^"]+)"\s*\}',
+            cleaned,
+        )
+        if pair_matches:
+            items = [{"topic": t, "sentiment": s} for t, s in pair_matches]
+
+    if items is None or not isinstance(items, list):
+        if cleaned:
+            logger.warning("Failed to parse Ollama response: %s", raw[:200])
         return []
 
     # Allow same topic with both positive AND negative (but not duplicate pairs)
