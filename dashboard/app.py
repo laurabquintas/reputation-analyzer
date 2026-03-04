@@ -389,6 +389,7 @@ def _ytd_topic_summary(reviews: list[dict], hotel: str, year: int | None = None)
         and r.get("published_date", "")[:4] == target_year
         and r.get("classified", False)
     ]
+    total = len(ytd)
     rows = []
     for topic_key, topic_display in _TOPIC_DISPLAY.items():
         pos = sum(
@@ -399,8 +400,12 @@ def _ytd_topic_summary(reviews: list[dict], hotel: str, year: int | None = None)
             1 for r in ytd for t in r.get("topics", [])
             if t["topic"] == topic_key and t["sentiment"] == "negative"
         )
-        rows.append({"Topic": topic_display, "Positive": pos, "Negative": neg})
-    return pd.DataFrame(rows)
+        rows.append({
+            "Topic": topic_display,
+            "Positive": round(pos / total * 100, 1) if total else 0,
+            "Negative": round(neg / total * 100, 1) if total else 0,
+        })
+    return pd.DataFrame(rows), total
 
 
 def _latest_top_reviews(reviews: list[dict], hotel: str, n: int = 3) -> list[dict]:
@@ -644,7 +649,7 @@ def main() -> None:
             key="review_year_toggle",
         )
         selected_year = current_year if review_year_option.startswith("YTD") else previous_year
-        overall_topic_df = _ytd_topic_summary(all_reviews_data, ANANEA_HOTEL, year=selected_year)
+        overall_topic_df, overall_total = _ytd_topic_summary(all_reviews_data, ANANEA_HOTEL, year=selected_year)
 
         if overall_topic_df[["Positive", "Negative"]].sum().sum() == 0:
             st.info(f"No classified reviews found for {selected_year}.")
@@ -657,6 +662,8 @@ def main() -> None:
                 name="Positive",
                 orientation="h",
                 marker_color="#15803d",
+                text=[f"{v}%" for v in overall_topic_df["Positive"]],
+                textposition="auto",
             ))
             fig.add_trace(go.Bar(
                 y=overall_topic_df["Topic"],
@@ -664,14 +671,16 @@ def main() -> None:
                 name="Negative",
                 orientation="h",
                 marker_color="#b91c1c",
+                text=[f"{v}%" for v in overall_topic_df["Negative"]],
+                textposition="auto",
             ))
             fig.update_layout(
                 barmode="group",
                 margin={"l": 20, "r": 20, "t": 30, "b": 20},
                 height=320,
-                xaxis_title="Mention Count",
+                xaxis_title="% of Reviews",
                 yaxis_title="",
-                title=f"Overall Topic Sentiment – {overall_label}",
+                title=f"Overall Topic Sentiment – {overall_label} ({overall_total} reviews)",
             )
             st.plotly_chart(fig, use_container_width=True)
 
@@ -685,7 +694,7 @@ def main() -> None:
                 "data/tripadvisor_reviews.json."
             )
         else:
-            ta_topic_df = _ytd_topic_summary(reviews_data, ANANEA_HOTEL, year=selected_year)
+            ta_topic_df, ta_total = _ytd_topic_summary(reviews_data, ANANEA_HOTEL, year=selected_year)
 
             if ta_topic_df[["Positive", "Negative"]].sum().sum() == 0:
                 st.info(f"No classified TripAdvisor reviews found for {selected_year}.")
@@ -698,6 +707,8 @@ def main() -> None:
                     name="Positive",
                     orientation="h",
                     marker_color="#15803d",
+                    text=[f"{v}%" for v in ta_topic_df["Positive"]],
+                    textposition="auto",
                 ))
                 fig.add_trace(go.Bar(
                     y=ta_topic_df["Topic"],
@@ -705,14 +716,16 @@ def main() -> None:
                     name="Negative",
                     orientation="h",
                     marker_color="#b91c1c",
+                    text=[f"{v}%" for v in ta_topic_df["Negative"]],
+                    textposition="auto",
                 ))
                 fig.update_layout(
                     barmode="group",
                     margin={"l": 20, "r": 20, "t": 30, "b": 20},
                     height=320,
-                    xaxis_title="Mention Count",
+                    xaxis_title="% of Reviews",
                     yaxis_title="",
-                    title=f"TripAdvisor Topic Sentiment – {ta_label}",
+                    title=f"TripAdvisor Topic Sentiment – {ta_label} ({ta_total} reviews)",
                 )
                 st.plotly_chart(fig, use_container_width=True)
 
@@ -762,7 +775,7 @@ def main() -> None:
                 "data/google_reviews.json."
             )
         else:
-            google_topic_df = _ytd_topic_summary(google_reviews_data, ANANEA_HOTEL, year=selected_year)
+            google_topic_df, google_total = _ytd_topic_summary(google_reviews_data, ANANEA_HOTEL, year=selected_year)
 
             if google_topic_df[["Positive", "Negative"]].sum().sum() == 0:
                 st.info(f"No classified Google reviews found for {selected_year}.")
@@ -775,6 +788,8 @@ def main() -> None:
                     name="Positive",
                     orientation="h",
                     marker_color="#15803d",
+                    text=[f"{v}%" for v in google_topic_df["Positive"]],
+                    textposition="auto",
                 ))
                 fig.add_trace(go.Bar(
                     y=google_topic_df["Topic"],
@@ -782,14 +797,16 @@ def main() -> None:
                     name="Negative",
                     orientation="h",
                     marker_color="#b91c1c",
+                    text=[f"{v}%" for v in google_topic_df["Negative"]],
+                    textposition="auto",
                 ))
                 fig.update_layout(
                     barmode="group",
                     margin={"l": 20, "r": 20, "t": 30, "b": 20},
                     height=320,
-                    xaxis_title="Mention Count",
+                    xaxis_title="% of Reviews",
                     yaxis_title="",
-                    title=f"Google Topic Sentiment – {google_label}",
+                    title=f"Google Topic Sentiment – {google_label} ({google_total} reviews)",
                 )
                 st.plotly_chart(fig, use_container_width=True)
 
