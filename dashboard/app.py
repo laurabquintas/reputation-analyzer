@@ -557,6 +557,67 @@ def main() -> None:
         st.plotly_chart(fig, use_container_width=True)
 
     # ================================================================== #
+    # Manual Missing Values (collapsible)
+    # ================================================================== #
+    with st.expander("Manual Missing Values"):
+        st.caption("Use this to fill scores when scraping failed. Changes are written directly to CSV files in data/.")
+
+        pending = manual_pending_summary(source_dfs)
+        if pending.empty:
+            st.success("No missing or zero values pending on the latest date for each source.")
+        else:
+            st.warning("Missing/zero values detected (latest date per source):")
+            st.dataframe(pending.sort_values(["Source", "Issue", "Hotel"]), use_container_width=True)
+
+        editable_sources = [s for s in SOURCES if s in source_dfs]
+        mv_source = st.selectbox("Source", editable_sources, index=0, key="mv_source")
+        mv_src_df = source_dfs[mv_source]
+
+        date_options = source_date_columns(mv_src_df)
+        if not date_options:
+            st.warning(f"No date columns found for {mv_source}.")
+        else:
+            selected_date = st.selectbox("Date", list(reversed(date_options)), index=0, key="mv_date")
+            flagged_rows = missing_or_zero_rows(mv_src_df, selected_date)
+            missing_hotels = flagged_rows["Hotel"].astype(str).tolist()
+            hotel_options = missing_hotels if missing_hotels else sorted(mv_src_df["Hotel"].astype(str).tolist())
+            hotel = st.selectbox("Hotel", hotel_options, index=0, key="mv_hotel")
+            hotel_link = HOTEL_LINKS.get(mv_source, {}).get(hotel)
+
+            if hotel_link:
+                st.markdown(f"Hotel link: [{hotel_link}]({hotel_link})")
+            else:
+                st.caption("No direct hotel link configured for this source/hotel.")
+
+            if missing_hotels:
+                st.info(
+                    f"Needs input for {mv_source} on {selected_date}: "
+                    + ", ".join(missing_hotels)
+                )
+                st.dataframe(flagged_rows, use_container_width=True)
+            else:
+                st.info(f"No missing/zero values for {mv_source} on {selected_date}. You can still overwrite an existing value.")
+
+            max_scale = SCALE_MAX.get(mv_source, 10.0)
+            score = st.number_input(
+                "Score",
+                min_value=0.0,
+                max_value=max_scale,
+                value=0.0,
+                step=0.1,
+                format="%.1f",
+                key="mv_score",
+            )
+
+            if st.button("Save score", key="mv_save"):
+                try:
+                    set_manual_score(source=mv_source, hotel=hotel, date_col=selected_date, score=float(score))
+                    st.success(f"Saved {score:.1f} for {hotel} in {mv_source} ({selected_date}).")
+                    st.rerun()
+                except Exception as exc:
+                    st.error(f"Failed to save score: {exc}")
+
+    # ================================================================== #
     # Internal Analysis – Reviews
     # ================================================================== #
     st.header("Internal Analysis - Reviews")
@@ -755,63 +816,6 @@ def main() -> None:
                 st.success(f"Review added (ID: {review_id}).{ollama_msg}")
                 st.rerun()
 
-    st.subheader("Manual Missing Values")
-    st.caption("Use this to fill scores when scraping failed. Changes are written directly to CSV files in data/.")
-
-    pending = manual_pending_summary(source_dfs)
-    if pending.empty:
-        st.success("No missing or zero values pending on the latest date for each source.")
-    else:
-        st.warning("Missing/zero values detected (latest date per source):")
-        st.dataframe(pending.sort_values(["Source", "Issue", "Hotel"]), use_container_width=True)
-
-    editable_sources = [s for s in SOURCES if s in source_dfs]
-    source = st.selectbox("Source", editable_sources, index=0)
-    src_df = source_dfs[source]
-
-    date_options = source_date_columns(src_df)
-    if not date_options:
-        st.warning(f"No date columns found for {source}.")
-        return
-
-    selected_date = st.selectbox("Date", list(reversed(date_options)), index=0)
-    flagged_rows = missing_or_zero_rows(src_df, selected_date)
-    missing_hotels = flagged_rows["Hotel"].astype(str).tolist()
-    hotel_options = missing_hotels if missing_hotels else sorted(src_df["Hotel"].astype(str).tolist())
-    hotel = st.selectbox("Hotel", hotel_options, index=0)
-    hotel_link = HOTEL_LINKS.get(source, {}).get(hotel)
-
-    if hotel_link:
-        st.markdown(f"Hotel link: [{hotel_link}]({hotel_link})")
-    else:
-        st.caption("No direct hotel link configured for this source/hotel.")
-
-    if missing_hotels:
-        st.info(
-            f"Needs input for {source} on {selected_date}: "
-            + ", ".join(missing_hotels)
-        )
-        st.dataframe(flagged_rows, use_container_width=True)
-    else:
-        st.info(f"No missing/zero values for {source} on {selected_date}. You can still overwrite an existing value.")
-
-    max_scale = SCALE_MAX.get(source, 10.0)
-    score = st.number_input(
-        "Score",
-        min_value=0.0,
-        max_value=max_scale,
-        value=0.0,
-        step=0.1,
-        format="%.1f",
-    )
-
-    if st.button("Save score"):
-        try:
-            set_manual_score(source=source, hotel=hotel, date_col=selected_date, score=float(score))
-            st.success(f"Saved {score:.1f} for {hotel} in {source} ({selected_date}).")
-            st.rerun()
-        except Exception as exc:
-            st.error(f"Failed to save score: {exc}")
 
 
 if __name__ == "__main__":
