@@ -56,7 +56,7 @@ DEFAULT_JSON_PATH = str(DATA_DIR / "tripadvisor_reviews.json")
 
 ANANEA_HOTEL = "Ananea Castelo Suites Hotel"
 
-VALID_TOPICS = {"employees", "commodities", "comfort", "cleaning", "quality_price", "meals"}
+VALID_TOPICS = {"employees", "commodities", "comfort", "cleaning", "quality_price", "meals", "return"}
 VALID_SENTIMENTS = {"positive", "negative"}
 
 
@@ -69,20 +69,87 @@ def _load_location_ids() -> dict[str, str]:
 LOCATION_IDS = _load_location_ids()
 
 
+# Languages to fetch reviews in (covers most hotel review languages)
+DEFAULT_LANGUAGES = ["en", "pt", "de", "fr", "es", "it", "nl"]
+
+
 # ---------------------- TripAdvisor API ---------------------- #
 
-def ta_get_reviews(location_id: str, api_key: str) -> list[dict]:
-    """Fetch up to 5 most recent reviews for a location."""
+def ta_get_reviews_page(
+    location_id: str,
+    api_key: str,
+    language: str = "en",
+    offset: int = 0,
+) -> tuple[list[dict], int]:
+    """Fetch a single page of reviews.  Returns (reviews, total_results)."""
     url = f"https://api.content.tripadvisor.com/api/v1/location/{location_id}/reviews"
     params = {
         "key": api_key,
-        "language": "en",
+        "language": language,
+        "offset": str(offset),
     }
     resp = requests.get(url, params=params, timeout=15)
-    logger.debug("Reviews status: %d", resp.status_code)
+    logger.debug("Reviews [lang=%s offset=%d] status: %d", language, offset, resp.status_code)
     resp.raise_for_status()
     data = resp.json()
-    return data.get("data", [])
+    paging = data.get("paging", {})
+    total = int(paging.get("total_results", 0))
+    return data.get("data", []), total
+
+
+def ta_get_reviews(
+    location_id: str,
+    api_key: str,
+    languages: list[str] | None = None,
+    max_pages: int = 5,
+) -> list[dict]:
+    """Fetch reviews across multiple languages with pagination.
+
+    Deduplicates by review ID (same review may appear in multiple languages).
+    Returns up to ``max_pages * 5`` reviews per language.
+    """
+    if languages is None:
+        languages = DEFAULT_LANGUAGES
+
+    seen_ids: set[str] = set()
+    all_reviews: list[dict] = []
+
+    for lang in languages:
+        offset = 0
+        pages_fetched = 0
+        while pages_fetched < max_pages:
+            try:
+                page, total = ta_get_reviews_page(location_id, api_key, lang, offset)
+            except requests.HTTPError as exc:
+                logger.warning("HTTP error for lang=%s offset=%d: %s", lang, offset, exc)
+                break
+
+            if not page:
+                break
+
+            for review in page:
+                rid = str(review.get("id", ""))
+                if rid and rid not in seen_ids:
+                    review["_language"] = lang
+                    all_reviews.append(review)
+                    seen_ids.add(rid)
+
+            pages_fetched += 1
+            logger.info(
+                "  [%s] page %d: %d reviews (total available: %d)",
+                lang, pages_fetched, len(page), total,
+            )
+
+            # Stop if we've fetched everything for this language
+            offset += len(page)
+            if offset >= total:
+                break
+
+            # Polite delay between pages
+            sleep(random.uniform(1.0, 2.0))
+
+    logger.info("Fetched %d unique reviews across %d languages", len(all_reviews), len(languages))
+    return all_reviews
 
 
 # ---------------------- Ollama classification ---------------------- #
@@ -97,30 +164,31 @@ def is_ollama_available(ollama_url: str = "http://localhost:11434") -> bool:
 
 def classify_review(text: str, ollama_url: str = "http://localhost:11434") -> list[dict]:
     """Classify a review into topics with sentiment using Ollama."""
-    prompt = f"""Analyze this hotel review and classify which topics are mentioned and whether each mention is positive or negative.
+    prompt = f"""You are a hotel review analyst. Read the review below carefully and identify ALL topics mentioned, even briefly.
 
-Topics to check:
-- employees: staff behavior, service, friendliness, helpfulness, reception, concierge
-- commodities: amenities, facilities, pool, gym, spa, room features, wifi, parking
-- comfort: room comfort, bed quality, noise, space, temperature, size
-- cleaning: cleanliness, hygiene, tidiness, housekeeping
-- quality_price: value for money, pricing, worth, cost, overpriced, good deal
-- meals: food, breakfast, restaurant, dining, bar, drinks, buffet, dinner, lunch
+TOPICS (use these exact keys):
+- employees: any mention of staff, service, friendliness, helpfulness, reception, concierge, team, waiters, management
+- commodities: amenities, facilities, pool, gym, spa, room features, wifi, parking, fridge, toiletries, TV, air conditioning, balcony
+- comfort: room comfort, bed quality, noise, quiet, space, temperature, room size, mattress, pillow, decor, ambiance
+- cleaning: cleanliness, hygiene, tidiness, housekeeping, spotless, dirty, stains, towels changed, room serviced
+- quality_price: value for money, pricing, worth, cost, overpriced, good deal, expensive, cheap, affordable, half board value
+- meals: food, breakfast, restaurant, dining, bar, drinks, buffet, dinner, lunch, cuisine, menu, chef, kitchen, snacks
+- return: whether the guest would return, come back, visit again, recommend, revisit, not return, wouldn't go back
 
-IMPORTANT: A single review can mention the same topic both positively AND negatively.
-For example "breakfast was great but dinner was poor" should produce TWO entries for meals:
-one positive and one negative.
+RULES:
+1. You MUST check each topic one by one. Go through the review sentence by sentence.
+2. A single review CAN have both positive AND negative for the SAME topic.
+3. Even brief or indirect mentions count (e.g. "rooms were cleaned daily" = cleaning positive).
+4. If a topic is described positively, mark it positive. If negatively, mark it negative.
+5. Output ONLY a JSON array. No explanation, no markdown.
 
-Output ONLY a JSON array. Each element must have "topic" and "sentiment" fields.
-If a topic is not mentioned, do not include it.
-Example: [{{"topic": "employees", "sentiment": "positive"}}, {{"topic": "meals", "sentiment": "positive"}}, {{"topic": "meals", "sentiment": "negative"}}]
+EXAMPLE INPUT: "Staff were amazing. Breakfast was varied. Pool was cold but rooms were spotless and spacious. Would definitely come back!"
+EXAMPLE OUTPUT: [{{"topic":"employees","sentiment":"positive"}},{{"topic":"meals","sentiment":"positive"}},{{"topic":"commodities","sentiment":"negative"}},{{"topic":"cleaning","sentiment":"positive"}},{{"topic":"comfort","sentiment":"positive"}},{{"topic":"return","sentiment":"positive"}}]
 
-Review:
-\"\"\"
-{text}
-\"\"\"
+Now analyze this review:
+\"\"\"{text}\"\"\"
 
-JSON output:"""
+JSON array:"""
 
     payload = {
         "model": "mistral:7b",
@@ -128,7 +196,7 @@ JSON output:"""
         "stream": False,
         "options": {
             "temperature": 0.1,
-            "num_predict": 256,
+            "num_predict": 512,
         },
     }
 
@@ -238,6 +306,10 @@ def parse_args() -> argparse.Namespace:
                    help="Skip Ollama classification, store reviews without topics.")
     p.add_argument("--reclassify", action="store_true",
                    help="Reclassify reviews that have classified=false.")
+    p.add_argument("--languages", nargs="*", default=None,
+                   help="Languages to fetch reviews in (default: en pt de fr es it nl)")
+    p.add_argument("--max-pages", type=int, default=5,
+                   help="Max API pages per language (5 reviews/page, default: 5)")
     p.add_argument("--min-delay", type=float, default=2.5,
                    help="Min delay (s) between hotel requests (default: 2.5)")
     p.add_argument("--max-delay", type=float, default=5.0,
@@ -290,7 +362,11 @@ def main() -> int:
     logger.info("Fetching reviews for %s (location_id=%s)", ANANEA_HOTEL, location_id)
 
     try:
-        raw_reviews = ta_get_reviews(location_id, api_key)
+        raw_reviews = ta_get_reviews(
+            location_id, api_key,
+            languages=args.languages,
+            max_pages=args.max_pages,
+        )
     except Exception as e:
         logger.error("Failed to fetch reviews: %s", e)
         return 1
