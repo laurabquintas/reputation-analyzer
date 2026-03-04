@@ -63,6 +63,13 @@ jobs:
         run: |
           .venv/bin/python src/sites/tripadvisor_reviews.py --date $(date -u +%F)
 
+      - name: Scrape Google reviews
+        continue-on-error: true
+        env:
+          GOOGLE_MAPS_API_KEY: ${{ secrets.GOOGLE_MAPS_API_KEY }}
+        run: |
+          .venv/bin/python src/sites/google_reviews.py --date $(date -u +%F)
+
       - name: Upload run summary
         if: always()
         uses: actions/upload-artifact@v4
@@ -84,7 +91,9 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: updated-reviews
-          path: data/tripadvisor_reviews.json
+          path: |
+            data/tripadvisor_reviews.json
+            data/google_reviews.json
           if-no-files-found: warn
 
       - name: Evaluate run summary
