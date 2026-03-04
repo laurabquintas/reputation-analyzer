@@ -9,10 +9,14 @@ from collections.abc import Callable
 from datetime import datetime
 from pathlib import Path
 
+import sys
 import yaml
 import pandas as pd
 import plotly.graph_objects as go
 import streamlit as st
+
+sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "src"))
+from sites.tripadvisor_reviews import classify_review, is_ollama_available
 
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -668,6 +672,20 @@ def main() -> None:
             if review_id in existing_ids:
                 st.warning("This review already exists (same name + date + title).")
             else:
+                # Try to classify automatically via Ollama
+                topics: list[dict] = []
+                classified = False
+                ollama_msg = ""
+                if is_ollama_available():
+                    try:
+                        topics = classify_review(mr_text)
+                        classified = True
+                        ollama_msg = f" Classified with {len(topics)} topics."
+                    except Exception:
+                        ollama_msg = " Ollama classification failed; saved without topics."
+                else:
+                    ollama_msg = " Ollama not available; saved without classification."
+
                 new_review = {
                     "id": review_id,
                     "hotel": ANANEA_HOTEL,
@@ -681,16 +699,13 @@ def main() -> None:
                     "subratings": {},
                     "helpful_votes": 0,
                     "scraped_date": datetime.now().strftime("%Y-%m-%d"),
-                    "topics": [],
-                    "classified": False,
+                    "topics": topics,
+                    "classified": classified,
                     "source": "manual",
                 }
                 current_reviews.append(new_review)
                 _save_reviews_json(current_reviews, REVIEWS_JSON_PATH)
-                st.success(
-                    f"Review added (ID: {review_id}). "
-                    "Run the scraper with --reclassify to classify it with Ollama."
-                )
+                st.success(f"Review added (ID: {review_id}).{ollama_msg}")
                 st.rerun()
 
     st.subheader("Manual Missing Values")
