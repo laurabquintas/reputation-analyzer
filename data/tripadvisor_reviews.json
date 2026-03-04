@@ -1,7 +1,7 @@
 {
   "meta": {
-    "last_updated": "2026-03-04T00:07:23",
-    "total_reviews": 5
+    "last_updated": "2026-03-04T00:17:24",
+    "total_reviews": 6
   },
   "reviews": [
     {
@@ -229,6 +229,23 @@
         }
       ],
       "classified": true
+    },
+    {
+      "id": "manual_959b92f35aec",
+      "hotel": "Ananea Castelo Suites Hotel",
+      "location_id": "",
+      "rating": 2,
+      "title": "Shocking service",
+      "text": "Went with friends for a birthday cocktails and live music . Expensive average singer and they said no to ordering us a taxi at the end when we wanted to leave ! Shocking as a local I will not go back. Luckily one of the group had the uber app.",
+      "published_date": "2025-09-27T00:00:00Z",
+      "travel_date": "",
+      "trip_type": "Friends",
+      "subratings": {},
+      "helpful_votes": 0,
+      "scraped_date": "2026-03-04",
+      "topics": [],
+      "classified": false,
+      "source": "manual"
     }
   ]
 }
