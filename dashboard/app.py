@@ -381,6 +381,157 @@ def _load_reviews_json(path: Path) -> list[dict]:
     return data.get("reviews", [])
 
 
+def _quarter_topic_comparison(reviews: list[dict], hotel: str) -> pd.DataFrame | None:
+    """Compare current quarter vs previous quarter topic sentiment percentages."""
+    today = datetime.now()
+    current_q = (today.month - 1) // 3 + 1
+    current_year = today.year
+
+    # Current quarter start/end
+    cq_start = f"{current_year}-{(current_q - 1) * 3 + 1:02d}-01"
+    if current_q == 4:
+        cq_end = f"{current_year + 1}-01-01"
+    else:
+        cq_end = f"{current_year}-{current_q * 3 + 1:02d}-01"
+
+    # Previous quarter start/end
+    if current_q == 1:
+        pq = 4
+        py = current_year - 1
+    else:
+        pq = current_q - 1
+        py = current_year
+    pq_start = f"{py}-{(pq - 1) * 3 + 1:02d}-01"
+    if pq == 4:
+        pq_end = f"{py + 1}-01-01"
+    else:
+        pq_end = f"{py}-{pq * 3 + 1:02d}-01"
+
+    def _filter_quarter(revs: list[dict], start: str, end: str) -> list[dict]:
+        return [
+            r for r in revs
+            if r.get("hotel") == hotel
+            and r.get("classified", False)
+            and start <= r.get("published_date", "")[:10] < end
+        ]
+
+    cq_reviews = _filter_quarter(reviews, cq_start, cq_end)
+    pq_reviews = _filter_quarter(reviews, pq_start, pq_end)
+
+    cq_total = len(cq_reviews)
+    pq_total = len(pq_reviews)
+
+    if cq_total == 0 and pq_total == 0:
+        return None
+
+    cq_label = f"Q{current_q} {current_year}"
+    pq_label = f"Q{pq} {py}"
+
+    rows = []
+    for topic_key, topic_display in _TOPIC_DISPLAY.items():
+        cq_pos = sum(1 for r in cq_reviews for t in r.get("topics", []) if t["topic"] == topic_key and t["sentiment"] == "positive")
+        cq_neg = sum(1 for r in cq_reviews for t in r.get("topics", []) if t["topic"] == topic_key and t["sentiment"] == "negative")
+        pq_pos = sum(1 for r in pq_reviews for t in r.get("topics", []) if t["topic"] == topic_key and t["sentiment"] == "positive")
+        pq_neg = sum(1 for r in pq_reviews for t in r.get("topics", []) if t["topic"] == topic_key and t["sentiment"] == "negative")
+
+        cq_pos_pct = round(cq_pos / cq_total * 100, 1) if cq_total else 0
+        cq_neg_pct = round(cq_neg / cq_total * 100, 1) if cq_total else 0
+        pq_pos_pct = round(pq_pos / pq_total * 100, 1) if pq_total else 0
+        pq_neg_pct = round(pq_neg / pq_total * 100, 1) if pq_total else 0
+
+        pos_delta = round(cq_pos_pct - pq_pos_pct, 1)
+        neg_delta = round(cq_neg_pct - pq_neg_pct, 1)
+
+        rows.append({
+            "Topic": topic_display,
+            f"Pos {pq_label}": f"{pq_pos_pct}%",
+            f"Pos {cq_label}": f"{cq_pos_pct}%",
+            "Pos Δ": pos_delta,
+            f"Neg {pq_label}": f"{pq_neg_pct}%",
+            f"Neg {cq_label}": f"{cq_neg_pct}%",
+            "Neg Δ": neg_delta,
+        })
+
+    df = pd.DataFrame(rows)
+    df.attrs["cq_label"] = cq_label
+    df.attrs["pq_label"] = pq_label
+    df.attrs["cq_total"] = cq_total
+    df.attrs["pq_total"] = pq_total
+    return df
+
+
+def _render_quarter_comparison(df: pd.DataFrame | None) -> None:
+    """Render quarter-over-quarter scorecards side by side above the bar plot."""
+    if df is None:
+        return
+    cq_label = df.attrs.get("cq_label", "")
+    pq_label = df.attrs.get("pq_label", "")
+    cq_total = df.attrs.get("cq_total", 0)
+    pq_total = df.attrs.get("pq_total", 0)
+
+    st.caption(
+        f"Comparison to previous quarter: {pq_label} ({pq_total} reviews) → "
+        f"{cq_label} ({cq_total} reviews)"
+    )
+
+    cols = st.columns(len(df))
+    for col, (_, row) in zip(cols, df.iterrows()):
+        pos_delta = row["Pos Δ"]
+        neg_delta = row["Neg Δ"]
+
+        # Positive: up is good (green), down is bad (red)
+        if pos_delta > 0:
+            pos_color = "#15803d"
+            pos_arrow = "▲"
+        elif pos_delta < 0:
+            pos_color = "#b91c1c"
+            pos_arrow = "▼"
+        else:
+            pos_color = "#6b7280"
+            pos_arrow = "–"
+
+        # Negative: down is good (green), up is bad (red)
+        if neg_delta < 0:
+            neg_color = "#15803d"
+            neg_arrow = "▼"
+        elif neg_delta > 0:
+            neg_color = "#b91c1c"
+            neg_arrow = "▲"
+        else:
+            neg_color = "#6b7280"
+            neg_arrow = "–"
+
+        pos_sign = "+" if pos_delta > 0 else ""
+        neg_sign = "+" if neg_delta > 0 else ""
+
+        card_html = f"""
+        <div style="background:#f9fafb;border:1px solid #e5e7eb;border-radius:8px;
+                    padding:10px 8px;text-align:center;">
+            <div style="font-weight:600;font-size:0.85rem;margin-bottom:6px;">
+                {row["Topic"]}
+            </div>
+            <div style="display:flex;justify-content:center;gap:16px;">
+                <div>
+                    <span style="color:#b91c1c;font-size:0.75rem;">&#11044;</span>
+                    <span style="font-size:0.7rem;color:#6b7280;">Neg</span>
+                    <div style="color:{neg_color};font-weight:600;font-size:0.85rem;">
+                        {neg_arrow} {neg_sign}{neg_delta}pp
+                    </div>
+                </div>
+                <div>
+                    <span style="color:#15803d;font-size:0.75rem;">&#11044;</span>
+                    <span style="font-size:0.7rem;color:#6b7280;">Pos</span>
+                    <div style="color:{pos_color};font-weight:600;font-size:0.85rem;">
+                        {pos_arrow} {pos_sign}{pos_delta}pp
+                    </div>
+                </div>
+            </div>
+        </div>
+        """
+        with col:
+            st.markdown(card_html, unsafe_allow_html=True)
+
+
 def _ytd_topic_summary(reviews: list[dict], hotel: str, year: int | None = None) -> pd.DataFrame:
     target_year = str(year if year is not None else datetime.now().year)
     ytd = [
@@ -649,6 +800,10 @@ def main() -> None:
             key="review_year_toggle",
         )
         selected_year = current_year if review_year_option.startswith("YTD") else previous_year
+        # Quarter-over-quarter comparison
+        overall_qtr_df = _quarter_topic_comparison(all_reviews_data, ANANEA_HOTEL)
+        _render_quarter_comparison(overall_qtr_df)
+
         overall_topic_df, overall_total = _ytd_topic_summary(all_reviews_data, ANANEA_HOTEL, year=selected_year)
 
         if overall_topic_df[["Positive", "Negative"]].sum().sum() == 0:
@@ -695,6 +850,10 @@ def main() -> None:
                 "data/tripadvisor_reviews.json."
             )
         else:
+            # Quarter-over-quarter comparison
+            ta_qtr_df = _quarter_topic_comparison(reviews_data, ANANEA_HOTEL)
+            _render_quarter_comparison(ta_qtr_df)
+
             ta_topic_df, ta_total = _ytd_topic_summary(reviews_data, ANANEA_HOTEL, year=selected_year)
 
             if ta_topic_df[["Positive", "Negative"]].sum().sum() == 0:
@@ -777,6 +936,10 @@ def main() -> None:
                 "data/google_reviews.json."
             )
         else:
+            # Quarter-over-quarter comparison
+            google_qtr_df = _quarter_topic_comparison(google_reviews_data, ANANEA_HOTEL)
+            _render_quarter_comparison(google_qtr_df)
+
             google_topic_df, google_total = _ytd_topic_summary(google_reviews_data, ANANEA_HOTEL, year=selected_year)
 
             if google_topic_df[["Positive", "Negative"]].sum().sum() == 0:
