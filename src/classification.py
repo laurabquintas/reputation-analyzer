@@ -24,26 +24,27 @@ def is_ollama_available(ollama_url: str = "http://localhost:11434") -> bool:
 
 def classify_review(text: str, ollama_url: str = "http://localhost:11434") -> list[dict]:
     """Classify a review into topics with sentiment using Ollama."""
-    prompt = f"""You are a hotel review analyst. Read the review below carefully and identify ALL topics mentioned, even briefly.
+    prompt = f"""You are a hotel review analyst. Read the review below carefully and identify ALL topics mentioned, even briefly. Pay special attention to complaints, cons, criticisms, and suggestions for improvement – these are NEGATIVE.
 
 TOPICS (use these exact keys):
 - employees: any mention of staff, service, friendliness, helpfulness, reception, concierge, team, waiters, management
-- commodities: amenities, facilities, pool, gym, spa, room features, wifi, parking, fridge, toiletries, TV, air conditioning, balcony
-- comfort: room comfort, bed quality, noise, quiet, space, temperature, room size, mattress, pillow, decor, ambiance
+- commodities: amenities, facilities, pool, gym, spa, room features, wifi, parking, fridge, toiletries, TV, air conditioning, balcony, shuttle, iron, entertainment, music
+- comfort: room comfort, bed quality, noise, quiet, space, temperature, room size, mattress, pillow, decor, ambiance, construction noise, view
 - cleaning: cleanliness, hygiene, tidiness, housekeeping, spotless, dirty, stains, towels changed, room serviced
 - quality_price: value for money, pricing, worth, cost, overpriced, good deal, expensive, cheap, affordable, half board value
-- meals: food, breakfast, restaurant, dining, bar, drinks, buffet, dinner, lunch, cuisine, menu, chef, kitchen, snacks
+- meals: food, breakfast, restaurant, dining, bar, drinks, buffet, dinner, lunch, cuisine, menu, chef, kitchen, snacks, repetitive food, variety
 - return: whether the guest would return, come back, visit again, recommend, revisit, not return, wouldn't go back
 
 RULES:
 1. You MUST check each topic one by one. Go through the review sentence by sentence.
-2. A single review CAN have both positive AND negative for the SAME topic.
+2. A single review CAN and OFTEN DOES have both positive AND negative for the SAME topic. For example breakfast can be praised (positive) but also called repetitive (negative).
 3. Even brief or indirect mentions count (e.g. "rooms were cleaned daily" = cleaning positive).
 4. If a topic is described positively, mark it positive. If negatively, mark it negative.
-5. Output ONLY a JSON array. No explanation, no markdown.
+5. Complaints, cons, "could be better", "didn't work well", "wish they had", suggestions for improvement = NEGATIVE. Do NOT skip these.
+6. Output ONLY a JSON array. No explanation, no markdown.
 
-EXAMPLE INPUT: "Staff were amazing. Breakfast was varied. Pool was cold but rooms were spotless and spacious. Would definitely come back!"
-EXAMPLE OUTPUT: [{{"topic":"employees","sentiment":"positive"}},{{"topic":"meals","sentiment":"positive"}},{{"topic":"commodities","sentiment":"negative"}},{{"topic":"cleaning","sentiment":"positive"}},{{"topic":"comfort","sentiment":"positive"}},{{"topic":"return","sentiment":"positive"}}]
+EXAMPLE INPUT: "Staff were amazing. Breakfast was varied but got repetitive after a few days. Pool was cold and could do with music but rooms were spotless and spacious. The air con struggled to keep the room cool. Would definitely come back!"
+EXAMPLE OUTPUT: [{{"topic":"employees","sentiment":"positive"}},{{"topic":"meals","sentiment":"positive"}},{{"topic":"meals","sentiment":"negative"}},{{"topic":"commodities","sentiment":"negative"}},{{"topic":"cleaning","sentiment":"positive"}},{{"topic":"comfort","sentiment":"positive"}},{{"topic":"comfort","sentiment":"negative"}},{{"topic":"return","sentiment":"positive"}}]
 
 Now analyze this review:
 \"\"\"{text}\"\"\"
@@ -80,21 +81,36 @@ def _parse_classification(raw: str) -> list[dict]:
             cleaned = cleaned[:-3]
         cleaned = cleaned.strip()
 
+    items = None
+
+    # Try 1: parse the whole string as JSON
     try:
         items = json.loads(cleaned)
     except json.JSONDecodeError:
+        pass
+
+    # Try 2: extract a JSON array from the string
+    if items is None:
         match = re.search(r"\[.*\]", cleaned, re.DOTALL)
         if match:
             try:
                 items = json.loads(match.group())
             except json.JSONDecodeError:
-                logger.warning("Failed to parse Ollama response: %s", raw[:200])
-                return []
-        else:
-            logger.warning("Failed to parse Ollama response: %s", raw[:200])
-            return []
+                pass
 
-    if not isinstance(items, list):
+    # Try 3: extract individual {"topic":"...","sentiment":"..."} objects via regex
+    # This handles malformed arrays like [{"topic":"x","sentiment":"y"},{"topic":"z":null}]
+    if items is None:
+        pair_matches = re.findall(
+            r'\{\s*"topic"\s*:\s*"([^"]+)"\s*,\s*"sentiment"\s*:\s*"([^"]+)"\s*\}',
+            cleaned,
+        )
+        if pair_matches:
+            items = [{"topic": t, "sentiment": s} for t, s in pair_matches]
+
+    if items is None or not isinstance(items, list):
+        if cleaned:
+            logger.warning("Failed to parse Ollama response: %s", raw[:200])
         return []
 
     # Allow same topic with both positive AND negative (but not duplicate pairs)
