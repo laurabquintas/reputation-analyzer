@@ -41,10 +41,11 @@ RULES:
 3. Even brief or indirect mentions count (e.g. "rooms were cleaned daily" = cleaning positive).
 4. If a topic is described positively, mark it positive. If negatively, mark it negative.
 5. Complaints, cons, "could be better", "didn't work well", "wish they had", suggestions for improvement = NEGATIVE. Do NOT skip these.
-6. Output ONLY a JSON array. No explanation, no markdown.
+6. For each entry include a "detail" field: a short phrase (2-4 words) describing the specific aspect mentioned. Use lowercase.
+7. Output ONLY a JSON array. No explanation, no markdown.
 
 EXAMPLE INPUT: "Staff were amazing. Breakfast was varied but got repetitive after a few days. Pool was cold and could do with music but rooms were spotless and spacious. The air con struggled to keep the room cool. Would definitely come back!"
-EXAMPLE OUTPUT: [{{"topic":"employees","sentiment":"positive"}},{{"topic":"meals","sentiment":"positive"}},{{"topic":"meals","sentiment":"negative"}},{{"topic":"commodities","sentiment":"negative"}},{{"topic":"cleaning","sentiment":"positive"}},{{"topic":"comfort","sentiment":"positive"}},{{"topic":"comfort","sentiment":"negative"}},{{"topic":"return","sentiment":"positive"}}]
+EXAMPLE OUTPUT: [{{"topic":"employees","sentiment":"positive","detail":"amazing staff"}},{{"topic":"meals","sentiment":"positive","detail":"varied breakfast"}},{{"topic":"meals","sentiment":"negative","detail":"repetitive breakfast"}},{{"topic":"commodities","sentiment":"negative","detail":"cold pool"}},{{"topic":"cleaning","sentiment":"positive","detail":"spotless rooms"}},{{"topic":"comfort","sentiment":"positive","detail":"spacious rooms"}},{{"topic":"comfort","sentiment":"negative","detail":"poor air conditioning"}},{{"topic":"return","sentiment":"positive","detail":"would come back"}}]
 
 Now analyze this review:
 \"\"\"{text}\"\"\"
@@ -57,7 +58,7 @@ JSON array:"""
         "stream": False,
         "options": {
             "temperature": 0.1,
-            "num_predict": 512,
+            "num_predict": 768,
         },
     }
 
@@ -98,15 +99,16 @@ def _parse_classification(raw: str) -> list[dict]:
             except json.JSONDecodeError:
                 pass
 
-    # Try 3: extract individual {"topic":"...","sentiment":"..."} objects via regex
+    # Try 3: extract individual objects via regex
     # This handles malformed arrays like [{"topic":"x","sentiment":"y"},{"topic":"z":null}]
     if items is None:
         pair_matches = re.findall(
-            r'\{\s*"topic"\s*:\s*"([^"]+)"\s*,\s*"sentiment"\s*:\s*"([^"]+)"\s*\}',
+            r'\{\s*"topic"\s*:\s*"([^"]+)"\s*,\s*"sentiment"\s*:\s*"([^"]+)"'
+            r'(?:\s*,\s*"detail"\s*:\s*"([^"]*)")?\s*\}',
             cleaned,
         )
         if pair_matches:
-            items = [{"topic": t, "sentiment": s} for t, s in pair_matches]
+            items = [{"topic": t, "sentiment": s, "detail": d} for t, s, d in pair_matches]
 
     if items is None or not isinstance(items, list):
         if cleaned:
@@ -121,9 +123,13 @@ def _parse_classification(raw: str) -> list[dict]:
             continue
         topic = str(item.get("topic", "")).lower().strip()
         sentiment = str(item.get("sentiment", "")).lower().strip()
+        detail = str(item.get("detail", "")).strip()
         pair = (topic, sentiment)
         if topic in VALID_TOPICS and sentiment in VALID_SENTIMENTS and pair not in seen_pairs:
-            result.append({"topic": topic, "sentiment": sentiment})
+            entry = {"topic": topic, "sentiment": sentiment}
+            if detail:
+                entry["detail"] = detail
+            result.append(entry)
             seen_pairs.add(pair)
 
     return result

@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import json
+from collections import Counter
 from datetime import datetime
 from pathlib import Path
 
@@ -58,6 +59,47 @@ def ytd_topic_summary(reviews: list[dict], hotel: str, year: int | None = None) 
         rows.append({"Topic": topic_display, "Positive": pos, "Negative": neg})
 
     return pd.DataFrame(rows)
+
+
+def ytd_topic_insights(
+    reviews: list[dict], hotel: str, year: int | None = None, top_n: int = 2
+) -> dict[tuple[str, str], list[str]]:
+    """Return the top-N most frequent detail phrases per (display_topic, sentiment).
+
+    Returns a dict like::
+
+        {("Employees", "positive"): ["friendly staff", "helpful reception"],
+         ("Employees", "negative"): ["slow check-in"], ...}
+    """
+    if year is None:
+        year = datetime.now().year
+
+    ytd_reviews = [
+        r for r in reviews
+        if r.get("hotel") == hotel
+        and r.get("published_date", "")[:4] == str(year)
+        and r.get("classified", False)
+    ]
+
+    counters: dict[tuple[str, str], Counter] = {}
+    for r in ytd_reviews:
+        for t in r.get("topics", []):
+            detail = t.get("detail", "").strip().lower()
+            if not detail:
+                continue
+            topic_key = t.get("topic", "")
+            sentiment = t.get("sentiment", "")
+            display = TOPIC_DISPLAY.get(topic_key)
+            if display and sentiment in ("positive", "negative"):
+                key = (display, sentiment)
+                if key not in counters:
+                    counters[key] = Counter()
+                counters[key][detail] += 1
+
+    return {
+        key: [phrase for phrase, _ in counter.most_common(top_n)]
+        for key, counter in counters.items()
+    }
 
 
 def latest_top_reviews(reviews: list[dict], hotel: str, n: int = 3) -> list[dict]:

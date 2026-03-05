@@ -5,6 +5,7 @@ import hmac
 import json
 import os
 import re
+from collections import Counter
 from collections.abc import Callable
 from datetime import datetime
 from pathlib import Path
@@ -561,6 +562,60 @@ def _ytd_topic_summary(reviews: list[dict], hotel: str, year: int | None = None)
     return pd.DataFrame(rows), total
 
 
+def _ytd_topic_insights(
+    reviews: list[dict], hotel: str, year: int | None = None, top_n: int = 2,
+) -> dict[tuple[str, str], list[str]]:
+    """Return the top-N most frequent detail phrases per (display_topic, sentiment)."""
+    target_year = str(year if year is not None else datetime.now().year)
+    ytd = [
+        r for r in reviews
+        if r.get("hotel") == hotel
+        and r.get("published_date", "")[:4] == target_year
+        and r.get("classified", False)
+    ]
+    counters: dict[tuple[str, str], Counter] = {}
+    for r in ytd:
+        for t in r.get("topics", []):
+            detail = t.get("detail", "").strip().lower()
+            if not detail:
+                continue
+            topic_key = t.get("topic", "")
+            sentiment = t.get("sentiment", "")
+            display = _TOPIC_DISPLAY.get(topic_key)
+            if display and sentiment in ("positive", "negative"):
+                key = (display, sentiment)
+                if key not in counters:
+                    counters[key] = Counter()
+                counters[key][detail] += 1
+    return {
+        key: [phrase for phrase, _ in counter.most_common(top_n)]
+        for key, counter in counters.items()
+    }
+
+
+def _render_topic_insights(
+    topic_df: pd.DataFrame,
+    insights: dict[tuple[str, str], list[str]],
+) -> None:
+    """Render top insight phrases aligned with each topic row."""
+    if not insights:
+        st.caption("No detail insights available yet. Reclassify reviews to generate them.")
+        return
+
+    lines = []
+    for topic_display in topic_df["Topic"]:
+        pos_details = insights.get((topic_display, "positive"), [])
+        neg_details = insights.get((topic_display, "negative"), [])
+        pos_str = ", ".join(pos_details) if pos_details else "--"
+        neg_str = ", ".join(neg_details) if neg_details else "--"
+        lines.append(
+            f"**{topic_display}**  \n"
+            f"&ensp;\U0001f7e2 {pos_str}  \n"
+            f"&ensp;\U0001f534 {neg_str}"
+        )
+    st.markdown("\n\n".join(lines))
+
+
 def _latest_top_reviews(reviews: list[dict], hotel: str, n: int = 3) -> list[dict]:
     hotel_reviews = [r for r in reviews if r.get("hotel") == hotel]
     hotel_reviews.sort(key=lambda r: r.get("published_date", ""), reverse=True)
@@ -812,35 +867,41 @@ def main() -> None:
             st.info(f"No classified reviews found for {selected_year}.")
         else:
             overall_label = f"YTD {selected_year}" if selected_year == current_year else str(selected_year)
-            fig = go.Figure()
-            fig.add_trace(go.Bar(
-                y=overall_topic_df["Topic"],
-                x=overall_topic_df["Positive"],
-                name="Positive",
-                orientation="h",
-                marker_color="#15803d",
-                text=[f"{v}%" for v in overall_topic_df["Positive"]],
-                textposition="auto",
-            ))
-            fig.add_trace(go.Bar(
-                y=overall_topic_df["Topic"],
-                x=overall_topic_df["Negative"],
-                name="Negative",
-                orientation="h",
-                marker_color="#b91c1c",
-                text=[f"{v}%" for v in overall_topic_df["Negative"]],
-                textposition="auto",
-            ))
-            fig.update_layout(
-                barmode="group",
-                margin={"l": 20, "r": 20, "t": 30, "b": 20},
-                height=320,
-                xaxis_title="% of Reviews",
-                xaxis_range=[0, 100],
-                yaxis_title="",
-                title=f"Overall Topic Sentiment – {overall_label} ({overall_total} reviews)",
-            )
-            st.plotly_chart(fig, use_container_width=True)
+            overall_insights = _ytd_topic_insights(all_reviews_data, ANANEA_HOTEL, year=selected_year)
+            chart_col, insights_col = st.columns([3, 2])
+            with chart_col:
+                fig = go.Figure()
+                fig.add_trace(go.Bar(
+                    y=overall_topic_df["Topic"],
+                    x=overall_topic_df["Positive"],
+                    name="Positive",
+                    orientation="h",
+                    marker_color="#15803d",
+                    text=[f"{v}%" for v in overall_topic_df["Positive"]],
+                    textposition="auto",
+                ))
+                fig.add_trace(go.Bar(
+                    y=overall_topic_df["Topic"],
+                    x=overall_topic_df["Negative"],
+                    name="Negative",
+                    orientation="h",
+                    marker_color="#b91c1c",
+                    text=[f"{v}%" for v in overall_topic_df["Negative"]],
+                    textposition="auto",
+                ))
+                fig.update_layout(
+                    barmode="group",
+                    margin={"l": 20, "r": 20, "t": 30, "b": 20},
+                    height=320,
+                    xaxis_title="% of Reviews",
+                    xaxis_range=[0, 100],
+                    yaxis_title="",
+                    title=f"Overall Topic Sentiment – {overall_label} ({overall_total} reviews)",
+                )
+                st.plotly_chart(fig, use_container_width=True)
+            with insights_col:
+                st.markdown("**Top Insights**")
+                _render_topic_insights(overall_topic_df, overall_insights)
 
     # ---- TripAdvisor ---- #
     if "Tripadvisor" in selected_sources:
@@ -862,35 +923,41 @@ def main() -> None:
                 st.info(f"No classified TripAdvisor reviews found for {selected_year}.")
             else:
                 ta_label = f"YTD {selected_year}" if selected_year == current_year else str(selected_year)
-                fig = go.Figure()
-                fig.add_trace(go.Bar(
-                    y=ta_topic_df["Topic"],
-                    x=ta_topic_df["Positive"],
-                    name="Positive",
-                    orientation="h",
-                    marker_color="#15803d",
-                    text=[f"{v}%" for v in ta_topic_df["Positive"]],
-                    textposition="auto",
-                ))
-                fig.add_trace(go.Bar(
-                    y=ta_topic_df["Topic"],
-                    x=ta_topic_df["Negative"],
-                    name="Negative",
-                    orientation="h",
-                    marker_color="#b91c1c",
-                    text=[f"{v}%" for v in ta_topic_df["Negative"]],
-                    textposition="auto",
-                ))
-                fig.update_layout(
-                    barmode="group",
-                    margin={"l": 20, "r": 20, "t": 30, "b": 20},
-                    height=320,
-                    xaxis_title="% of Reviews",
-                    xaxis_range=[0, 100],
-                    yaxis_title="",
-                    title=f"TripAdvisor Topic Sentiment – {ta_label} ({ta_total} reviews)",
-                )
-                st.plotly_chart(fig, use_container_width=True)
+                ta_insights = _ytd_topic_insights(reviews_data, ANANEA_HOTEL, year=selected_year)
+                chart_col, insights_col = st.columns([3, 2])
+                with chart_col:
+                    fig = go.Figure()
+                    fig.add_trace(go.Bar(
+                        y=ta_topic_df["Topic"],
+                        x=ta_topic_df["Positive"],
+                        name="Positive",
+                        orientation="h",
+                        marker_color="#15803d",
+                        text=[f"{v}%" for v in ta_topic_df["Positive"]],
+                        textposition="auto",
+                    ))
+                    fig.add_trace(go.Bar(
+                        y=ta_topic_df["Topic"],
+                        x=ta_topic_df["Negative"],
+                        name="Negative",
+                        orientation="h",
+                        marker_color="#b91c1c",
+                        text=[f"{v}%" for v in ta_topic_df["Negative"]],
+                        textposition="auto",
+                    ))
+                    fig.update_layout(
+                        barmode="group",
+                        margin={"l": 20, "r": 20, "t": 30, "b": 20},
+                        height=320,
+                        xaxis_title="% of Reviews",
+                        xaxis_range=[0, 100],
+                        yaxis_title="",
+                        title=f"TripAdvisor Topic Sentiment – {ta_label} ({ta_total} reviews)",
+                    )
+                    st.plotly_chart(fig, use_container_width=True)
+                with insights_col:
+                    st.markdown("**Top Insights**")
+                    _render_topic_insights(ta_topic_df, ta_insights)
 
             st.markdown("**Latest Reviews**")
             top_reviews = _latest_top_reviews(reviews_data, ANANEA_HOTEL, n=3)
@@ -948,35 +1015,41 @@ def main() -> None:
                 st.info(f"No classified Google reviews found for {selected_year}.")
             else:
                 google_label = f"YTD {selected_year}" if selected_year == current_year else str(selected_year)
-                fig = go.Figure()
-                fig.add_trace(go.Bar(
-                    y=google_topic_df["Topic"],
-                    x=google_topic_df["Positive"],
-                    name="Positive",
-                    orientation="h",
-                    marker_color="#15803d",
-                    text=[f"{v}%" for v in google_topic_df["Positive"]],
-                    textposition="auto",
-                ))
-                fig.add_trace(go.Bar(
-                    y=google_topic_df["Topic"],
-                    x=google_topic_df["Negative"],
-                    name="Negative",
-                    orientation="h",
-                    marker_color="#b91c1c",
-                    text=[f"{v}%" for v in google_topic_df["Negative"]],
-                    textposition="auto",
-                ))
-                fig.update_layout(
-                    barmode="group",
-                    margin={"l": 20, "r": 20, "t": 30, "b": 20},
-                    height=320,
-                    xaxis_title="% of Reviews",
-                    xaxis_range=[0, 100],
-                    yaxis_title="",
-                    title=f"Google Topic Sentiment – {google_label} ({google_total} reviews)",
-                )
-                st.plotly_chart(fig, use_container_width=True)
+                google_insights = _ytd_topic_insights(google_reviews_data, ANANEA_HOTEL, year=selected_year)
+                chart_col, insights_col = st.columns([3, 2])
+                with chart_col:
+                    fig = go.Figure()
+                    fig.add_trace(go.Bar(
+                        y=google_topic_df["Topic"],
+                        x=google_topic_df["Positive"],
+                        name="Positive",
+                        orientation="h",
+                        marker_color="#15803d",
+                        text=[f"{v}%" for v in google_topic_df["Positive"]],
+                        textposition="auto",
+                    ))
+                    fig.add_trace(go.Bar(
+                        y=google_topic_df["Topic"],
+                        x=google_topic_df["Negative"],
+                        name="Negative",
+                        orientation="h",
+                        marker_color="#b91c1c",
+                        text=[f"{v}%" for v in google_topic_df["Negative"]],
+                        textposition="auto",
+                    ))
+                    fig.update_layout(
+                        barmode="group",
+                        margin={"l": 20, "r": 20, "t": 30, "b": 20},
+                        height=320,
+                        xaxis_title="% of Reviews",
+                        xaxis_range=[0, 100],
+                        yaxis_title="",
+                        title=f"Google Topic Sentiment – {google_label} ({google_total} reviews)",
+                    )
+                    st.plotly_chart(fig, use_container_width=True)
+                with insights_col:
+                    st.markdown("**Top Insights**")
+                    _render_topic_insights(google_topic_df, google_insights)
 
             st.markdown("**Latest Reviews**")
             google_top_reviews = _latest_top_reviews(google_reviews_data, ANANEA_HOTEL, n=3)
