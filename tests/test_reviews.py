@@ -6,7 +6,7 @@ from datetime import datetime
 
 import pandas as pd
 
-from src.reviews import latest_top_reviews, ytd_topic_summary
+from src.reviews import latest_top_reviews, ytd_topic_summary, ytd_topic_insights
 
 
 SAMPLE_REVIEWS = [
@@ -18,8 +18,8 @@ SAMPLE_REVIEWS = [
         "text": "Staff was great, breakfast excellent.",
         "published_date": f"{datetime.now().year}-02-15",
         "topics": [
-            {"topic": "employees", "sentiment": "positive"},
-            {"topic": "meals", "sentiment": "positive"},
+            {"topic": "employees", "sentiment": "positive", "detail": "friendly staff"},
+            {"topic": "meals", "sentiment": "positive", "detail": "excellent breakfast"},
         ],
         "classified": True,
     },
@@ -31,10 +31,10 @@ SAMPLE_REVIEWS = [
         "text": "Room was noisy, but staff was helpful. Food was both good and bad.",
         "published_date": f"{datetime.now().year}-02-20",
         "topics": [
-            {"topic": "comfort", "sentiment": "negative"},
-            {"topic": "employees", "sentiment": "positive"},
-            {"topic": "meals", "sentiment": "positive"},
-            {"topic": "meals", "sentiment": "negative"},
+            {"topic": "comfort", "sentiment": "negative", "detail": "noisy room"},
+            {"topic": "employees", "sentiment": "positive", "detail": "helpful staff"},
+            {"topic": "meals", "sentiment": "positive", "detail": "good food"},
+            {"topic": "meals", "sentiment": "negative", "detail": "bad food"},
         ],
         "classified": True,
     },
@@ -46,8 +46,8 @@ SAMPLE_REVIEWS = [
         "text": "Clean rooms, good value.",
         "published_date": f"{datetime.now().year}-03-01",
         "topics": [
-            {"topic": "cleaning", "sentiment": "positive"},
-            {"topic": "quality_price", "sentiment": "positive"},
+            {"topic": "cleaning", "sentiment": "positive", "detail": "clean rooms"},
+            {"topic": "quality_price", "sentiment": "positive", "detail": "good value"},
         ],
         "classified": True,
     },
@@ -58,7 +58,7 @@ SAMPLE_REVIEWS = [
         "title": "Old review",
         "text": "Perfect.",
         "published_date": "2025-06-15",
-        "topics": [{"topic": "comfort", "sentiment": "positive"}],
+        "topics": [{"topic": "comfort", "sentiment": "positive", "detail": "perfect stay"}],
         "classified": True,
     },
     {
@@ -68,7 +68,7 @@ SAMPLE_REVIEWS = [
         "title": "Not for us",
         "text": "Bad.",
         "published_date": f"{datetime.now().year}-01-10",
-        "topics": [{"topic": "cleaning", "sentiment": "negative"}],
+        "topics": [{"topic": "cleaning", "sentiment": "negative", "detail": "dirty rooms"}],
         "classified": True,
     },
     {
@@ -150,3 +150,47 @@ class TestLatestTopReviews:
     def test_empty_for_unknown_hotel(self):
         result = latest_top_reviews(SAMPLE_REVIEWS, "Unknown Hotel", n=3)
         assert result == []
+
+
+class TestYtdTopicInsights:
+    def test_returns_top_details(self):
+        insights = ytd_topic_insights(SAMPLE_REVIEWS, "Ananea Castelo Suites Hotel")
+        # Two reviews mention employees positive: "friendly staff" and "helpful staff"
+        emp_pos = insights.get(("Employees", "positive"), [])
+        assert len(emp_pos) == 2
+        assert "friendly staff" in emp_pos
+        assert "helpful staff" in emp_pos
+
+    def test_limits_to_top_n(self):
+        insights = ytd_topic_insights(SAMPLE_REVIEWS, "Ananea Castelo Suites Hotel", top_n=1)
+        meals_pos = insights.get(("Meals", "positive"), [])
+        assert len(meals_pos) == 1
+
+    def test_filters_by_hotel(self):
+        insights = ytd_topic_insights(SAMPLE_REVIEWS, "Ananea Castelo Suites Hotel")
+        # "dirty rooms" is from Other Hotel — should not appear
+        cleaning_neg = insights.get(("Cleaning", "negative"), [])
+        assert "dirty rooms" not in cleaning_neg
+
+    def test_filters_by_year(self):
+        insights = ytd_topic_insights(SAMPLE_REVIEWS, "Ananea Castelo Suites Hotel")
+        # Review "4" is from 2025 — "perfect stay" should NOT appear
+        comfort_pos = insights.get(("Comfort", "positive"), [])
+        assert "perfect stay" not in comfort_pos
+
+    def test_handles_missing_detail(self):
+        reviews_no_detail = [
+            {
+                "id": "x",
+                "hotel": "Ananea Castelo Suites Hotel",
+                "published_date": f"{datetime.now().year}-01-10",
+                "topics": [{"topic": "employees", "sentiment": "positive"}],
+                "classified": True,
+            },
+        ]
+        insights = ytd_topic_insights(reviews_no_detail, "Ananea Castelo Suites Hotel")
+        assert insights.get(("Employees", "positive"), []) == []
+
+    def test_empty_for_unknown_hotel(self):
+        insights = ytd_topic_insights(SAMPLE_REVIEWS, "Unknown Hotel")
+        assert insights == {}
