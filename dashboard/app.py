@@ -1,7 +1,10 @@
 from __future__ import annotations
 
+import csv
+import logging
 import re
 from collections.abc import Callable
+from datetime import datetime, timezone
 from pathlib import Path
 
 import yaml
@@ -13,6 +16,9 @@ import streamlit as st
 ROOT = Path(__file__).resolve().parents[1]
 DATA_DIR = ROOT / "data"
 CONFIG_PATH = ROOT / "config" / "hotels.yaml"
+AUDIT_LOG = DATA_DIR / "audit.csv"
+
+logger = logging.getLogger(__name__)
 
 SOURCES = {
     "Booking": DATA_DIR / "booking_scores.csv",
@@ -84,6 +90,24 @@ def update_average(df: pd.DataFrame) -> pd.DataFrame:
     return df
 
 
+def _append_audit(source: str, hotel: str, date_col: str, old_value: object, new_value: float) -> None:
+    """Append one row to the audit CSV log."""
+    write_header = not AUDIT_LOG.exists()
+    AUDIT_LOG.parent.mkdir(parents=True, exist_ok=True)
+    with open(AUDIT_LOG, "a", newline="", encoding="utf-8") as fh:
+        writer = csv.writer(fh)
+        if write_header:
+            writer.writerow(["timestamp", "source", "hotel", "date_col", "old_value", "new_value"])
+        writer.writerow([
+            datetime.now(timezone.utc).isoformat(),
+            source,
+            hotel,
+            date_col,
+            old_value if old_value is not None else "",
+            new_value,
+        ])
+
+
 def set_manual_score(source: str, hotel: str, date_col: str, score: float) -> None:
     import fcntl
 
@@ -104,9 +128,16 @@ def set_manual_score(source: str, hotel: str, date_col: str, score: float) -> No
             if date_col not in df.columns:
                 df[date_col] = pd.NA
 
+            old_value = df.loc[hotel, date_col] if hotel in df.index and date_col in df.columns else None
+            if pd.isna(old_value):
+                old_value = None
+
             df.loc[hotel, date_col] = score
             df = update_average(df)
             df.to_csv(csv_path, sep=";", index_label="Hotel")
+
+            _append_audit(source, hotel, date_col, old_value, score)
+            logger.info("Manual score: %s | %s | %s | %s → %s", source, hotel, date_col, old_value, score)
         finally:
             fcntl.flock(lock_fh, fcntl.LOCK_UN)
 
