@@ -68,7 +68,7 @@ DEFAULT_MIN_DELAY = 2.0
 DEFAULT_MAX_DELAY = 5.0
 DEFAULT_RETRIES = 2
 
-DATE_COL_RE = re.compile(r"\d{4}-\d{2}-\d{2}")  # YYYY-MM-DD
+DATE_COL_RE = re.compile(r"^\d{4}-\d{2}-\d{2}$")  # YYYY-MM-DD
 
 _CONFIG_PATH = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "..", "config", "hotels.yaml")
 
