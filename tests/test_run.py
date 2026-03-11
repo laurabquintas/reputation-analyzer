@@ -58,8 +58,11 @@ def test_run_site_warns_when_no_scores_collected(tmp_path: Path, monkeypatch) ->
         "B;4.0;\n",
         encoding="utf-8",
     )
-    config = SiteConfig(script=tmp_path / "fake.py", csv_path=csv_path)
+    fake_script = tmp_path / "fake.py"
+    fake_script.write_text("")
+    config = SiteConfig(script=fake_script, csv_path=csv_path)
 
+    monkeypatch.setattr("src.run.ROOT", tmp_path)
     monkeypatch.setattr(
         "src.run.subprocess.run",
         lambda *args, **kwargs: CompletedProcess(args=args[0], returncode=0, stdout="", stderr=""),
@@ -80,8 +83,11 @@ def test_run_site_warns_when_partial_scores_collected(tmp_path: Path, monkeypatc
         "C;3.8;3.8\n",
         encoding="utf-8",
     )
-    config = SiteConfig(script=tmp_path / "fake.py", csv_path=csv_path)
+    fake_script = tmp_path / "fake.py"
+    fake_script.write_text("")
+    config = SiteConfig(script=fake_script, csv_path=csv_path)
 
+    monkeypatch.setattr("src.run.ROOT", tmp_path)
     monkeypatch.setattr(
         "src.run.subprocess.run",
         lambda *args, **kwargs: CompletedProcess(args=args[0], returncode=0, stdout="", stderr=""),
@@ -101,8 +107,11 @@ def test_run_site_is_ok_when_all_scores_collected(tmp_path: Path, monkeypatch) -
         "B;4.0;4.0\n",
         encoding="utf-8",
     )
-    config = SiteConfig(script=tmp_path / "fake.py", csv_path=csv_path)
+    fake_script = tmp_path / "fake.py"
+    fake_script.write_text("")
+    config = SiteConfig(script=fake_script, csv_path=csv_path)
 
+    monkeypatch.setattr("src.run.ROOT", tmp_path)
     monkeypatch.setattr(
         "src.run.subprocess.run",
         lambda *args, **kwargs: CompletedProcess(args=args[0], returncode=0, stdout="", stderr=""),
