@@ -53,6 +53,7 @@ SITE_CONFIGS: dict[str, SiteConfig] = {
     "GOOGLE": SiteConfig(
         script=ROOT / "src" / "sites" / "google.py",
         csv_path=DATA_DIR / "google_scores.csv",
+        required_env=("GOOGLE_MAPS_API_KEY",),
     ),
     "EXPEDIA": SiteConfig(
         script=ROOT / "src" / "sites" / "expedia.py",
