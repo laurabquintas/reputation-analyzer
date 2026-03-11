@@ -85,23 +85,30 @@ def update_average(df: pd.DataFrame) -> pd.DataFrame:
 
 
 def set_manual_score(source: str, hotel: str, date_col: str, score: float) -> None:
+    import fcntl
+
     csv_path = SOURCES[source]
     if not csv_path.exists():
-        raise FileNotFoundError(f"Missing CSV for {source}: {csv_path}")
+        raise FileNotFoundError(f"Data file not found for {source}")
 
-    df = pd.read_csv(csv_path, sep=";", index_col="Hotel")
-    df.index = df.index.astype(str).str.strip()
-    df = df.groupby(level=0).first()
-    hotel = hotel.strip()
-    if hotel not in df.index:
-        df.loc[hotel] = pd.NA
+    with open(csv_path, "r") as lock_fh:
+        fcntl.flock(lock_fh, fcntl.LOCK_EX)
+        try:
+            df = pd.read_csv(csv_path, sep=";", index_col="Hotel")
+            df.index = df.index.astype(str).str.strip()
+            df = df.groupby(level=0).first()
+            hotel = hotel.strip()
+            if hotel not in df.index:
+                df.loc[hotel] = pd.NA
 
-    if date_col not in df.columns:
-        df[date_col] = pd.NA
+            if date_col not in df.columns:
+                df[date_col] = pd.NA
 
-    df.loc[hotel, date_col] = score
-    df = update_average(df)
-    df.to_csv(csv_path, sep=";", index_label="Hotel")
+            df.loc[hotel, date_col] = score
+            df = update_average(df)
+            df.to_csv(csv_path, sep=";", index_label="Hotel")
+        finally:
+            fcntl.flock(lock_fh, fcntl.LOCK_UN)
 
 
 def scores_over_time(df: pd.DataFrame, source: str) -> pd.DataFrame:
@@ -361,7 +368,7 @@ def main() -> None:
     for source, path in SOURCES.items():
         df = load_source_df(path)
         if df is None:
-            st.warning(f"{source}: no valid data file found at {path}")
+            st.warning(f"{source}: no valid data file found.")
             continue
         source_dfs[source] = df
         all_history.append(scores_over_time(df, source))
