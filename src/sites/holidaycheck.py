@@ -82,7 +82,7 @@ def _load_urls() -> dict[str, str]:
 # Map of hotel display name -> HolidayCheck URL
 URLS = _load_urls()
 
-DATE_COL_RE = re.compile(r"\d{4}-\d{2}-\d{2}")  # YYYY-MM-DD
+DATE_COL_RE = re.compile(r"^\d{4}-\d{2}-\d{2}$")  # YYYY-MM-DD
 # -------------------------- Scraper logic -------------------------- #
 
 def _normalize_to_six_scale(score: float, best_rating: float | None) -> float:
