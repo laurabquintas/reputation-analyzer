@@ -71,7 +71,7 @@ def _load_location_ids() -> dict[str, str]:
 # Map of hotel display name -> TripAdvisor location ID
 LOCATION_IDS = _load_location_ids()
 
-DATE_COL_RE = re.compile(r"\d{4}-\d{2}-\d{2}")  # YYYY-MM-DD
+DATE_COL_RE = re.compile(r"^\d{4}-\d{2}-\d{2}$")  # YYYY-MM-DD
 # -------------------------- Scraper logic -------------------------- #
 
 def sanitize_tripadvisor_score(score: float | None) -> float | None:

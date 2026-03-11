@@ -76,7 +76,7 @@ def _load_hotel_queries() -> Dict[str, str]:
 # Map of hotel display name -> text query for Places search
 HOTEL_QUERIES: Dict[str, str] = _load_hotel_queries()
 
-DATE_COL_RE = re.compile(r"\d{4}-\d{2}-\d{2}")  # YYYY-MM-DD
+DATE_COL_RE = re.compile(r"^\d{4}-\d{2}-\d{2}$")  # YYYY-MM-DD
 
 
 # -------------------------- API logic ------------------------------ #
