@@ -1,6 +1,6 @@
 {
   "meta": {
-    "last_updated": "2026-03-04T22:58:15",
+    "last_updated": "2026-03-11T23:28:37",
     "total_reviews": 11
   },
   "reviews": [
@@ -20,23 +20,28 @@
       "topics": [
         {
           "topic": "employees",
-          "sentiment": "positive"
+          "sentiment": "positive",
+          "detail": "great staff"
         },
         {
           "topic": "commodities",
-          "sentiment": "negative"
+          "sentiment": "negative",
+          "detail": "no bottle openers in rooms"
+        },
+        {
+          "topic": "commodities",
+          "sentiment": "positive",
+          "detail": "ample free parking"
         },
         {
           "topic": "cleaning",
-          "sentiment": "positive"
+          "sentiment": "positive",
+          "detail": "rooms cleaned and towels changed daily"
         },
         {
           "topic": "meals",
-          "sentiment": "positive"
-        },
-        {
-          "topic": "return",
-          "sentiment": "positive"
+          "sentiment": "positive",
+          "detail": "freshly cooked food beyond expectations"
         }
       ],
       "classified": true
@@ -57,31 +62,28 @@
       "topics": [
         {
           "topic": "employees",
-          "sentiment": "positive"
+          "sentiment": "positive",
+          "detail": "nicer staff"
         },
         {
           "topic": "commodities",
-          "sentiment": "positive"
+          "sentiment": "positive",
+          "detail": "beautiful modern rooms"
         },
         {
           "topic": "cleaning",
-          "sentiment": "positive"
+          "sentiment": "positive",
+          "detail": "spotless pool area"
         },
         {
           "topic": "meals",
-          "sentiment": "positive"
+          "sentiment": "positive",
+          "detail": "vast breakfast selection"
         },
         {
-          "topic": "meals",
-          "sentiment": "negative"
-        },
-        {
-          "topic": "commodities",
-          "sentiment": "negative"
-        },
-        {
-          "topic": "return",
-          "sentiment": "positive"
+          "topic": "quality_price",
+          "sentiment": "negative",
+          "detail": "few euros into old town"
         }
       ],
       "classified": true
@@ -102,15 +104,23 @@
       "topics": [
         {
           "topic": "employees",
-          "sentiment": "positive"
+          "sentiment": "positive",
+          "detail": "amazing and friendly staff"
+        },
+        {
+          "topic": "commodities",
+          "sentiment": "positive",
+          "detail": "lovely rooms"
         },
         {
           "topic": "meals",
-          "sentiment": "positive"
+          "sentiment": "positive",
+          "detail": "lovely breakfast"
         },
         {
           "topic": "return",
-          "sentiment": "positive"
+          "sentiment": "positive",
+          "detail": "would come back"
         }
       ],
       "classified": true
@@ -168,23 +178,23 @@
       "topics": [
         {
           "topic": "employees",
-          "sentiment": "positive"
+          "sentiment": "positive",
+          "detail": "hotel manager"
         },
         {
           "topic": "commodities",
-          "sentiment": "positive"
+          "sentiment": "positive",
+          "detail": "high-tech design furniture"
         },
         {
           "topic": "comfort",
-          "sentiment": "positive"
-        },
-        {
-          "topic": "commodities",
-          "sentiment": "negative"
+          "sentiment": "positive",
+          "detail": "luxurious rooms"
         },
         {
           "topic": "meals",
-          "sentiment": "positive"
+          "sentiment": "positive",
+          "detail": "rich and healthy breakfast"
         }
       ],
       "classified": true
@@ -205,35 +215,33 @@
       "topics": [
         {
           "topic": "employees",
-          "sentiment": "positive"
+          "sentiment": "positive",
+          "detail": "friendly and accommodating staff"
         },
         {
           "topic": "commodities",
-          "sentiment": "positive"
-        },
-        {
-          "topic": "comfort",
-          "sentiment": "positive"
+          "sentiment": "positive",
+          "detail": "intelligent TV placement"
         },
         {
           "topic": "cleaning",
-          "sentiment": "positive"
+          "sentiment": "positive",
+          "detail": "well-maintained pool areas"
         },
         {
-          "topic": "commodities",
-          "sentiment": "negative"
+          "topic": "comfort",
+          "sentiment": "positive",
+          "detail": "spacious rooms"
         },
         {
-          "topic": "meals",
-          "sentiment": "negative"
-        },
-        {
-          "topic": "return",
-          "sentiment": "negative"
+          "topic": "comfort",
+          "sentiment": "negative",
+          "detail": "insufficient storage space"
         },
         {
           "topic": "employees",
-          "sentiment": "negative"
+          "sentiment": "negative",
+          "detail": "language barriers"
         }
       ],
       "classified": true
@@ -254,19 +262,23 @@
       "topics": [
         {
           "topic": "employees",
-          "sentiment": "negative"
+          "sentiment": "negative",
+          "detail": "refused to order a taxi"
         },
         {
           "topic": "commodities",
-          "sentiment": "positive"
+          "sentiment": "positive",
+          "detail": "live music"
         },
         {
           "topic": "quality_price",
-          "sentiment": "negative"
+          "sentiment": "negative",
+          "detail": "expensive"
         },
         {
           "topic": "return",
-          "sentiment": "negative"
+          "sentiment": "negative",
+          "detail": "will not go back"
         }
       ],
       "classified": true,
@@ -288,23 +300,28 @@
       "topics": [
         {
           "topic": "employees",
-          "sentiment": "negative"
+          "sentiment": "negative",
+          "detail": "unfriendly staff on arrival"
         },
         {
           "topic": "employees",
-          "sentiment": "positive"
+          "sentiment": "positive",
+          "detail": "lovely female guest service agent"
         },
         {
           "topic": "commodities",
-          "sentiment": "positive"
-        },
-        {
-          "topic": "cleaning",
-          "sentiment": "positive"
+          "sentiment": "positive",
+          "detail": "pool bar"
         },
         {
           "topic": "comfort",
-          "sentiment": "positive"
+          "sentiment": "positive",
+          "detail": "comfortable week"
+        },
+        {
+          "topic": "cleaning",
+          "sentiment": "positive",
+          "detail": "nice new clean room serviced daily"
         }
       ],
       "classified": true,
@@ -326,11 +343,13 @@
       "topics": [
         {
           "topic": "commodities",
-          "sentiment": "positive"
+          "sentiment": "positive",
+          "detail": "new hotel"
         },
         {
           "topic": "meals",
-          "sentiment": "positive"
+          "sentiment": "positive",
+          "detail": "very good dinner"
         }
       ],
       "classified": true,
@@ -351,16 +370,24 @@
       "scraped_date": "2026-03-04",
       "topics": [
         {
-          "topic": "employees",
-          "sentiment": "positive"
+          "topic": "commodities",
+          "sentiment": "positive",
+          "detail": "modern decor"
         },
         {
-          "topic": "commodities",
-          "sentiment": "positive"
+          "topic": "comfort",
+          "sentiment": "positive",
+          "detail": "amazing views"
+        },
+        {
+          "topic": "employees",
+          "sentiment": "positive",
+          "detail": "friendly and caring service"
         },
         {
           "topic": "meals",
-          "sentiment": "positive"
+          "sentiment": "positive",
+          "detail": "delicious food"
         }
       ],
       "classified": true,
@@ -428,27 +455,28 @@
       "topics": [
         {
           "topic": "employees",
-          "sentiment": "positive"
+          "sentiment": "positive",
+          "detail": "friendly and competent staff"
         },
         {
           "topic": "commodities",
-          "sentiment": "positive"
-        },
-        {
-          "topic": "comfort",
-          "sentiment": "positive"
-        },
-        {
-          "topic": "cleaning",
-          "sentiment": "negative"
-        },
-        {
-          "topic": "commodities",
-          "sentiment": "negative"
+          "sentiment": "positive",
+          "detail": "new hotel"
         },
         {
           "topic": "meals",
-          "sentiment": "positive"
+          "sentiment": "positive",
+          "detail": "convincing breakfast, dinner"
+        },
+        {
+          "topic": "cleaning",
+          "sentiment": "negative",
+          "detail": "minor issues in rooms"
+        },
+        {
+          "topic": "return",
+          "sentiment": "positive",
+          "detail": "would love to come back"
         }
       ],
       "classified": true,
