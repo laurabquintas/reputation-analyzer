@@ -43,8 +43,12 @@ def test_sanitize_clamps_above_six() -> None:
     assert sanitize_holidaycheck_score(7.0) == 6.0
 
 
-def test_sanitize_clamps_below_zero() -> None:
-    assert sanitize_holidaycheck_score(-1.0) == 0.0
+def test_sanitize_rejects_below_zero() -> None:
+    assert sanitize_holidaycheck_score(-1.0) is None
+
+
+def test_sanitize_rejects_above_ten() -> None:
+    assert sanitize_holidaycheck_score(11.0) is None
 
 
 def test_sanitize_non_numeric_returns_none() -> None:
