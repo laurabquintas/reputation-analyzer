@@ -70,6 +70,11 @@ jobs:
         run: |
           .venv/bin/python src/sites/google_reviews.py --date $(date -u +%F)
 
+      - name: Scrape HolidayCheck reviews
+        continue-on-error: true
+        run: |
+          .venv/bin/python src/sites/holidaycheck_reviews.py --date $(date -u +%F)
+
       - name: Upload run summary
         if: always()
         uses: actions/upload-artifact@v4
@@ -94,6 +99,7 @@ jobs:
           path: |
             data/tripadvisor_reviews.json
             data/google_reviews.json
+            data/holidaycheck_reviews.json
           if-no-files-found: warn
 
       - name: Evaluate run summary
