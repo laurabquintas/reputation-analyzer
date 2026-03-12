@@ -48,6 +48,7 @@ from playwright.sync_api import sync_playwright
 from playwright.async_api import async_playwright
 
 from src.classification import (
+    classify_booking_review,
     classify_review,
     is_ollama_available,
 )
@@ -303,10 +304,16 @@ def _parse_date(text: str) -> str:
 
 
 def _parse_score(text: str) -> float | None:
-    """Parse a Booking.com review score from text like 'Scored 10\\n10'."""
+    """Parse a Booking.com review score.
+
+    Handles English ("Scored 10 10") and Portuguese ("Pontuado com 10 10").
+    The duplicate number comes from get_text(" ", strip=True) joining
+    the visible score and its aria-label.
+    """
     if not text:
         return None
-    m = re.search(r"Scored\s+(\d+(?:\.\d+)?)", text)
+    # English "Scored 9.0" or Portuguese "Pontuado com 9.0"
+    m = re.search(r"(?:Scored|Pontuado\s+com)\s+(\d+(?:\.\d+)?)", text, re.I)
     if m:
         try:
             score = float(m.group(1))
@@ -314,7 +321,7 @@ def _parse_score(text: str) -> float | None:
                 return score
         except ValueError:
             pass
-    # Fallback: first number
+    # Fallback: first number in valid range
     m = re.search(r"(\d+(?:\.\d+)?)", text)
     if m:
         try:
@@ -527,6 +534,10 @@ def parse_args() -> argparse.Namespace:
         help="Reclassify reviews that have classified=false.",
     )
     p.add_argument(
+        "--reclassify-all", action="store_true",
+        help="Reclassify ALL reviews, even previously classified ones.",
+    )
+    p.add_argument(
         "--max-pages", type=int, default=10,
         help="Max review pages to fetch (default: 10)",
     )
@@ -571,15 +582,22 @@ def main() -> int:
         )
 
     # --- Reclassify mode ---
-    if args.reclassify:
+    if args.reclassify or args.reclassify_all:
         if not ollama_ok:
             logger.error("Cannot reclassify: Ollama is not available.")
             return 1
         reclassified = 0
         for review in existing_reviews:
-            if not review.get("classified", False) and review.get("text"):
+            needs_reclassify = args.reclassify_all or not review.get("classified", False)
+            if needs_reclassify and (
+                review.get("positive_text") or review.get("negative_text")
+            ):
                 try:
-                    topics = classify_review(review["text"], args.ollama_url)
+                    topics = classify_booking_review(
+                        review.get("positive_text", ""),
+                        review.get("negative_text", ""),
+                        args.ollama_url,
+                    )
                     review["topics"] = topics
                     review["classified"] = True
                     reclassified += 1
@@ -623,12 +641,16 @@ def main() -> int:
             continue
 
         text = raw.get("text", "")
+        positive_text = raw.get("positive_text", "")
+        negative_text = raw.get("negative_text", "")
         topics: list[dict] = []
         classified = False
 
-        if ollama_ok and text:
+        if ollama_ok and (positive_text or negative_text):
             try:
-                topics = classify_review(text, args.ollama_url)
+                topics = classify_booking_review(
+                    positive_text, negative_text, args.ollama_url,
+                )
                 classified = True
                 logger.info(
                     "  Review %s: %d topics classified",
