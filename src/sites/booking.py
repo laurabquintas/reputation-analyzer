@@ -34,7 +34,7 @@ Pin a specific date column (otherwise "today"):
 REQUIREMENTS
 ------------
 pandas
-requests
+playwright
 beautifulsoup4
 
 TIPS
@@ -57,8 +57,8 @@ from datetime import datetime
 
 import yaml
 import pandas as pd
-import requests
 from bs4 import BeautifulSoup
+from playwright.sync_api import sync_playwright
 
 logger = logging.getLogger(__name__)
 
@@ -84,16 +84,14 @@ def _load_urls() -> dict[str, str]:
 # Map of hotel display name -> Booking URL
 URLS = _load_urls()
 
-UA_HEADERS = {
-    "User-Agent": (
-        "Mozilla/5.0 (Windows NT 10.0; Win64; x64) "
-        "AppleWebKit/537.36 (KHTML, like Gecko) "
-        "Chrome/124.0.0.0 Safari/537.36"
-    ),
-    "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
-    "Accept-Language": "en-GB,en;q=0.9",
-    "Referer": "https://www.booking.com/",
-}
+USER_AGENTS = [
+    "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 "
+    "(KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36",
+    "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 "
+    "(KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36",
+    "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 "
+    "(KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36",
+]
 
 DATE_COL_RE = re.compile(r"^\d{4}-\d{2}-\d{2}$")
 
@@ -111,39 +109,66 @@ def sanitize_booking_score(score: float | None) -> float | None:
     logger.warning("Booking score out of expected range 0-10: %s. Ignoring value.", value)
     return None
 
-def fetch_booking_rating(url: str, session: requests.Session, retries: int = DEFAULT_RETRIES) -> float | None:
+def _fetch_page_playwright(url: str, timeout: int = 30000) -> str | None:
+    """Render a Booking.com page with Playwright and return the HTML."""
+    try:
+        with sync_playwright() as p:
+            browser = p.chromium.launch(headless=True)
+            context = browser.new_context(
+                user_agent=random.choice(USER_AGENTS),
+                locale="en-GB",
+            )
+            page = context.new_page()
+            try:
+                page.goto(url, timeout=timeout, wait_until="networkidle")
+                # Reject non-essential cookies
+                reject_btn = page.locator("#onetrust-reject-all-handler")
+                if reject_btn.count() > 0:
+                    reject_btn.click()
+                    sleep(0.5)
+                return page.content()
+            finally:
+                browser.close()
+    except Exception as e:
+        logger.warning("Playwright fetch failed for %s: %s", url, e)
+        return None
+
+
+def _extract_score_from_html(html: str) -> float | None:
+    """Extract aggregate rating from JSON-LD in the HTML."""
+    soup = BeautifulSoup(html, "html.parser")
+    for tag in soup.find_all("script", type="application/ld+json"):
+        try:
+            data = json.loads(tag.string or "")
+        except Exception:
+            continue
+
+        items = data if isinstance(data, list) else [data]
+        for obj in items:
+            if not isinstance(obj, dict):
+                continue
+            agg = obj.get("aggregateRating")
+            if isinstance(agg, dict) and "ratingValue" in agg:
+                val = str(agg.get("ratingValue"))
+                return sanitize_booking_score(float(val.replace(",", ".")))
+    return None
+
+
+def fetch_booking_rating(url: str, retries: int = DEFAULT_RETRIES, **_kwargs) -> float | None:
     """
-    Fetch the Booking rating for a single property page.
-    Strategy: parse JSON-LD blocks for "aggregateRating"->"ratingValue".
+    Fetch the Booking rating for a single property page using Playwright.
+    Strategy: render page with headless Chromium, parse JSON-LD for
+    "aggregateRating" -> "ratingValue".
     Returns a float (e.g., 8.7) or None if not found.
     """
     for attempt in range(retries + 1):
-        try:
-            r = session.get(url, headers=UA_HEADERS, timeout=20)
-            r.raise_for_status()
-            soup = BeautifulSoup(r.text, "html.parser")
+        html = _fetch_page_playwright(url)
+        if html:
+            score = _extract_score_from_html(html)
+            if score is not None:
+                return score
 
-            for tag in soup.find_all("script", type="application/ld+json"):
-                try:
-                    data = json.loads(tag.string or "")
-                except Exception:
-                    continue
-
-                # JSON-LD could be a dict or a list
-                items = data if isinstance(data, list) else [data]
-                for obj in items:
-                    if not isinstance(obj, dict):
-                        continue
-                    agg = obj.get("aggregateRating")
-                    if isinstance(agg, dict) and "ratingValue" in agg:
-                        val = str(agg.get("ratingValue"))
-                        # Normalize decimal separator & cast
-                        return sanitize_booking_score(float(val.replace(",", ".")))
-
-        except Exception as e:
-            logger.warning("%s attempt %d failed: %s", url, attempt + 1, e)
-
-        # simple backoff/jitter
+        logger.warning("%s attempt %d: no score found", url, attempt + 1)
         sleep(random.uniform(2.0, 4.0) * (attempt + 1))
 
     return None
@@ -209,7 +234,6 @@ def main():
     hotels = list(URLS.keys())
     df = ensure_csv(args.csv, args.sep, hotels)
 
-    session = requests.Session()
     today_col = args.date
     new_scores: dict[str, float | None] = {}
 
@@ -217,7 +241,7 @@ def main():
 
     for i, (hotel, url) in enumerate(URLS.items(), start=1):
         logger.info("%02d/%d → %s", i, len(URLS), hotel)
-        score = fetch_booking_rating(url, session, retries=args.retries)
+        score = fetch_booking_rating(url, retries=args.retries)
         score = sanitize_booking_score(score)
         new_scores[hotel] = score
         if score is not None:

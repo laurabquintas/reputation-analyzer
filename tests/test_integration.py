@@ -29,14 +29,8 @@ BOOKING_HTML = """
 
 
 def test_booking_full_pipeline() -> None:
-    resp = MagicMock()
-    resp.status_code = 200
-    resp.text = BOOKING_HTML
-    resp.raise_for_status = MagicMock()
-    session = MagicMock()
-    session.get.return_value = resp
-
-    score = fetch_booking_rating("https://www.booking.com/hotel/pt/castelo-suites.en-gb.html", session, retries=0)
+    with patch("src.sites.booking._fetch_page_playwright", return_value=BOOKING_HTML):
+        score = fetch_booking_rating("https://www.booking.com/hotel/pt/castelo-suites.en-gb.html", retries=0)
     score = sanitize_booking_score(score)
     assert score == 8.7
 
@@ -188,14 +182,9 @@ EMPTY_HTML = "<html><head></head><body>Nothing useful here</body></html>"
 
 
 def test_booking_no_score_returns_none() -> None:
-    resp = MagicMock()
-    resp.status_code = 200
-    resp.text = EMPTY_HTML
-    resp.raise_for_status = MagicMock()
-    session = MagicMock()
-    session.get.return_value = resp
-
-    score = fetch_booking_rating("https://www.booking.com/hotel/pt/example", session, retries=0)
+    with patch("src.sites.booking._fetch_page_playwright", return_value=EMPTY_HTML), \
+         patch("src.sites.booking.sleep"):
+        score = fetch_booking_rating("https://www.booking.com/hotel/pt/example", retries=0)
     assert score is None
 
 
