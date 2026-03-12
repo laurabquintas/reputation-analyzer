@@ -69,6 +69,7 @@ HOTEL_LINKS: dict[str, dict[str, str]] = _load_hotel_links()
 ANANEA_HOTEL = "Ananea Castelo Suites Hotel"
 REVIEWS_JSON_PATH = DATA_DIR / "tripadvisor_reviews.json"
 GOOGLE_REVIEWS_JSON_PATH = DATA_DIR / "google_reviews.json"
+HOLIDAYCHECK_REVIEWS_JSON_PATH = DATA_DIR / "holidaycheck_reviews.json"
 
 
 def load_source_df(path: Path) -> pd.DataFrame | None:
@@ -868,9 +869,10 @@ def main() -> None:
     # Load review sources based on selection
     reviews_data = _load_reviews_json(REVIEWS_JSON_PATH) if "Tripadvisor" in selected_sources else []
     google_reviews_data = _load_reviews_json(GOOGLE_REVIEWS_JSON_PATH) if "Google" in selected_sources else []
+    holidaycheck_reviews_data = _load_reviews_json(HOLIDAYCHECK_REVIEWS_JSON_PATH) if "Holidaycheck" in selected_sources else []
 
     # Combine selected review sources for overall summary
-    all_reviews_data = reviews_data + google_reviews_data
+    all_reviews_data = reviews_data + google_reviews_data + holidaycheck_reviews_data
 
     # ---- Overall Sources Topic Sentiment ---- #
     st.subheader("Overall Sources Topic Sentiment")
@@ -1091,6 +1093,99 @@ def main() -> None:
                         st.markdown(f"**{stars}** {rating}/5")
                         author = review.get("author_name", "Anonymous")
                         st.markdown(f"**{author}**")
+                        text = review.get("text", "")
+                        display_text = text[:200] + "..." if len(text) > 200 else text
+                        st.caption(display_text)
+
+                        pub_date = review.get("published_date", "")
+                        if pub_date:
+                            st.caption(pub_date)
+
+                        topics = review.get("topics", [])
+                        if topics:
+                            pills = " ".join(
+                                f"{'🟢' if t['sentiment'] == 'positive' else '🔴'} "
+                                f"{t['topic'].replace('_', ' ').title()}"
+                                for t in topics
+                            )
+                            st.caption(pills)
+
+    # ---- HolidayCheck ---- #
+    if "Holidaycheck" in selected_sources:
+        st.subheader("HolidayCheck")
+
+        if not holidaycheck_reviews_data:
+            st.info(
+                "No HolidayCheck review data available yet. Run the reviews scraper to populate "
+                "data/holidaycheck_reviews.json."
+            )
+        else:
+            # Quarter-over-quarter comparison
+            hc_qtr_df = _quarter_topic_comparison(holidaycheck_reviews_data, ANANEA_HOTEL)
+            _render_quarter_comparison(hc_qtr_df)
+
+            hc_topic_df, hc_total = _ytd_topic_summary(holidaycheck_reviews_data, ANANEA_HOTEL, year=selected_year)
+
+            if hc_topic_df[["Positive", "Negative"]].sum().sum() == 0:
+                st.info(f"No classified HolidayCheck reviews found for {selected_year}.")
+            else:
+                hc_label = f"YTD {selected_year}" if selected_year == current_year else str(selected_year)
+                hc_insights = _ytd_topic_insights(holidaycheck_reviews_data, ANANEA_HOTEL, year=selected_year)
+                chart_col, insights_col = st.columns([3, 2])
+                with chart_col:
+                    fig = go.Figure()
+                    fig.add_trace(go.Bar(
+                        y=hc_topic_df["Topic"],
+                        x=hc_topic_df["Positive"],
+                        name="Positive",
+                        orientation="h",
+                        marker_color="#15803d",
+                        text=[f"{v}%" for v in hc_topic_df["Positive"]],
+                        textposition="auto",
+                    ))
+                    fig.add_trace(go.Bar(
+                        y=hc_topic_df["Topic"],
+                        x=hc_topic_df["Negative"],
+                        name="Negative",
+                        orientation="h",
+                        marker_color="#b91c1c",
+                        text=[f"{v}%" for v in hc_topic_df["Negative"]],
+                        textposition="auto",
+                    ))
+                    fig.update_layout(
+                        barmode="group",
+                        margin={"l": 20, "r": 20, "t": 30, "b": 20},
+                        height=450,
+                        xaxis_title="% of Reviews",
+                        xaxis_range=[0, 100],
+                        yaxis_title="",
+                        title=f"HolidayCheck Topic Sentiment – {hc_label} ({hc_total} reviews)",
+                    )
+                    st.plotly_chart(fig, use_container_width=True)
+                with insights_col:
+                    _render_topic_insights(hc_topic_df, hc_insights)
+
+            st.markdown("**Latest Reviews**")
+            hc_top_reviews = _latest_top_reviews(holidaycheck_reviews_data, ANANEA_HOTEL, n=3)
+
+            if not hc_top_reviews:
+                st.info("No HolidayCheck reviews found.")
+            else:
+                cols = st.columns(len(hc_top_reviews))
+                for col, review in zip(cols, hc_top_reviews):
+                    with col:
+                        rating = review.get("rating") or 0
+                        try:
+                            rating = float(rating)
+                        except (TypeError, ValueError):
+                            rating = 0
+                        st.markdown(f"**{rating:.1f}/6**")
+                        author = review.get("author_name", "Anonymous")
+                        title = review.get("title", "")
+                        if title:
+                            st.markdown(f"**{title}**")
+                        elif author:
+                            st.markdown(f"**{author}**")
                         text = review.get("text", "")
                         display_text = text[:200] + "..." if len(text) > 200 else text
                         st.caption(display_text)
