@@ -43,6 +43,7 @@ from pathlib import Path
 import yaml
 from bs4 import BeautifulSoup, Tag
 from playwright.sync_api import sync_playwright
+from playwright.async_api import async_playwright
 
 from src.classification import (
     classify_review,
@@ -93,17 +94,50 @@ def _hotel_url_to_base_url(hotel_url: str) -> str:
 
 # ---------------------- Playwright fetch ---------------------- #
 
-def fetch_reviews_page(url: str, timeout: int = 30000) -> str | None:
-    """Render an Expedia hotel page and click the reviews button.
+async def _async_fetch_reviews_page(url: str, timeout: int = 30000) -> str | None:
+    """Async version of fetch_reviews_page for use inside event loops (e.g. Jupyter)."""
+    base_url = _hotel_url_to_base_url(url)
+    candidates = _expedia_url_candidates(base_url)
 
-    Expedia is a JavaScript SPA; plain ``requests.get()`` returns only a
-    polyfill skeleton.  This function:
-    1. Navigates to the base hotel page (no ``pwaDialog`` param).
-    2. Waits for the page to load and hydrate.
-    3. Clicks the "See all N reviews" button (``data-stid="reviews-link"``).
-    4. Waits for the reviews dialog to load review items.
-    5. Returns the rendered HTML with review content.
-    """
+    for candidate_url in candidates:
+        try:
+            async with async_playwright() as p:
+                browser = await p.chromium.launch(headless=True)
+                context = await browser.new_context(
+                    user_agent=random.choice(USER_AGENTS),
+                    locale="en-US",
+                )
+                page = await context.new_page()
+                try:
+                    await page.goto(candidate_url, timeout=timeout, wait_until="networkidle")
+
+                    reviews_btn = page.locator('[data-stid="reviews-link"]')
+                    if await reviews_btn.count() == 0:
+                        logger.warning("No reviews button found on %s", candidate_url)
+                        continue
+
+                    await reviews_btn.click()
+                    await page.wait_for_selector(
+                        '[data-stid="product-reviews-list-item"]',
+                        timeout=15000,
+                    )
+
+                    html = await page.content()
+                    if candidate_url != base_url:
+                        logger.info("Fetched via fallback URL: %s", candidate_url)
+                    return html
+                finally:
+                    await browser.close()
+        except Exception as e:
+            logger.warning("Playwright fetch failed for %s: %s", candidate_url, e)
+            continue
+
+    logger.error("Failed to fetch reviews on all Expedia URL variants")
+    return None
+
+
+def _sync_fetch_reviews_page(url: str, timeout: int = 30000) -> str | None:
+    """Sync version of fetch_reviews_page (used outside event loops)."""
     base_url = _hotel_url_to_base_url(url)
     candidates = _expedia_url_candidates(base_url)
 
@@ -119,7 +153,6 @@ def fetch_reviews_page(url: str, timeout: int = 30000) -> str | None:
                 try:
                     page.goto(candidate_url, timeout=timeout, wait_until="networkidle")
 
-                    # Click the "See all N reviews" button to open the dialog
                     reviews_btn = page.locator('[data-stid="reviews-link"]')
                     if reviews_btn.count() == 0:
                         logger.warning("No reviews button found on %s", candidate_url)
@@ -127,7 +160,6 @@ def fetch_reviews_page(url: str, timeout: int = 30000) -> str | None:
 
                     reviews_btn.click()
 
-                    # Wait for review items to appear in the dialog
                     page.wait_for_selector(
                         '[data-stid="product-reviews-list-item"]',
                         timeout=15000,
@@ -145,6 +177,28 @@ def fetch_reviews_page(url: str, timeout: int = 30000) -> str | None:
 
     logger.error("Failed to fetch reviews on all Expedia URL variants")
     return None
+
+
+def fetch_reviews_page(url: str, timeout: int = 30000) -> str | None:
+    """Render an Expedia hotel page and click the reviews button.
+
+    Automatically uses the async Playwright API when called inside an
+    existing event loop (e.g. Jupyter notebooks), and the sync API otherwise.
+    """
+    import asyncio
+
+    try:
+        loop = asyncio.get_running_loop()
+    except RuntimeError:
+        loop = None
+
+    if loop is not None:
+        # Inside an event loop (Jupyter) — use nest_asyncio or run coroutine
+        import nest_asyncio
+        nest_asyncio.apply()
+        return loop.run_until_complete(_async_fetch_reviews_page(url, timeout))
+    else:
+        return _sync_fetch_reviews_page(url, timeout)
 
 
 # ---------------------- HTML scraping ---------------------- #
