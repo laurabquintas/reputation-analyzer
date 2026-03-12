@@ -597,23 +597,52 @@ def _render_topic_insights(
     topic_df: pd.DataFrame,
     insights: dict[tuple[str, str], list[str]],
 ) -> None:
-    """Render top insight phrases aligned with each topic row."""
+    """Render top insight phrases aligned with each bar-chart row.
+
+    The bar chart uses Plotly horizontal bars with topics on the y-axis,
+    which renders them bottom-to-top.  We reverse the DataFrame order so
+    the first HTML row corresponds to the top-most bar.
+    """
     if not insights:
         st.caption("No detail insights available yet. Reclassify reviews to generate them.")
         return
 
-    lines = []
-    for topic_display in topic_df["Topic"]:
+    # Chart layout: 450px total, ~70px top (title+legend), ~50px bottom (axis).
+    # Plot area ≈ 330px for 7 topic rows → ~47px per row.
+    CHART_HEIGHT = 450
+    TOP_OFFSET = 5      # title + legend offset
+    BOTTOM_OFFSET = 50  # x-axis ticks + "% of Reviews" label
+    n_topics = len(topic_df)
+    plot_area = CHART_HEIGHT - TOP_OFFSET - BOTTOM_OFFSET
+    row_height = plot_area / n_topics if n_topics else 50
+
+    # Build rows in reversed order to match Plotly's bottom-to-top y-axis
+    _SKIP_INSIGHTS = {"Would Return"}
+    rows_html = []
+    for topic_display in reversed(topic_df["Topic"].tolist()):
+        if topic_display in _SKIP_INSIGHTS:
+            continue
         pos_details = insights.get((topic_display, "positive"), [])
         neg_details = insights.get((topic_display, "negative"), [])
-        pos_str = ", ".join(pos_details) if pos_details else "--"
-        neg_str = ", ".join(neg_details) if neg_details else "--"
-        lines.append(
-            f"**{topic_display}**  \n"
-            f"&ensp;\U0001f7e2 {pos_str}  \n"
-            f"&ensp;\U0001f534 {neg_str}"
+        pos_str = ", ".join(pos_details) if pos_details else "\u2014"
+        neg_str = ", ".join(neg_details) if neg_details else "\u2014"
+        rows_html.append(
+            f'<div style="margin-bottom:8px;">'
+            f'<span style="color:#888;font-weight:600;">{topic_display}</span><br>'
+            f'<span style="color:#15803d;">\u25cf</span> '
+            f'<span style="color:#444;">{pos_str}</span><br>'
+            f'<span style="color:#b91c1c;">\u25cf</span> '
+            f'<span style="color:#444;">{neg_str}</span>'
+            f'</div>'
         )
-    st.markdown("\n\n".join(lines))
+
+    html = (
+        '<div style="font-size:0.73rem;font-family:sans-serif;line-height:1.3;">'
+        '<div style="font-size:1rem;font-weight:700;margin-bottom:20px;">Top Insights</div>'
+        + "".join(rows_html)
+        + '</div>'
+    )
+    st.markdown(html, unsafe_allow_html=True)
 
 
 def _latest_top_reviews(reviews: list[dict], hotel: str, n: int = 3) -> list[dict]:
@@ -892,7 +921,7 @@ def main() -> None:
                 fig.update_layout(
                     barmode="group",
                     margin={"l": 20, "r": 20, "t": 30, "b": 20},
-                    height=320,
+                    height=450,
                     xaxis_title="% of Reviews",
                     xaxis_range=[0, 100],
                     yaxis_title="",
@@ -900,7 +929,6 @@ def main() -> None:
                 )
                 st.plotly_chart(fig, use_container_width=True)
             with insights_col:
-                st.markdown("**Top Insights**")
                 _render_topic_insights(overall_topic_df, overall_insights)
 
     # ---- TripAdvisor ---- #
@@ -948,7 +976,7 @@ def main() -> None:
                     fig.update_layout(
                         barmode="group",
                         margin={"l": 20, "r": 20, "t": 30, "b": 20},
-                        height=320,
+                        height=450,
                         xaxis_title="% of Reviews",
                         xaxis_range=[0, 100],
                         yaxis_title="",
@@ -956,7 +984,6 @@ def main() -> None:
                     )
                     st.plotly_chart(fig, use_container_width=True)
                 with insights_col:
-                    st.markdown("**Top Insights**")
                     _render_topic_insights(ta_topic_df, ta_insights)
 
             st.markdown("**Latest Reviews**")
@@ -1040,7 +1067,7 @@ def main() -> None:
                     fig.update_layout(
                         barmode="group",
                         margin={"l": 20, "r": 20, "t": 30, "b": 20},
-                        height=320,
+                        height=450,
                         xaxis_title="% of Reviews",
                         xaxis_range=[0, 100],
                         yaxis_title="",
@@ -1048,7 +1075,6 @@ def main() -> None:
                     )
                     st.plotly_chart(fig, use_container_width=True)
                 with insights_col:
-                    st.markdown("**Top Insights**")
                     _render_topic_insights(google_topic_df, google_insights)
 
             st.markdown("**Latest Reviews**")
