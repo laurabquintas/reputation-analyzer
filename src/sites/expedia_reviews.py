@@ -10,9 +10,8 @@ Reviews are stored in a JSON file and deduplicated by review ID across runs.
 Each review is classified into zero or more topics with positive/negative
 sentiment.
 
-Expedia does not offer a public review API, so this scraper fetches the hotel
-page and parses the HTML with BeautifulSoup. Anti-bot handling (URL candidates,
-UA rotation, retry logic, proxy support) is reused from the score scraper.
+Expedia is a JavaScript SPA, so this scraper uses Playwright (headless
+Chromium) to render the page and extract reviews from the rendered DOM.
 
 USAGE
 -----
@@ -27,7 +26,7 @@ Reclassify previously unclassified reviews:
 
 REQUIREMENTS
 ------------
-requests, beautifulsoup4, PyYAML
+playwright, beautifulsoup4, PyYAML
 """
 
 from __future__ import annotations
@@ -36,16 +35,14 @@ import argparse
 import hashlib
 import json
 import logging
-import os
 import random
 import re
 from datetime import datetime
 from pathlib import Path
-from time import sleep
 
-import requests
 import yaml
 from bs4 import BeautifulSoup, Tag
+from playwright.sync_api import sync_playwright
 
 from src.classification import (
     classify_review,
@@ -53,9 +50,7 @@ from src.classification import (
 )
 from src.sites.expedia import (
     USER_AGENTS,
-    HEADERS,
     _expedia_url_candidates,
-    fetch_page,
 )
 
 logger = logging.getLogger(__name__)
@@ -85,20 +80,71 @@ def _load_expedia_urls() -> dict[str, str]:
 EXPEDIA_URLS = _load_expedia_urls()
 
 
-def _hotel_url_to_reviews_url(hotel_url: str) -> str:
-    """Convert a hotel info URL to the reviews page URL.
-
-    Replaces any existing ``pwaDialog=…`` value with
-    ``reviews-property-reviews-wrapper-0`` which loads the full reviews page.
-    """
+def _hotel_url_to_base_url(hotel_url: str) -> str:
+    """Strip any ``pwaDialog`` query params to get the base hotel page URL."""
     from urllib.parse import urlsplit, urlunsplit, parse_qsl, urlencode
 
     parsed = urlsplit(hotel_url)
     params = [(k, v) for k, v in parse_qsl(parsed.query, keep_blank_values=True)
               if not k.lower().startswith("pwadialog")]
-    params.append(("pwaDialog", "reviews-property-reviews-wrapper-0"))
     new_query = urlencode(params)
     return urlunsplit((parsed.scheme, parsed.netloc, parsed.path, new_query, parsed.fragment))
+
+
+# ---------------------- Playwright fetch ---------------------- #
+
+def fetch_reviews_page(url: str, timeout: int = 30000) -> str | None:
+    """Render an Expedia hotel page and click the reviews button.
+
+    Expedia is a JavaScript SPA; plain ``requests.get()`` returns only a
+    polyfill skeleton.  This function:
+    1. Navigates to the base hotel page (no ``pwaDialog`` param).
+    2. Waits for the page to load and hydrate.
+    3. Clicks the "See all N reviews" button (``data-stid="reviews-link"``).
+    4. Waits for the reviews dialog to load review items.
+    5. Returns the rendered HTML with review content.
+    """
+    base_url = _hotel_url_to_base_url(url)
+    candidates = _expedia_url_candidates(base_url)
+
+    for candidate_url in candidates:
+        try:
+            with sync_playwright() as p:
+                browser = p.chromium.launch(headless=True)
+                context = browser.new_context(
+                    user_agent=random.choice(USER_AGENTS),
+                    locale="en-US",
+                )
+                page = context.new_page()
+                try:
+                    page.goto(candidate_url, timeout=timeout, wait_until="networkidle")
+
+                    # Click the "See all N reviews" button to open the dialog
+                    reviews_btn = page.locator('[data-stid="reviews-link"]')
+                    if reviews_btn.count() == 0:
+                        logger.warning("No reviews button found on %s", candidate_url)
+                        continue
+
+                    reviews_btn.click()
+
+                    # Wait for review items to appear in the dialog
+                    page.wait_for_selector(
+                        '[data-stid="product-reviews-list-item"]',
+                        timeout=15000,
+                    )
+
+                    html = page.content()
+                    if candidate_url != base_url:
+                        logger.info("Fetched via fallback URL: %s", candidate_url)
+                    return html
+                finally:
+                    browser.close()
+        except Exception as e:
+            logger.warning("Playwright fetch failed for %s: %s", candidate_url, e)
+            continue
+
+    logger.error("Failed to fetch reviews on all Expedia URL variants")
+    return None
 
 
 # ---------------------- HTML scraping ---------------------- #
@@ -163,7 +209,10 @@ def _extract_review_id(element: Tag) -> str:
 
 
 def _scrape_reviews_from_html(html: str) -> list[dict]:
-    """Parse review data from an Expedia page HTML.
+    """Parse review data from a rendered Expedia page HTML.
+
+    Looks for ``data-stid="product-reviews-list-item"`` elements that
+    Expedia renders inside the reviews dialog.
 
     Returns a list of raw review dicts with keys:
       id, rating, title, text, travel_date, author_name
@@ -171,163 +220,80 @@ def _scrape_reviews_from_html(html: str) -> list[dict]:
     soup = BeautifulSoup(html, "html.parser")
     reviews: list[dict] = []
 
-    # --- Strategy 1: JSON-LD structured data --- #
-    for script in soup.find_all("script", type="application/ld+json"):
-        raw = (script.string or "").strip()
-        if not raw:
-            continue
-        try:
-            ld_data = json.loads(raw)
-        except json.JSONDecodeError:
-            continue
-
-        items = ld_data if isinstance(ld_data, list) else [ld_data]
-        for item in items:
-            if isinstance(item, dict) and item.get("@type") == "Review":
-                review = _parse_jsonld_review(item)
-                if review.get("text"):
-                    reviews.append(review)
-
-            # Reviews nested inside a Hotel/LodgingBusiness
-            if isinstance(item, dict) and "review" in item:
-                nested = item["review"]
-                if isinstance(nested, list):
-                    for r in nested:
-                        review = _parse_jsonld_review(r)
-                        if review.get("text"):
-                            reviews.append(review)
-                elif isinstance(nested, dict):
-                    review = _parse_jsonld_review(nested)
-                    if review.get("text"):
-                        reviews.append(review)
-
-    if reviews:
-        return reviews
-
-    # --- Strategy 2: HTML parsing --- #
-    review_selectors = [
-        {"attrs": {"data-stid": re.compile(r"review", re.I)}},
-        {"attrs": {"itemprop": "review"}},
-        {"attrs": {"itemtype": "http://schema.org/Review"}},
-        {"class_": re.compile(r"review-card|review-content", re.I)},
-    ]
-
-    review_elements: list[Tag] = []
-    for sel in review_selectors:
-        found = soup.find_all(["div", "article", "section", "li"], **sel)
-        if found:
-            review_elements = found
-            break
-
-    for element in review_elements:
-        review = _parse_html_review(element)
-        if review.get("text"):
-            reviews.append(review)
+    # Expedia review items
+    review_items = soup.find_all(attrs={"data-stid": "product-reviews-list-item"})
+    for item in review_items:
+        review = _parse_expedia_review_item(item)
+        reviews.append(review)
 
     return reviews
 
 
-def _parse_jsonld_review(item: dict) -> dict:
-    """Extract review fields from a JSON-LD Review object."""
-    review_id = item.get("@id", "") or item.get("url", "")
-    if "/" in review_id:
-        review_id = review_id.rstrip("/").rsplit("/", 1)[-1]
+def _parse_expedia_review_item(item: Tag) -> dict:
+    """Extract review fields from an Expedia ``product-reviews-list-item``.
 
-    rating_obj = item.get("reviewRating", {})
+    Structure (as of 2026):
+      <article id="<review-id>">
+        <h3 aria-label="8 out of 10 Good">8/10 Good</h3>
+        <h4>Author Name</h4>
+        <div class="uitk-type-300">Travelled with group</div>
+        <div class="uitk-type-300">6 Oct 2025</div>
+        <span>Liked: cleanliness, ...</span>
+        <div class="uitk-expando-peek">review text...</div>
+      </article>
+    """
+    # Review ID from the <article> element
+    article = item.find("article")
+    review_id = article.get("id", "") if article else ""
+    if not review_id:
+        review_id = _extract_review_id(item)
+
+    # Rating from h3 (e.g. "8/10 Good")
     rating = None
-    if isinstance(rating_obj, dict):
-        rating = _parse_rating(str(rating_obj.get("ratingValue", "")))
-
-    author_obj = item.get("author", {})
-    author = ""
-    if isinstance(author_obj, dict):
-        author = author_obj.get("name", "")
-    elif isinstance(author_obj, str):
-        author = author_obj
-
-    body = item.get("reviewBody", "") or item.get("description", "")
-    title = item.get("name", "") or item.get("headline", "")
-
-    date_published = item.get("datePublished", "") or item.get("dateCreated", "")
-
-    return {
-        "id": review_id,
-        "rating": rating,
-        "title": title,
-        "text": body,
-        "travel_date": _parse_date(date_published),
-        "author_name": author,
-    }
-
-
-def _parse_html_review(element: Tag) -> dict:
-    """Extract review fields from an HTML review element."""
-    review_id = _extract_review_id(element)
-
-    # Rating
-    rating = None
-    rating_el = (
-        element.find(attrs={"itemprop": "ratingValue"})
-        or element.find(class_=re.compile(r"rating", re.I))
-        or element.find(attrs={"data-stid": re.compile(r"rating", re.I)})
-    )
-    if rating_el:
-        rating = _parse_rating(rating_el.get_text())
-        if rating is None:
-            rating = _parse_rating(str(rating_el.get("content", "")))
-
-    # Also try "X out of 10" or "X/10" patterns in the element
-    if rating is None:
-        el_text = element.get_text(" ", strip=True)
-        m = re.search(r"(\d+(?:\.\d+)?)\s*(?:out of|/)\s*10", el_text, re.I)
+    h3 = item.find("h3")
+    if h3:
+        h3_text = h3.get_text(strip=True)
+        m = re.match(r"(\d+(?:\.\d+)?)/10", h3_text)
         if m:
             rating = _parse_rating(m.group(1))
 
-    # Title
-    title = ""
-    title_el = (
-        element.find(attrs={"itemprop": "name"})
-        or element.find(class_=re.compile(r"review.*title|title", re.I))
-        or element.find(["h2", "h3", "h4"])
-    )
-    if title_el:
-        title = title_el.get_text(strip=True)
-
-    # Review text
-    text = ""
-    text_el = (
-        element.find(attrs={"itemprop": "reviewBody"})
-        or element.find(attrs={"itemprop": "description"})
-        or element.find(class_=re.compile(r"review.*text|review.*body", re.I))
-        or element.find(attrs={"data-stid": re.compile(r"content|text|body", re.I)})
-    )
-    if text_el:
-        text = text_el.get_text(strip=True)
-    else:
-        paragraphs = element.find_all("p")
-        if paragraphs:
-            text = max((p.get_text(strip=True) for p in paragraphs), key=len, default="")
-
-    # Date
-    travel_date = ""
-    date_el = (
-        element.find(attrs={"itemprop": "datePublished"})
-        or element.find(class_=re.compile(r"date", re.I))
-        or element.find("time")
-    )
-    if date_el:
-        travel_date = _parse_date(
-            date_el.get("datetime", "") or date_el.get("content", "") or date_el.get_text(strip=True)
-        )
-
-    # Author
+    # Author from h4
     author_name = ""
-    author_el = (
-        element.find(attrs={"itemprop": "author"})
-        or element.find(class_=re.compile(r"author|user", re.I))
+    h4 = item.find("h4")
+    if h4:
+        author_name = h4.get_text(strip=True)
+
+    # Date and travel type from uitk-type-300 divs
+    travel_date = ""
+    type_300_divs = item.find_all("div", class_="uitk-type-300")
+    date_pattern = re.compile(
+        r"\d{1,2}\s+(?:Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Sept|Oct|Nov|Dec)\w*\s+\d{4}",
+        re.I,
     )
-    if author_el:
-        author_name = author_el.get_text(strip=True)
+    for div in type_300_divs:
+        text = div.get_text(strip=True)
+        if date_pattern.search(text):
+            travel_date = _parse_date(text)
+            break
+
+    # Review text from uitk-expando-peek
+    text = ""
+    expando = item.find(class_="uitk-expando-peek")
+    if expando:
+        # Get text from spans inside, or fallback to full text
+        spans = expando.find_all("span", class_="uitk-type-300")
+        if spans:
+            text = " ".join(s.get_text(strip=True) for s in spans)
+        else:
+            text = expando.get_text(" ", strip=True)
+
+    # Title from h3 quality label (e.g. "Good", "Excellent")
+    title = ""
+    if h3:
+        h3_text = h3.get_text(strip=True)
+        m = re.match(r"\d+(?:\.\d+)?/10\s+(.*)", h3_text)
+        if m:
+            title = m.group(1).strip()
 
     return {
         "id": review_id,
@@ -342,52 +308,40 @@ def _parse_html_review(element: Tag) -> dict:
 def expedia_get_reviews(
     hotel_url: str,
     max_pages: int = 5,
-    timeout: int = 20,
+    timeout: int = 30,
     retries: int = 2,
     min_delay: float = 2.5,
     max_delay: float = 5.0,
 ) -> list[dict]:
-    """Fetch reviews from Expedia hotel page.
+    """Fetch reviews from Expedia hotel page using Playwright.
 
-    Uses anti-bot measures from the score scraper: URL candidates,
-    UA rotation, retry logic, proxy support.
+    Navigates to the hotel page, clicks the reviews button, and
+    extracts reviews from the rendered dialog.
     """
-    reviews_url = _hotel_url_to_reviews_url(hotel_url)
     all_reviews: list[dict] = []
     seen_ids: set[str] = set()
+    timeout_ms = timeout * 1000
 
-    for page in range(1, max_pages + 1):
-        url = reviews_url if page == 1 else f"{reviews_url}&startIndex={10 * (page - 1)}"
-        logger.info("Fetching Expedia reviews page %d: %s", page, url)
+    logger.info("Fetching Expedia reviews: %s", hotel_url)
 
-        html = fetch_page(url, timeout=timeout, retries=retries)
-        if html is None:
-            logger.warning("Failed to fetch page %d, stopping.", page)
-            break
+    html = fetch_reviews_page(hotel_url, timeout=timeout_ms)
+    if html is None:
+        logger.warning("Failed to fetch reviews page.")
+        return all_reviews
 
-        count_before = len(all_reviews)
-        page_reviews = _scrape_reviews_from_html(html)
+    page_reviews = _scrape_reviews_from_html(html)
 
-        for review in page_reviews:
-            rid = review.get("id", "")
-            if not rid:
-                content = (review.get("text", "") + review.get("title", "")).encode()
-                rid = hashlib.md5(content).hexdigest()[:16]
-                review["id"] = rid
-            if rid not in seen_ids:
-                all_reviews.append(review)
-                seen_ids.add(rid)
+    for review in page_reviews:
+        rid = review.get("id", "")
+        if not rid:
+            content = (review.get("text", "") + review.get("title", "")).encode()
+            rid = hashlib.md5(content).hexdigest()[:16]
+            review["id"] = rid
+        if rid not in seen_ids:
+            all_reviews.append(review)
+            seen_ids.add(rid)
 
-        new_on_page = len(all_reviews) - count_before
-        logger.info("Page %d: %d new reviews (%d total)", page, new_on_page, len(all_reviews))
-
-        if new_on_page == 0:
-            logger.info("No new reviews on page %d, stopping.", page)
-            break
-
-        sleep(random.uniform(min_delay, max_delay))
-
-    logger.info("Fetched %d unique reviews total", len(all_reviews))
+    logger.info("Fetched %d unique reviews", len(all_reviews))
     return all_reviews
 
 
