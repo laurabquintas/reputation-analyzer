@@ -86,15 +86,19 @@ EXPEDIA_URLS = _load_expedia_urls()
 
 
 def _hotel_url_to_reviews_url(hotel_url: str) -> str:
-    """Ensure the hotel URL points to the reviews dialog.
+    """Convert a hotel info URL to the reviews page URL.
 
-    Expedia hotel URLs may already contain ``?pwaDialog=product-reviews``; if
-    not, we append it so the reviews section is rendered server-side.
+    Replaces any existing ``pwaDialog=…`` value with
+    ``reviews-property-reviews-wrapper-0`` which loads the full reviews page.
     """
-    if "pwaDialog" not in hotel_url:
-        sep = "&" if "?" in hotel_url else "?"
-        return f"{hotel_url}{sep}pwaDialog=product-reviews"
-    return hotel_url
+    from urllib.parse import urlsplit, urlunsplit, parse_qsl, urlencode
+
+    parsed = urlsplit(hotel_url)
+    params = [(k, v) for k, v in parse_qsl(parsed.query, keep_blank_values=True)
+              if not k.lower().startswith("pwadialog")]
+    params.append(("pwaDialog", "reviews-property-reviews-wrapper-0"))
+    new_query = urlencode(params)
+    return urlunsplit((parsed.scheme, parsed.netloc, parsed.path, new_query, parsed.fragment))
 
 
 # ---------------------- HTML scraping ---------------------- #
