@@ -906,7 +906,7 @@ def main() -> None:
     # Load review sources based on selection
     reviews_data = _load_reviews_json(REVIEWS_JSON_PATH) if "Tripadvisor" in selected_sources else []
     google_reviews_data = _load_reviews_json(GOOGLE_REVIEWS_JSON_PATH) if "Google" in selected_sources else []
-    holidaycheck_reviews_data = _load_reviews_json(HOLIDAYCHECK_REVIEWS_JSON_PATH) if "Holidaycheck" in selected_sources else []
+    holidaycheck_reviews_data = _load_reviews_json(HOLIDAYCHECK_REVIEWS_JSON_PATH) if "HolidayCheck" in selected_sources else []
 
     # Combine selected review sources for overall summary
     all_reviews_data = reviews_data + google_reviews_data + holidaycheck_reviews_data
@@ -1148,7 +1148,7 @@ def main() -> None:
                             st.caption(pills)
 
     # ---- HolidayCheck ---- #
-    if "Holidaycheck" in selected_sources:
+    if "HolidayCheck" in selected_sources:
         st.subheader("HolidayCheck")
 
         if not holidaycheck_reviews_data:
