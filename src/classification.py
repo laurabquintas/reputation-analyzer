@@ -72,6 +72,82 @@ JSON array:"""
     return _parse_classification(raw_response)
 
 
+def classify_booking_review(
+    positive_text: str,
+    negative_text: str,
+    ollama_url: str = "http://localhost:11434",
+) -> list[dict]:
+    """Classify a Booking.com review using its pre-separated positive/negative text.
+
+    Booking.com reviews already split guest feedback into "Liked" (positive)
+    and "Disliked" (negative) sections.  By passing this structure to the LLM
+    we eliminate sentiment-guessing errors.
+    """
+    sections: list[str] = []
+    if positive_text:
+        sections.append(f"POSITIVE (the guest LIKED this):\n\"\"\"{positive_text}\"\"\"")
+    if negative_text:
+        sections.append(f"NEGATIVE (the guest DISLIKED this):\n\"\"\"{negative_text}\"\"\"")
+
+    if not sections:
+        return []
+
+    review_block = "\n\n".join(sections)
+
+    prompt = f"""You are a hotel review analyst. The review below is from Booking.com and is ALREADY separated into what the guest liked (positive) and disliked (negative). Use that separation to assign the correct sentiment — do NOT guess.
+
+TOPICS (use these exact keys):
+- employees: any mention of staff, service, friendliness, helpfulness, reception, concierge, team, waiters, management
+- commodities: amenities, facilities, pool, gym, spa, room features, wifi, parking, fridge, toiletries, TV, air conditioning, balcony, shuttle, iron, entertainment, music
+- comfort: room comfort, bed quality, noise, quiet, space, temperature, room size, mattress, pillow, decor, ambiance, construction noise, view
+- cleaning: cleanliness, hygiene, tidiness, housekeeping, spotless, dirty, stains, towels changed, room serviced
+- quality_price: value for money, pricing, worth, cost, overpriced, good deal, expensive, cheap, affordable, half board value
+- meals: food, breakfast, restaurant, dining, bar, drinks, buffet, dinner, lunch, cuisine, menu, chef, kitchen, snacks, repetitive food, variety
+- return: whether the guest would return, come back, visit again, recommend, revisit, not return, wouldn't go back
+
+RULES:
+1. Topics mentioned in the POSITIVE section MUST be classified as "positive".
+2. Topics mentioned in the NEGATIVE section MUST be classified as "negative".
+3. The review text may be in any language — identify topics regardless of language.
+4. Even brief or indirect mentions count.
+5. For each entry include a "detail" field: a short phrase (2-4 words) in English describing the specific aspect mentioned. Use lowercase.
+6. Output ONLY a JSON array. No explanation, no markdown.
+
+EXAMPLE:
+POSITIVE (the guest LIKED this):
+\"\"\"the room, breakfast and the friendliness of the staff\"\"\"
+
+NEGATIVE (the guest DISLIKED this):
+\"\"\"parking was expensive\"\"\"
+
+OUTPUT: [{{"topic":"comfort","sentiment":"positive","detail":"nice room"}},{{"topic":"meals","sentiment":"positive","detail":"good breakfast"}},{{"topic":"employees","sentiment":"positive","detail":"friendly staff"}},{{"topic":"quality_price","sentiment":"negative","detail":"expensive parking"}}]
+
+Now analyze this review:
+
+{review_block}
+
+JSON array:"""
+
+    payload = {
+        "model": "mistral:7b",
+        "prompt": prompt,
+        "stream": False,
+        "options": {
+            "temperature": 0.1,
+            "num_predict": 768,
+        },
+    }
+
+    resp = requests.post(
+        f"{ollama_url}/api/generate",
+        json=payload,
+        timeout=60,
+    )
+    resp.raise_for_status()
+    raw_response = resp.json().get("response", "")
+    return _parse_classification(raw_response)
+
+
 def _parse_classification(raw: str) -> list[dict]:
     """Parse Ollama JSON response into validated topic classifications."""
     cleaned = raw.strip()
