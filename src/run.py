@@ -53,6 +53,7 @@ SITE_CONFIGS: dict[str, SiteConfig] = {
     "GOOGLE": SiteConfig(
         script=ROOT / "src" / "sites" / "google.py",
         csv_path=DATA_DIR / "google_scores.csv",
+        required_env=("GOOGLE_MAPS_API_KEY",),
     ),
     "EXPEDIA": SiteConfig(
         script=ROOT / "src" / "sites" / "expedia.py",
@@ -146,7 +147,42 @@ def run_site(site: str, config: SiteConfig, date_col: str, python_cmd: str, time
             total_hotels=0,
         )
 
-    cmd = [python_cmd, str(config.script), "--date", date_col]
+    # Validate script path is inside the project root
+    resolved_script = config.script.resolve()
+    if not resolved_script.is_file():
+        message = f"Script not found: {config.script.name}"
+        print(f"::error title={site}::{message}")
+        return SiteResult(
+            site=site,
+            status="failed",
+            message=message,
+            warning=False,
+            returncode=1,
+            duration_seconds=round(time.time() - start, 2),
+            csv_path=str(config.csv_path),
+            has_date_column=False,
+            scored_hotels=0,
+            total_hotels=0,
+        )
+    try:
+        resolved_script.relative_to(ROOT)
+    except ValueError:
+        message = f"Script path escapes project root: {config.script.name}"
+        print(f"::error title={site}::{message}")
+        return SiteResult(
+            site=site,
+            status="failed",
+            message=message,
+            warning=False,
+            returncode=1,
+            duration_seconds=round(time.time() - start, 2),
+            csv_path=str(config.csv_path),
+            has_date_column=False,
+            scored_hotels=0,
+            total_hotels=0,
+        )
+
+    cmd = [python_cmd, str(resolved_script), "--date", date_col]
     logger.info("[run] %s: %s", site, " ".join(cmd))
 
     try:

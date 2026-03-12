@@ -82,7 +82,7 @@ def _load_urls() -> dict[str, str]:
 # Map of hotel display name -> HolidayCheck URL
 URLS = _load_urls()
 
-DATE_COL_RE = re.compile(r"\d{4}-\d{2}-\d{2}")  # YYYY-MM-DD
+DATE_COL_RE = re.compile(r"^\d{4}-\d{2}-\d{2}$")  # YYYY-MM-DD
 # -------------------------- Scraper logic -------------------------- #
 
 def _normalize_to_six_scale(score: float, best_rating: float | None) -> float:
@@ -103,7 +103,10 @@ def sanitize_holidaycheck_score(score: float | None) -> float | None:
         value = float(score)
     except (TypeError, ValueError):
         return None
-    return max(0.0, min(6.0, value))
+    if value < 0.0 or value > 10.0:
+        logger.warning("HolidayCheck score out of expected range 0-10: %s. Ignoring value.", value)
+        return None
+    return min(6.0, value)
 
 
 def get_holidaycheck_score(url: str, timeout: int = 15) -> float | None:
