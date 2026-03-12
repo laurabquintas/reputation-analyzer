@@ -32,6 +32,7 @@ requests, beautifulsoup4, PyYAML
 from __future__ import annotations
 
 import argparse
+import hashlib
 import json
 import logging
 import os
@@ -87,15 +88,33 @@ HC_URLS = _load_holidaycheck_urls()
 
 
 def _hotel_url_to_reviews_url(hotel_url: str) -> str:
-    """Convert a hotel info URL (/hi/...) to the reviews URL (/hrd/...).
+    """Convert a hotel info URL to the reviews URL.
 
-    HolidayCheck uses /hi/{slug}/{uuid} for hotel info pages and
-    /hrd/{slug}/{uuid} for the review listing pages.
+    Hotel info:  /hi/{slug}/{uuid}
+    Reviews:     /hr/bewertungen-{slug}/{uuid}
     """
-    return hotel_url.replace("/hi/", "/hrd/", 1)
+    # Extract slug and uuid from /hi/{slug}/{uuid}
+    parts = hotel_url.split("/hi/", 1)
+    if len(parts) == 2:
+        remainder = parts[1]  # e.g. "ananea-castelo-suites-algarve/069563af-..."
+        return f"{parts[0]}/hr/bewertungen-{remainder}"
+    return hotel_url
 
 
 # ---------------------- HTML scraping ---------------------- #
+
+def _normalize_rating(score: float | None) -> float | None:
+    """Normalize a HolidayCheck rating to the 0-6 scale.
+
+    The structured data sometimes reports scores on a 0-10 scale,
+    but HolidayCheck's real scale is 0-6.
+    """
+    if score is None:
+        return None
+    if score > 6.0:
+        return round(score * 0.6, 1)
+    return round(score, 1)
+
 
 def _parse_rating(text: str) -> float | None:
     """Extract a numeric rating from text like '5,5' or '4.0'."""
@@ -339,6 +358,38 @@ def _parse_html_review(element: Tag) -> dict:
     }
 
 
+def _extract_review_detail_links(html: str, base_url: str = "https://www.holidaycheck.de") -> list[str]:
+    """Extract individual review detail page links from a reviews listing page.
+
+    Looks for links matching the /hrd/ pattern (individual review pages).
+    """
+    soup = BeautifulSoup(html, "html.parser")
+    links: list[str] = []
+    seen: set[str] = set()
+
+    for a_tag in soup.find_all("a", href=re.compile(r"/hrd/")):
+        href = a_tag.get("href", "")
+        if not href:
+            continue
+        if href.startswith("/"):
+            href = base_url + href
+        if href not in seen:
+            links.append(href)
+            seen.add(href)
+
+    return links
+
+
+def _scrape_full_review(url: str, timeout: int = 15) -> dict:
+    """Fetch a single review detail page and extract the full review text."""
+    resp = requests.get(url, headers=UA_HEADERS, timeout=timeout)
+    resp.raise_for_status()
+    reviews = _scrape_reviews_from_html(resp.text)
+    if reviews:
+        return reviews[0]
+    return {}
+
+
 def hc_get_reviews(
     hotel_url: str,
     max_pages: int = 10,
@@ -346,10 +397,12 @@ def hc_get_reviews(
     min_delay: float = 2.5,
     max_delay: float = 5.0,
 ) -> list[dict]:
-    """Fetch reviews from HolidayCheck hotel page with pagination.
+    """Fetch reviews from HolidayCheck with full text from detail pages.
 
-    Converts the hotel info URL (/hi/) to the reviews URL (/hrd/) and
-    paginates through available review pages.
+    1. Scrapes the reviews listing page (/hr/bewertungen-...) for review
+       links and preview data.
+    2. Follows each individual review detail link (/hrd/...) to get the
+       full review text (the listing page only shows truncated text).
     """
     reviews_url = _hotel_url_to_reviews_url(hotel_url)
     all_reviews: list[dict] = []
@@ -357,7 +410,7 @@ def hc_get_reviews(
 
     for page in range(1, max_pages + 1):
         url = reviews_url if page == 1 else f"{reviews_url}?p={page}"
-        logger.info("Fetching page %d: %s", page, url)
+        logger.info("Fetching listing page %d: %s", page, url)
 
         try:
             resp = requests.get(url, headers=UA_HEADERS, timeout=timeout)
@@ -369,35 +422,53 @@ def hc_get_reviews(
             logger.warning("Request error on page %d: %s", page, exc)
             break
 
-        page_reviews = _scrape_reviews_from_html(resp.text)
+        count_before = len(all_reviews)
 
-        if not page_reviews:
-            logger.info("No reviews found on page %d, stopping pagination.", page)
-            break
+        # Extract individual review detail links (/hrd/...) for full text
+        detail_links = _extract_review_detail_links(resp.text)
 
-        new_on_page = 0
-        for review in page_reviews:
-            rid = review.get("id", "")
-            if not rid:
-                # Generate a fallback ID from content hash
-                import hashlib
-                content = (review.get("text", "") + review.get("title", "")).encode()
-                rid = hashlib.md5(content).hexdigest()[:16]
-                review["id"] = rid
+        if detail_links:
+            # Follow each detail link to get the full review text
+            logger.info("Found %d review detail links on page %d", len(detail_links), page)
+            for detail_url in detail_links:
+                sleep(random.uniform(min_delay, max_delay))
+                try:
+                    full_review = _scrape_full_review(detail_url, timeout=timeout)
+                    if full_review and full_review.get("text"):
+                        rid = full_review.get("id", "")
+                        if not rid:
+                            content = (full_review.get("text", "") + full_review.get("title", "")).encode()
+                            rid = hashlib.md5(content).hexdigest()[:16]
+                            full_review["id"] = rid
+                        if rid not in seen_ids:
+                            all_reviews.append(full_review)
+                            seen_ids.add(rid)
+                            logger.info("  Fetched full review: %s", full_review.get("title", rid)[:50])
+                except Exception as exc:
+                    logger.warning("  Failed to fetch detail page %s: %s", detail_url, exc)
+        else:
+            # Fallback: use reviews from the listing page (may be truncated)
+            page_reviews = _scrape_reviews_from_html(resp.text)
+            for review in page_reviews:
+                rid = review.get("id", "")
+                if not rid:
+                    content = (review.get("text", "") + review.get("title", "")).encode()
+                    rid = hashlib.md5(content).hexdigest()[:16]
+                    review["id"] = rid
+                if rid not in seen_ids:
+                    all_reviews.append(review)
+                    seen_ids.add(rid)
 
-            if rid not in seen_ids:
-                all_reviews.append(review)
-                seen_ids.add(rid)
-                new_on_page += 1
-
-        logger.info("Page %d: %d reviews (%d new)", page, len(page_reviews), new_on_page)
+        new_on_page = len(all_reviews) - count_before
+        logger.info("Page %d: %d new reviews (%d total)", page, new_on_page, len(all_reviews))
 
         if new_on_page == 0:
             logger.info("No new reviews on page %d, stopping.", page)
             break
 
-        # Polite delay between pages
-        sleep(random.uniform(min_delay, max_delay))
+        # Polite delay between listing pages (detail page delays are inline above)
+        if not detail_links:
+            sleep(random.uniform(min_delay, max_delay))
 
     logger.info("Fetched %d unique reviews total", len(all_reviews))
     return all_reviews
@@ -584,7 +655,7 @@ def main() -> int:
             "id": review_id,
             "hotel": ANANEA_HOTEL,
             "source": "holidaycheck",
-            "rating": raw.get("rating"),
+            "rating": _normalize_rating(raw.get("rating")),
             "title": raw.get("title", ""),
             "text": text,
             "published_date": raw.get("travel_date", ""),

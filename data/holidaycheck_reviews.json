@@ -1,0 +1,529 @@
+{
+  "meta": {
+    "last_updated": "2026-03-12T02:03:03",
+    "total_reviews": 19
+  },
+  "reviews": [
+    {
+      "id": "e1276fbcf51afea1",
+      "hotel": "Ananea Castelo Suites Hotel",
+      "source": "holidaycheck",
+      "rating": 6.0,
+      "title": "Sehr gerne nochmals!!! Nur zum empfehle!!!!",
+      "text": "Wir waren begeistert von unserem Aufenthalt im Castelo Suites Algarve. Es war genau so, wie wir es uns vorgestellt hatten. Schon beim ersten Sprung in den Rooftop-Pool war der Alltagsstress vergessen und wir schlürften entspannt unsere Cocktails. Wir kommen höchstwahrscheinlich im Herbst nochmals! Es isch erholig puur!",
+      "published_date": "2025-08-27",
+      "author_name": "Tim",
+      "scraped_date": "2026-03-12",
+      "topics": [
+        {
+          "topic": "return",
+          "sentiment": "positive",
+          "detail": "likely return in autumn"
+        }
+      ],
+      "classified": true
+    },
+    {
+      "id": "5c353f2cb8bc3b57",
+      "hotel": "Ananea Castelo Suites Hotel",
+      "source": "holidaycheck",
+      "rating": 6.0,
+      "title": "Modernes neues Hotel mit traumhaftem Rooftop-Pool",
+      "text": "Wir haben unseren Aufenthalt im Ananea Castelo Suites Algarve im August verbracht – nur kurze Zeit nach der Eröffnung. Uns war bewusst, dass bei einer so frühen Buchung noch nicht alles perfekt eingespielt sein würde, und genau so war es auch: Es gab noch kleinere offene Baustellenbereiche. Das war jedoch erwartbar und hat unseren Aufenthalt nicht wesentlich beeinträchtigt.\n\nDas Hotel selbst ist sehr modern und stilvoll gestaltet. Alles wirkt neu, hochwertig und geschmackvoll eingerichtet. Die Zimmer sind ausreichend groß und bieten genügend Platz zum Wohlfühlen. Stauraum ist etwas knapp bemessen, aber für einen Urlaubsaufenthalt absolut ausreichend und für uns kein Problem.\n\nBesonders hervorheben möchten wir den wunderschönen Panorama-Pool auf der Dachterrasse – definitiv ein Highlight des Hotels. Der Ausblick von dort oben ist fantastisch und lädt zum Entspannen ein. Die Poolbar war zum Zeitpunkt unseres Aufenthalts leider noch nicht geöffnet, machte aber optisch bereits einen sehr schönen Eindruck.\n\nEin weiterer großer Pluspunkt ist die ruhige Lage. Das Hotel befindet sich angenehm abseits vom typischen Touristentrubel von Albufeira, sodass man hier wirklich entspannen kann. Gleichzeitig ist man dennoch gut angebunden. Parkmöglichkeiten waren ausreichend vorhanden, was ebenfalls sehr praktisch war.\n\nFazit: Trotz kleiner „Startschwierigkeiten“ ein sehr gelungener Aufenthalt in einem modernen Hotel mit tollem Rooftop-Pool und ruhiger Lage. Wir sind sicher, dass sich das Hotel nach vollständiger Fertigstellung noch weiter positiv entwickeln wird.",
+      "published_date": "2026-02-23",
+      "author_name": "Carlo",
+      "scraped_date": "2026-03-12",
+      "topics": [
+        {
+          "topic": "commodities",
+          "sentiment": "positive",
+          "detail": "modern and stylish hotel"
+        },
+        {
+          "topic": "comfort",
+          "sentiment": "positive",
+          "detail": "spacious rooms"
+        },
+        {
+          "topic": "commodities",
+          "sentiment": "negative",
+          "detail": "limited storage space"
+        }
+      ],
+      "classified": true
+    },
+    {
+      "id": "e5943e5b40bd104e",
+      "hotel": "Ananea Castelo Suites Hotel",
+      "source": "holidaycheck",
+      "rating": 6.0,
+      "title": "Tolles Hotel, wir waren sehr zufrieden",
+      "text": "Ein wirklich sehr schönes Hotel. Tolle und ruhige Lage mit sehr nettem Personal. Unsere Erwartungen wurden komplett erfüllt und wir kommen auf jeden Fall wieder!",
+      "published_date": "2025-10-12",
+      "author_name": "Leni",
+      "scraped_date": "2026-03-12",
+      "topics": [
+        {
+          "topic": "employees",
+          "sentiment": "positive",
+          "detail": "very friendly staff"
+        },
+        {
+          "topic": "commodities",
+          "sentiment": "positive",
+          "detail": "nice and quiet location"
+        },
+        {
+          "topic": "return",
+          "sentiment": "positive",
+          "detail": "will definitely return"
+        }
+      ],
+      "classified": true
+    },
+    {
+      "id": "57455503d9dd158d",
+      "hotel": "Ananea Castelo Suites Hotel",
+      "source": "holidaycheck",
+      "rating": 4.0,
+      "title": "Neues Hotel mit Potential nach Oben",
+      "text": "Zimmer zur Straßenseite zu laut. Restaurant zu klein gebaut. Es müssen Zeiten vergeben werden, wann Du zum Frühstück kommen musst. Sehr nettes Personal, sehr bemüht. Am Abendprogramm muss noch gearbeitet werden. In den Zimmern fehlen definitiv Schränke. Ansonsten ein sehr modernes sauberes Hotel.",
+      "published_date": "2025-10-30",
+      "author_name": "Franziska",
+      "scraped_date": "2026-03-12",
+      "topics": [
+        {
+          "topic": "commodities",
+          "sentiment": "negative",
+          "detail": "loud rooms to street"
+        },
+        {
+          "topic": "employees",
+          "sentiment": "positive",
+          "detail": "nice personal"
+        },
+        {
+          "topic": "cleaning",
+          "sentiment": "positive",
+          "detail": "modern and clean hotel"
+        }
+      ],
+      "classified": true
+    },
+    {
+      "id": "333c5985699f6e1d",
+      "hotel": "Ananea Castelo Suites Hotel",
+      "source": "holidaycheck",
+      "rating": 6.0,
+      "title": "Erholsame Urlaubstage in einem neuen schönen Hotel",
+      "text": "Schönes neues Hotel in guter Lage mit einer schönen Gartenanlage. Sehr gutes Essen und ein sehr sympathisches junges Team!",
+      "published_date": "2025-10-30",
+      "author_name": "Roswitha",
+      "scraped_date": "2026-03-12",
+      "topics": [
+        {
+          "topic": "commodities",
+          "sentiment": "positive",
+          "detail": "new hotel"
+        },
+        {
+          "topic": "employees",
+          "sentiment": "positive",
+          "detail": "sympathetic young team"
+        },
+        {
+          "topic": "meals",
+          "sentiment": "positive",
+          "detail": "good food"
+        }
+      ],
+      "classified": true
+    },
+    {
+      "id": "eeab75500d11bb6d",
+      "hotel": "Ananea Castelo Suites Hotel",
+      "source": "holidaycheck",
+      "rating": 6.0,
+      "title": "insgesamt empfehlenswert",
+      "text": "Sehr stilvoll eingerichtet. Stimmig und harmonisch abgestimmt. Einfach zum wohlfühlen. Sehr freundliches Personal.",
+      "published_date": "2025-11-23",
+      "author_name": "Peter",
+      "scraped_date": "2026-03-12",
+      "topics": [
+        {
+          "topic": "commodities",
+          "sentiment": "positive",
+          "detail": "stylish decor"
+        },
+        {
+          "topic": "comfort",
+          "sentiment": "positive",
+          "detail": "easy to feel good"
+        },
+        {
+          "topic": "employees",
+          "sentiment": "positive",
+          "detail": "friendly personnel"
+        }
+      ],
+      "classified": true
+    },
+    {
+      "id": "hotel-review-32abadda-78a6-4227-aafa-31605600fa6a",
+      "hotel": "Ananea Castelo Suites Hotel",
+      "source": "holidaycheck",
+      "rating": null,
+      "title": "",
+      "text": "Das Zimmer ist modern und hat eine gute Klimaanlage. Es fehlt jedoch ein Kleiderschrank. Die Toilette und die Dusche sind nur durch eine Schiebetür getrennt. Das bedeutet, dass man entweder duschen oder auf die Toilette gehen kann, aber beides gleichzeitig verschließen nicht möglich ist.",
+      "published_date": "",
+      "author_name": "",
+      "scraped_date": "2026-03-12",
+      "topics": [
+        {
+          "topic": "commodities",
+          "sentiment": "positive",
+          "detail": "modern room"
+        },
+        {
+          "topic": "commodities",
+          "sentiment": "negative",
+          "detail": "lack of wardrobe"
+        },
+        {
+          "topic": "comfort",
+          "sentiment": "positive",
+          "detail": "good air conditioning"
+        }
+      ],
+      "classified": true
+    },
+    {
+      "id": "706c6418544c5042",
+      "hotel": "Ananea Castelo Suites Hotel",
+      "source": "holidaycheck",
+      "rating": 6.0,
+      "title": "Neues stilvolles Hotel",
+      "text": "Ein neues und modernes Hotel mit der Liebe zum Detail! Besonders beeindruckend war die Dachterrasse mit dem Pool und einem atemberaubenden Blick 😊",
+      "published_date": "2025-11-12",
+      "author_name": "Kathrin",
+      "scraped_date": "2026-03-12",
+      "topics": [
+        {
+          "topic": "commodities",
+          "sentiment": "positive",
+          "detail": "new and modern hotel"
+        },
+        {
+          "topic": "comfort",
+          "sentiment": "positive",
+          "detail": "breathtaking view"
+        }
+      ],
+      "classified": true
+    },
+    {
+      "id": "71d67c6f4e85a52a",
+      "hotel": "Ananea Castelo Suites Hotel",
+      "source": "holidaycheck",
+      "rating": 5.0,
+      "title": "Das moderne Hotel an der Algarve",
+      "text": "Modernes stilvolles Hotel ,das ein gepflegten Eindruck machte. Mir persönlich hat am besten gefallen, der grosse Pool mit der Gartenanlage und auf der Dachterrasse der Pool mit den Liegenmöglichkeiten. Das Hotel macht einen guten Eindruck wenn doch nicht alles ,so klappte wie es soll. Ich meine die Drehtüren an der Rezeption  und die andere Drehtür am Pool funktionierten manchmal nicht.",
+      "published_date": "2025-09-11",
+      "author_name": "Heiko",
+      "scraped_date": "2026-03-12",
+      "topics": [
+        {
+          "topic": "commodities",
+          "sentiment": "positive",
+          "detail": "modern style hotel"
+        },
+        {
+          "topic": "commodities",
+          "sentiment": "negative",
+          "detail": "dysfunctional revolving doors at reception"
+        }
+      ],
+      "classified": true
+    },
+    {
+      "id": "599b4970b1af8962",
+      "hotel": "Ananea Castelo Suites Hotel",
+      "source": "holidaycheck",
+      "rating": 6.0,
+      "title": "Architektur, Stil & unvergessliches Ambiente – ein",
+      "text": "Das Castelo Suites beeindruckt nicht nur durch Qualität, sondern durch sein gesamtes Ambiente – eine harmonische Kombination aus modernem Design und regionaler Eleganz. Der erste Eindruck beim Betreten der Lobby war eindrucksvoll: stilvolle Einrichtung, warme Materialien, dezente Beleuchtung und freundlicher Empfang.\n\nDie Gestaltung des Hotels – von den Fluren über die Balkone bis hin zur Dachterrasse – zeigt Liebe zum Detail und eine durchdachte Verbindung zur Natur (Farbtöne, Materialien, Ausblicke). Jedes Zimmer ist großzügig, modern eingerichtet und hat klare Linien, große Glasflächen und hochwertige Ausstattung.\n\nBesonders beeindruckend ist die Dachterrasse mit Infinity-Pool und Panoramablick – ein visuelles Highlight, das bei Tag und Abend gleichermaßen fasziniert. Die Bars und Außenbereiche sind elegant platziert, sodass man sich immer eingeladen fühlt, aber nie überladen.\n\nDer Übergang zwischen Innen und Außen gelingt hier besonders gut: Balkone, Terrassen, Blickachsen, Natur integriert in das Design.\n\nTrotz dieser Schönheit war alles funktional: das Personal war präsent, aber dezent; die Technik (Licht, Klimaanlage, WLAN) einwandfrei; die Räume gut isoliert gegen Geräusche.\n\nKulinarik, Service, Lage – alles fügt sich in das Gesamtkonzept eines Luxushotels mit Stil. Ein Urlaub hier ist nicht nur ein Aufenthalt, sondern ein Erlebnis für alle Sinne.",
+      "published_date": "2025-10-06",
+      "author_name": "Justus ",
+      "scraped_date": "2026-03-12",
+      "topics": [
+        {
+          "topic": "employees",
+          "sentiment": "positive",
+          "detail": "friendly reception"
+        },
+        {
+          "topic": "commodities",
+          "sentiment": "positive",
+          "detail": "well-designed lobby"
+        },
+        {
+          "topic": "comfort",
+          "sentiment": "positive",
+          "detail": "well-isolated rooms"
+        }
+      ],
+      "classified": true
+    },
+    {
+      "id": "48943a6faa27ad3b",
+      "hotel": "Ananea Castelo Suites Hotel",
+      "source": "holidaycheck",
+      "rating": 6.0,
+      "title": "Empfehlenswerte Adresse mit Top-Potential",
+      "text": "Das erste Mal an der Algarve und prompt eine richtige Wohlfühloase erwischt. Das Hotel ist perfekt, um entspannt die Gegend zu erkunden und den Tag erholsam ausklingen zu lassen.",
+      "published_date": "2025-09-20",
+      "author_name": "Mandy",
+      "scraped_date": "2026-03-12",
+      "topics": [
+        {
+          "topic": "return",
+          "sentiment": "positive",
+          "detail": "first time at Algarve"
+        },
+        {
+          "topic": "commodities",
+          "sentiment": "positive",
+          "detail": "perfect hotel"
+        }
+      ],
+      "classified": true
+    },
+    {
+      "id": "fdab2c5f02e55296",
+      "hotel": "Ananea Castelo Suites Hotel",
+      "source": "holidaycheck",
+      "rating": 5.0,
+      "title": "Schönes neues ruhiges Hotel",
+      "text": "Sehr schönes schickes neues Hotel. Noch nicht alles perfekt und noch kein Fitness Raum und keine Tiefgarage.",
+      "published_date": "2025-09-17",
+      "author_name": "Silke ",
+      "scraped_date": "2026-03-12",
+      "topics": [
+        {
+          "topic": "commodities",
+          "sentiment": "negative",
+          "detail": "no fitness room"
+        }
+      ],
+      "classified": true
+    },
+    {
+      "id": "32c85903307849c3",
+      "hotel": "Ananea Castelo Suites Hotel",
+      "source": "holidaycheck",
+      "rating": 6.0,
+      "title": "Erholung pur im Ananea Castelo Suites Hotel",
+      "text": "Modernes, ruhiges Hotel mit herzlichem Team, komfortablen Zimmern und idealer Lage. Perfekt zum Entspannen!\nAngesichts der hohen Qualität von Ausstattung, Service und Lage ist das Preis-Leistungs-Verhältnis absolut top.",
+      "published_date": "2025-08-26",
+      "author_name": "Carlos",
+      "scraped_date": "2026-03-12",
+      "topics": [
+        {
+          "topic": "employees",
+          "sentiment": "positive",
+          "detail": "friendly team"
+        },
+        {
+          "topic": "commodities",
+          "sentiment": "positive",
+          "detail": "modern facilities"
+        },
+        {
+          "topic": "comfort",
+          "sentiment": "positive",
+          "detail": "comfortable rooms"
+        },
+        {
+          "topic": "quality_price",
+          "sentiment": "positive",
+          "detail": "excellent value for money"
+        }
+      ],
+      "classified": true
+    },
+    {
+      "id": "b73ef0e5687cdb20",
+      "hotel": "Ananea Castelo Suites Hotel",
+      "source": "holidaycheck",
+      "rating": 5.0,
+      "title": "Schönes Hotel zum Entspannen und Wohlfühlen",
+      "text": "Das Hotel ist sehr geschmackvoll eingerichtet und hat eine schöne Atmosphäre. Es waren immernoch einige Bauarbeiten während unseres Aufenthaltes, was uns aber eher positiv gestimmt hat, da das Hotel jetzt schon sehr schön war. \nEs ist perfekt für eine schöne Auszeit mit dem Partner.",
+      "published_date": "2025-09-18",
+      "author_name": "Rieke",
+      "scraped_date": "2026-03-12",
+      "topics": [
+        {
+          "topic": "commodities",
+          "sentiment": "positive",
+          "detail": "well-designed hotel"
+        },
+        {
+          "topic": "comfort",
+          "sentiment": "positive",
+          "detail": "nice atmosphere"
+        },
+        {
+          "topic": "return",
+          "sentiment": "positive",
+          "detail": "perfect for relaxing with partner"
+        }
+      ],
+      "classified": true
+    },
+    {
+      "id": "f86cabffbdd5592f",
+      "hotel": "Ananea Castelo Suites Hotel",
+      "source": "holidaycheck",
+      "rating": 6.0,
+      "title": "Hotel kann man weiterempfehlen",
+      "text": "Das Hotel einfach super.\nDas Personal war sehr freundlich gewesen, egal ob an der Rezeption, Restaurant oder Bar.\nAuch die Zimmer wurden jeden Tag sauber gemacht und die Damen sind immer freundlich gewesen.",
+      "published_date": "2025-11-03",
+      "author_name": "Heike  und Mathias",
+      "scraped_date": "2026-03-12",
+      "topics": [
+        {
+          "topic": "employees",
+          "sentiment": "positive",
+          "detail": "friendly staff at reception, restaurant or bar"
+        },
+        {
+          "topic": "cleaning",
+          "sentiment": "positive",
+          "detail": "rooms cleaned daily"
+        }
+      ],
+      "classified": true
+    },
+    {
+      "id": "3968af9f92797d22",
+      "hotel": "Ananea Castelo Suites Hotel",
+      "source": "holidaycheck",
+      "rating": 4.0,
+      "title": "Neues Hotel mit schlechtem Essen in Umgebung wo e.",
+      "text": "Neu und geschmackvoll. Zimmer schön,leider keine Schränke. Top Wasserkocher und Nespresso Maschine. Für die Maschine nur am ersten Tag kostenlos Kapsel.\nHP sehr wenig Auswahl. Außergewöhnliche Gerichte,die man mögen muss!",
+      "published_date": "2025-08-17",
+      "author_name": "Vivienne",
+      "scraped_date": "2026-03-12",
+      "topics": [
+        {
+          "topic": "commodities",
+          "sentiment": "positive",
+          "detail": "nice and tasteful"
+        },
+        {
+          "topic": "commodities",
+          "sentiment": "negative",
+          "detail": "only free capsules on first day for Nespresso machine"
+        },
+        {
+          "topic": "meals",
+          "sentiment": "positive",
+          "detail": "exceptional dishes"
+        },
+        {
+          "topic": "meals",
+          "sentiment": "negative",
+          "detail": "limited HP selection"
+        },
+        {
+          "topic": "comfort",
+          "sentiment": "positive",
+          "detail": "nice room"
+        }
+      ],
+      "classified": true
+    },
+    {
+      "id": "0afaa088001ff24f",
+      "hotel": "Ananea Castelo Suites Hotel",
+      "source": "holidaycheck",
+      "rating": 6.0,
+      "title": "Super Hotel!",
+      "text": "Das Hotel ist wunderschön und bietet alles was man für den perfekten Urlaub benötigt. Zimmer, Frühstück, Außenbereich war alles top. Die Mitarbeiter sind immer freundlich & hilfsbereit gewesen.",
+      "published_date": "2025-09-10",
+      "author_name": "Braella",
+      "scraped_date": "2026-03-12",
+      "topics": [
+        {
+          "topic": "commodities",
+          "sentiment": "positive",
+          "detail": "beautiful hotel"
+        },
+        {
+          "topic": "employees",
+          "sentiment": "positive",
+          "detail": "friendly & helpful staff"
+        },
+        {
+          "topic": "meals",
+          "sentiment": "positive",
+          "detail": "top breakfast"
+        }
+      ],
+      "classified": true
+    },
+    {
+      "id": "d5dd1f7334eddd92",
+      "hotel": "Ananea Castelo Suites Hotel",
+      "source": "holidaycheck",
+      "rating": 6.0,
+      "title": "Weil einfach alles gepasst hat",
+      "text": "Sehr nettes Personal, immer hilfsbereit. Frühstück sehr reichhaltig.Abendessen sehr vielfältig immer mit Fisch. Großer Pool.",
+      "published_date": "2025-10-17",
+      "author_name": "Marianne ",
+      "scraped_date": "2026-03-12",
+      "topics": [
+        {
+          "topic": "employees",
+          "sentiment": "positive",
+          "detail": "helpful staff"
+        },
+        {
+          "topic": "meals",
+          "sentiment": "positive",
+          "detail": "rich breakfast"
+        },
+        {
+          "topic": "commodities",
+          "sentiment": "positive",
+          "detail": "large pool"
+        }
+      ],
+      "classified": true
+    },
+    {
+      "id": "bd273a2d08b06a60",
+      "hotel": "Ananea Castelo Suites Hotel",
+      "source": "holidaycheck",
+      "rating": 5.0,
+      "title": "Interessantes spannendes neues Hotel",
+      "text": "Modernes Design, nicht zu groß. Sehr schöne Poolanlagen. Junges williges Personal. Freundlich und hilfsbereit. Zum Wohlfühlen",
+      "published_date": "2025-09-14",
+      "author_name": "Pia",
+      "scraped_date": "2026-03-12",
+      "topics": [
+        {
+          "topic": "commodities",
+          "sentiment": "positive",
+          "detail": "modern design"
+        },
+        {
+          "topic": "employees",
+          "sentiment": "positive",
+          "detail": "young and willing staff"
+        }
+      ],
+      "classified": true
+    }
+  ]
+}
