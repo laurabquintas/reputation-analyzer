@@ -1,22 +1,15 @@
 from __future__ import annotations
 
-<<<<<<< HEAD
+import csv
 import hashlib
 import hmac
 import json
-import os
-=======
-import csv
 import logging
->>>>>>> 912c2fe (fix(security): add audit trail for manual score changes)
+import os
 import re
 from collections import Counter
 from collections.abc import Callable
-<<<<<<< HEAD
-from datetime import datetime
-=======
 from datetime import datetime, timezone
->>>>>>> 912c2fe (fix(security): add audit trail for manual score changes)
 from pathlib import Path
 
 import sys
