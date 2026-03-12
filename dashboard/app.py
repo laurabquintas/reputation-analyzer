@@ -654,7 +654,7 @@ def _render_topic_insights(
     row_height = plot_area / n_topics if n_topics else 50
 
     # Build rows in reversed order to match Plotly's bottom-to-top y-axis
-    _SKIP_INSIGHTS = {"Would Return"}
+    _SKIP_INSIGHTS = {"Would Return", "Quality / Price"}
     rows_html = []
     for topic_display in reversed(topic_df["Topic"].tolist()):
         if topic_display in _SKIP_INSIGHTS:
