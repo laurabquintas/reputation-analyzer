@@ -1,0 +1,85 @@
+{
+  "meta": {
+    "last_updated": "2026-03-12T15:27:41",
+    "total_reviews": 3
+  },
+  "reviews": [
+    {
+      "id": "68e299f462a90e06c39e2b5e",
+      "hotel": "Ananea Castelo Suites Hotel",
+      "source": "expedia",
+      "rating": 8.0,
+      "title": "Good",
+      "text": "Breakfast was lovely i do wish the room had more storage. Lovely location.",
+      "published_date": "2025-10-06",
+      "author_name": "Michelle",
+      "scraped_date": "2026-03-12",
+      "topics": [
+        {
+          "topic": "meals",
+          "sentiment": "positive",
+          "detail": "lovely breakfast"
+        },
+        {
+          "topic": "commodities",
+          "sentiment": "negative",
+          "detail": "room lacks storage"
+        }
+      ],
+      "classified": true
+    },
+    {
+      "id": "68b68904eb5adc43ffc4bda7",
+      "hotel": "Ananea Castelo Suites Hotel",
+      "source": "expedia",
+      "rating": 10.0,
+      "title": "Excellent",
+      "text": "Vacances entres copines, nous avons choisi cet hôtel car gros coup de cœur pour les petites plages autour et surtout proches de la zone d’activité nautique en voiture. L’hôtel est super joli, plusieurs piscines et la nourriture était très bonne. Le personnel est top et réponds à tout moment à nos questions/besoins. Nous espérons y revenir.",
+      "published_date": "2025-09-02",
+      "author_name": "Cecile",
+      "scraped_date": "2026-03-12",
+      "topics": [
+        {
+          "topic": "employees",
+          "sentiment": "positive",
+          "detail": "top staff"
+        },
+        {
+          "topic": "commodities",
+          "sentiment": "positive",
+          "detail": "several pools"
+        },
+        {
+          "topic": "meals",
+          "sentiment": "positive",
+          "detail": "good food"
+        },
+        {
+          "topic": "return",
+          "sentiment": "positive",
+          "detail": "hope to return"
+        }
+      ],
+      "classified": true
+    },
+    {
+      "id": "689eee3603ad6a6fa902c0d7",
+      "hotel": "Ananea Castelo Suites Hotel",
+      "source": "expedia",
+      "rating": 8.0,
+      "title": "Good",
+      "text": "Hotellet var fantastisk i sig, men med tanke på att det var nyöppnat så märktes det att det var en del kvar att fixa. Maten var inte det bästa om man beställde från deras meny, frukosten var också enformig och inte så anpassad för en vegansk kost.\n\nMen överlag var vi supernöjda 😍",
+      "published_date": "2025-08-17",
+      "author_name": "Lina",
+      "scraped_date": "2026-03-12",
+      "topics": [
+        {
+          "topic": "meals",
+          "sentiment": "negative",
+          "detail": "not the best food from menu"
+        }
+      ],
+      "classified": true
+    }
+  ]
+}
