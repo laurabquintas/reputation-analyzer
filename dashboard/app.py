@@ -1457,19 +1457,50 @@ def main() -> None:
                             st.caption(pills)
 
     # ---- Manual Review Input ---- #
+    _MANUAL_SOURCE_MAP = {
+        "TripAdvisor": REVIEWS_JSON_PATH,
+        "Google": GOOGLE_REVIEWS_JSON_PATH,
+        "HolidayCheck": HOLIDAYCHECK_REVIEWS_JSON_PATH,
+        "Expedia": EXPEDIA_REVIEWS_JSON_PATH,
+        "Booking.com": BOOKING_REVIEWS_JSON_PATH,
+    }
+
     with st.expander("Add Review Manually"):
         st.caption(
             "Review APIs return a limited number of reviews. "
             "Use this form to add reviews you found on the website that the API missed."
         )
 
-        with st.form("manual_review_form", clear_on_submit=True):
-            mr_source = st.selectbox(
-                "Source",
-                ["TripAdvisor"],
-                index=0,
-                key="mr_source",
+        mr_source = st.selectbox(
+            "Source",
+            list(_MANUAL_SOURCE_MAP.keys()),
+            index=0,
+            key="mr_source",
+        )
+
+        # Show last review info for the selected source
+        _mr_json_path = _MANUAL_SOURCE_MAP[mr_source]
+        _mr_reviews = _load_reviews_json(_mr_json_path)
+        if _mr_reviews:
+            # Find the most recent review by published_date
+            _mr_sorted = sorted(
+                _mr_reviews,
+                key=lambda r: r.get("published_date", "")[:10],
+                reverse=True,
             )
+            _last = _mr_sorted[0]
+            _last_date = _last.get("published_date", "")[:10]
+            _last_title = _last.get("title", "—") or "—"
+            _last_rating = _last.get("rating", "—")
+            st.info(
+                f"**Last {mr_source} review:** {_last_date} · "
+                f"Rating {_last_rating} · \"{_last_title}\" "
+                f"({len(_mr_reviews)} reviews total)"
+            )
+        else:
+            st.info(f"No {mr_source} reviews yet.")
+
+        with st.form("manual_review_form", clear_on_submit=True):
             mr_cols = st.columns([2, 1])
             with mr_cols[0]:
                 mr_reviewer = st.text_input("Reviewer name", placeholder="e.g. John D.")
@@ -1491,7 +1522,8 @@ def main() -> None:
             else:
                 pub_date_str = mr_date.strftime("%Y-%m-%d")
                 review_id = _generate_manual_id(mr_reviewer, pub_date_str, mr_title)
-                current_reviews = _load_reviews_json(REVIEWS_JSON_PATH)
+                target_path = _MANUAL_SOURCE_MAP[mr_source]
+                current_reviews = _load_reviews_json(target_path)
                 existing_ids = {r["id"] for r in current_reviews}
 
                 if review_id in existing_ids:
@@ -1530,8 +1562,8 @@ def main() -> None:
                         "review_source": mr_source,
                     }
                     current_reviews.append(new_review)
-                    _save_reviews_json(current_reviews, REVIEWS_JSON_PATH)
-                    st.success(f"Review added (ID: {review_id}).{ollama_msg}")
+                    _save_reviews_json(current_reviews, target_path)
+                    st.success(f"Review added to {mr_source} (ID: {review_id}).{ollama_msg}")
                     st.rerun()
 
 
