@@ -29,6 +29,8 @@ AUDIT_LOG = DATA_DIR / "audit.csv"
 
 logger = logging.getLogger(__name__)
 
+SOURCE_ORDER = ["Tripadvisor", "Google", "HolidayCheck", "Expedia", "Booking"]
+
 SOURCES = {
     "Booking": DATA_DIR / "booking_scores.csv",
     "Tripadvisor": DATA_DIR / "tripadvisor_scores.csv",
@@ -772,7 +774,8 @@ def main() -> None:
     history_df = pd.concat(all_history, ignore_index=True)
     history_df = history_df.sort_values("Date")
 
-    available_sources = sorted(history_df["Source"].dropna().unique().tolist())
+    _present = set(history_df["Source"].dropna().unique().tolist())
+    available_sources = [s for s in SOURCE_ORDER if s in _present]
     if "source_selector" not in st.session_state:
         st.session_state["source_selector"] = available_sources
     selected_sources = st.multiselect(
