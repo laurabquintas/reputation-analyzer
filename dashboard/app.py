@@ -754,14 +754,14 @@ def main() -> None:
     st.title("Hotel Reputation Dashboard")
     st.caption("Biweekly reputation scores over time, pulled from source websites.")
 
-    # Subtle background for overall / summary sections
+    # Subtle background for overall / summary sections (bordered containers)
     st.markdown(
         """
         <style>
-        div[data-testid="stVerticalBlock"]:has(> div.summary-block) {
+        div[data-testid="stVerticalBlockBorderWrapper"]:has(div.summary-block) {
             background-color: #f0f2f6;
             border-radius: 10px;
-            padding: 1rem;
+            padding: 0.5rem;
         }
         </style>
         """,
@@ -804,39 +804,37 @@ def main() -> None:
     # ================================================================== #
     st.header("Competition Comparison")
 
-    with st.container():
-        st.markdown('<div class="summary-block"></div>', unsafe_allow_html=True)
-        st.subheader("Ananea Scorecard")
-        st.caption("Latest available score per source. Competitor values are red when higher than Ananea and green when lower.")
-        scorecard = latest_scorecard_table(history_df, selected_sources)
-        kpi = ananea_competitive_index(history_df, selected_sources)
+    st.subheader("Ananea Scorecard")
+    st.caption("Latest available score per source. Competitor values are red when higher than Ananea and green when lower.")
+    scorecard = latest_scorecard_table(history_df, selected_sources)
+    kpi = ananea_competitive_index(history_df, selected_sources)
 
-        kpi_col1, kpi_col2, kpi_col3 = st.columns(3)
-        with kpi_col1:
-            if pd.notna(kpi["ananea_index"]):
-                st.metric("Ananea Competitive Index", f"{kpi['ananea_index']:.2f}/100")
-            else:
-                st.metric("Ananea Competitive Index", "N/A")
-        with kpi_col2:
-            if pd.notna(kpi["peers_index"]):
-                st.metric("Peers Index", f"{kpi['peers_index']:.2f}/100")
-            else:
-                st.metric("Peers Index", "N/A")
-        with kpi_col3:
-            if pd.notna(kpi["edge_pp"]):
-                st.metric("Edge vs Peers", f"{kpi['edge_pp']:+.2f} pp")
-            else:
-                st.metric("Edge vs Peers", "N/A")
-        st.caption(
-            "Competitive Index formula: for each selected source, normalize score to 0-100 "
-            f"(score / source max * 100), then average across sources. "
-            "Peers Index uses the average competitor score per source."
-        )
-
-        if scorecard.empty:
-            st.warning("No Ananea scorecard data available for the selected sources.")
+    kpi_col1, kpi_col2, kpi_col3 = st.columns(3)
+    with kpi_col1:
+        if pd.notna(kpi["ananea_index"]):
+            st.metric("Ananea Competitive Index", f"{kpi['ananea_index']:.2f}/100")
         else:
-            st.dataframe(style_scorecard(scorecard.sort_values("Source")), use_container_width=True)
+            st.metric("Ananea Competitive Index", "N/A")
+    with kpi_col2:
+        if pd.notna(kpi["peers_index"]):
+            st.metric("Peers Index", f"{kpi['peers_index']:.2f}/100")
+        else:
+            st.metric("Peers Index", "N/A")
+    with kpi_col3:
+        if pd.notna(kpi["edge_pp"]):
+            st.metric("Edge vs Peers", f"{kpi['edge_pp']:+.2f} pp")
+        else:
+            st.metric("Edge vs Peers", "N/A")
+    st.caption(
+        "Competitive Index formula: for each selected source, normalize score to 0-100 "
+        f"(score / source max * 100), then average across sources. "
+        "Peers Index uses the average competitor score per source."
+    )
+
+    if scorecard.empty:
+        st.warning("No Ananea scorecard data available for the selected sources.")
+    else:
+        st.dataframe(style_scorecard(scorecard.sort_values("Source")), use_container_width=True)
 
     current_year = datetime.now().year
     previous_year = current_year - 1
@@ -956,7 +954,7 @@ def main() -> None:
     selected_year = current_year  # default; overridden by radio button below
 
     # ---- Overall Sources Topic Sentiment ---- #
-    with st.container():
+    with st.container(border=True):
         st.markdown('<div class="summary-block"></div>', unsafe_allow_html=True)
         st.subheader("Overall Sources Topic Sentiment")
         st.caption("Aggregated topic sentiment across selected review sources.")
