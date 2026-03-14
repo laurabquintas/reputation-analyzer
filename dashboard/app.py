@@ -429,68 +429,62 @@ def _load_reviews_json(path: Path) -> list[dict]:
     return data.get("reviews", [])
 
 
-def _quarter_topic_comparison(reviews: list[dict], hotel: str) -> pd.DataFrame | None:
-    """Compare current quarter vs previous quarter topic sentiment percentages."""
+def _quarter_topic_comparison(
+    reviews: list[dict], hotel: str, year: int | None = None,
+) -> pd.DataFrame | None:
+    """Compare a year's topic sentiments against the previous year.
+
+    When *year* equals the current year the label reads "YTD <year>";
+    otherwise it reads "<year>" (full year).  The comparison baseline is
+    always the full previous year (*year* − 1).
+    """
     today = datetime.now()
-    current_q = (today.month - 1) // 3 + 1
-    current_year = today.year
+    target_year = year if year is not None else today.year
+    baseline_year = target_year - 1
 
-    # Current quarter start/end
-    cq_start = f"{current_year}-{(current_q - 1) * 3 + 1:02d}-01"
-    if current_q == 4:
-        cq_end = f"{current_year + 1}-01-01"
-    else:
-        cq_end = f"{current_year}-{current_q * 3 + 1:02d}-01"
+    # Target period
+    target_start = f"{target_year}-01-01"
+    target_end = f"{target_year}-12-31"
 
-    # Previous quarter start/end
-    if current_q == 1:
-        pq = 4
-        py = current_year - 1
-    else:
-        pq = current_q - 1
-        py = current_year
-    pq_start = f"{py}-{(pq - 1) * 3 + 1:02d}-01"
-    if pq == 4:
-        pq_end = f"{py + 1}-01-01"
-    else:
-        pq_end = f"{py}-{pq * 3 + 1:02d}-01"
+    # Baseline: full previous year
+    base_start = f"{baseline_year}-01-01"
+    base_end = f"{baseline_year}-12-31"
 
-    def _filter_quarter(revs: list[dict], start: str, end: str) -> list[dict]:
+    def _filter_period(revs: list[dict], start: str, end: str) -> list[dict]:
         return [
             r for r in revs
             if r.get("hotel") == hotel
             and r.get("classified", False)
-            and start <= r.get("published_date", "")[:10] < end
+            and start <= r.get("published_date", "")[:10] <= end
         ]
 
-    cq_reviews = _filter_quarter(reviews, cq_start, cq_end)
-    pq_reviews = _filter_quarter(reviews, pq_start, pq_end)
+    target_reviews = _filter_period(reviews, target_start, target_end)
+    base_reviews = _filter_period(reviews, base_start, base_end)
 
-    cq_total = len(cq_reviews)
-    pq_total = len(pq_reviews)
+    target_total = len(target_reviews)
+    base_total = len(base_reviews)
 
-    if cq_total == 0 and pq_total == 0:
+    if target_total == 0 and base_total == 0:
         return None
 
-    cq_label = f"Q{current_q} {current_year}"
-    pq_label = f"Q{pq} {py}"
+    target_label = f"YTD {target_year}" if target_year == today.year else str(target_year)
+    base_label = str(baseline_year)
 
     rows = []
     for topic_key, topic_display in _TOPIC_DISPLAY.items():
-        cq_pos = sum(1 for r in cq_reviews for t in r.get("topics", []) if t["topic"] == topic_key and t["sentiment"] == "positive")
-        cq_neg = sum(1 for r in cq_reviews for t in r.get("topics", []) if t["topic"] == topic_key and t["sentiment"] == "negative")
-        pq_pos = sum(1 for r in pq_reviews for t in r.get("topics", []) if t["topic"] == topic_key and t["sentiment"] == "positive")
-        pq_neg = sum(1 for r in pq_reviews for t in r.get("topics", []) if t["topic"] == topic_key and t["sentiment"] == "negative")
+        t_pos = sum(1 for r in target_reviews for t in r.get("topics", []) if t["topic"] == topic_key and t["sentiment"] == "positive")
+        t_neg = sum(1 for r in target_reviews for t in r.get("topics", []) if t["topic"] == topic_key and t["sentiment"] == "negative")
+        b_pos = sum(1 for r in base_reviews for t in r.get("topics", []) if t["topic"] == topic_key and t["sentiment"] == "positive")
+        b_neg = sum(1 for r in base_reviews for t in r.get("topics", []) if t["topic"] == topic_key and t["sentiment"] == "negative")
 
-        cq_pos_pct = round(cq_pos / cq_total * 100, 1) if cq_total else 0
-        cq_neg_pct = round(cq_neg / cq_total * 100, 1) if cq_total else 0
-        pq_pos_pct = round(pq_pos / pq_total * 100, 1) if pq_total else 0
-        pq_neg_pct = round(pq_neg / pq_total * 100, 1) if pq_total else 0
+        t_pos_pct = round(t_pos / target_total * 100, 1) if target_total else 0
+        t_neg_pct = round(t_neg / target_total * 100, 1) if target_total else 0
+        b_pos_pct = round(b_pos / base_total * 100, 1) if base_total else 0
+        b_neg_pct = round(b_neg / base_total * 100, 1) if base_total else 0
 
-        # None means we can't compare (one quarter has 0 reviews)
-        can_compare = cq_total > 0 and pq_total > 0
-        pos_delta = round(cq_pos_pct - pq_pos_pct, 1) if can_compare else None
-        neg_delta = round(cq_neg_pct - pq_neg_pct, 1) if can_compare else None
+        can_compare = target_total > 0 and base_total > 0
+        pos_delta = round(t_pos_pct - b_pos_pct, 1) if can_compare else None
+        neg_delta = round(t_neg_pct - b_neg_pct, 1) if can_compare else None
 
         rows.append({
             "Topic": topic_display,
@@ -499,15 +493,15 @@ def _quarter_topic_comparison(reviews: list[dict], hotel: str) -> pd.DataFrame |
         })
 
     df = pd.DataFrame(rows)
-    df.attrs["cq_label"] = cq_label
-    df.attrs["pq_label"] = pq_label
-    df.attrs["cq_total"] = cq_total
-    df.attrs["pq_total"] = pq_total
+    df.attrs["cq_label"] = target_label
+    df.attrs["pq_label"] = base_label
+    df.attrs["cq_total"] = target_total
+    df.attrs["pq_total"] = base_total
     return df
 
 
 def _render_quarter_comparison(df: pd.DataFrame | None) -> None:
-    """Render quarter-over-quarter scorecards side by side above the bar plot."""
+    """Render year-over-year scorecards side by side above the bar plot."""
     if df is None:
         return
     cq_label = df.attrs.get("cq_label", "")
@@ -516,7 +510,7 @@ def _render_quarter_comparison(df: pd.DataFrame | None) -> None:
     pq_total = df.attrs.get("pq_total", 0)
 
     st.caption(
-        f"Comparison to previous quarter: {pq_label} ({pq_total} reviews) → "
+        f"Year-over-year comparison: {pq_label} ({pq_total} reviews) → "
         f"{cq_label} ({cq_total} reviews)"
     )
 
@@ -936,8 +930,8 @@ def main() -> None:
             key="review_year_toggle",
         )
         selected_year = current_year if review_year_option.startswith("YTD") else previous_year
-        # Quarter-over-quarter comparison
-        overall_qtr_df = _quarter_topic_comparison(all_reviews_data, ANANEA_HOTEL)
+        # Year-over-year comparison (previous year vs YTD)
+        overall_qtr_df = _quarter_topic_comparison(all_reviews_data, ANANEA_HOTEL, year=selected_year)
         _render_quarter_comparison(overall_qtr_df)
 
         overall_topic_df, overall_total = _ytd_topic_summary(all_reviews_data, ANANEA_HOTEL, year=selected_year)
@@ -991,8 +985,8 @@ def main() -> None:
                 "data/tripadvisor_reviews.json."
             )
         else:
-            # Quarter-over-quarter comparison
-            ta_qtr_df = _quarter_topic_comparison(reviews_data, ANANEA_HOTEL)
+            # Year-over-year comparison (previous year vs YTD)
+            ta_qtr_df = _quarter_topic_comparison(reviews_data, ANANEA_HOTEL, year=selected_year)
             _render_quarter_comparison(ta_qtr_df)
 
             ta_topic_df, ta_total = _ytd_topic_summary(reviews_data, ANANEA_HOTEL, year=selected_year)
@@ -1082,8 +1076,8 @@ def main() -> None:
                 "data/google_reviews.json."
             )
         else:
-            # Quarter-over-quarter comparison
-            google_qtr_df = _quarter_topic_comparison(google_reviews_data, ANANEA_HOTEL)
+            # Year-over-year comparison (previous year vs YTD)
+            google_qtr_df = _quarter_topic_comparison(google_reviews_data, ANANEA_HOTEL, year=selected_year)
             _render_quarter_comparison(google_qtr_df)
 
             google_topic_df, google_total = _ytd_topic_summary(google_reviews_data, ANANEA_HOTEL, year=selected_year)
@@ -1168,8 +1162,8 @@ def main() -> None:
                 "data/holidaycheck_reviews.json."
             )
         else:
-            # Quarter-over-quarter comparison
-            hc_qtr_df = _quarter_topic_comparison(holidaycheck_reviews_data, ANANEA_HOTEL)
+            # Year-over-year comparison (previous year vs YTD)
+            hc_qtr_df = _quarter_topic_comparison(holidaycheck_reviews_data, ANANEA_HOTEL, year=selected_year)
             _render_quarter_comparison(hc_qtr_df)
 
             hc_topic_df, hc_total = _ytd_topic_summary(holidaycheck_reviews_data, ANANEA_HOTEL, year=selected_year)
@@ -1261,8 +1255,8 @@ def main() -> None:
                 "data/expedia_reviews.json."
             )
         else:
-            # Quarter-over-quarter comparison
-            exp_qtr_df = _quarter_topic_comparison(expedia_reviews_data, ANANEA_HOTEL)
+            # Year-over-year comparison (previous year vs YTD)
+            exp_qtr_df = _quarter_topic_comparison(expedia_reviews_data, ANANEA_HOTEL, year=selected_year)
             _render_quarter_comparison(exp_qtr_df)
 
             exp_topic_df, exp_total = _ytd_topic_summary(expedia_reviews_data, ANANEA_HOTEL, year=selected_year)
@@ -1354,8 +1348,8 @@ def main() -> None:
                 "data/booking_reviews.json."
             )
         else:
-            # Quarter-over-quarter comparison
-            bk_qtr_df = _quarter_topic_comparison(booking_reviews_data, ANANEA_HOTEL)
+            # Year-over-year comparison (previous year vs YTD)
+            bk_qtr_df = _quarter_topic_comparison(booking_reviews_data, ANANEA_HOTEL, year=selected_year)
             _render_quarter_comparison(bk_qtr_df)
 
             bk_topic_df, bk_total = _ytd_topic_summary(booking_reviews_data, ANANEA_HOTEL, year=selected_year)
