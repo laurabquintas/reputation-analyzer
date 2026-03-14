@@ -754,6 +754,20 @@ def main() -> None:
     st.title("Hotel Reputation Dashboard")
     st.caption("Biweekly reputation scores over time, pulled from source websites.")
 
+    # Subtle background for overall / summary sections
+    st.markdown(
+        """
+        <style>
+        div[data-testid="stVerticalBlock"]:has(> div.summary-block) {
+            background-color: #f0f2f6;
+            border-radius: 10px;
+            padding: 1rem;
+        }
+        </style>
+        """,
+        unsafe_allow_html=True,
+    )
+
     source_dfs: dict[str, pd.DataFrame] = {}
     all_history = []
     for source, path in SOURCES.items():
@@ -790,37 +804,39 @@ def main() -> None:
     # ================================================================== #
     st.header("Competition Comparison")
 
-    st.subheader("Ananea Scorecard")
-    st.caption("Latest available score per source. Competitor values are red when higher than Ananea and green when lower.")
-    scorecard = latest_scorecard_table(history_df, selected_sources)
-    kpi = ananea_competitive_index(history_df, selected_sources)
+    with st.container():
+        st.markdown('<div class="summary-block"></div>', unsafe_allow_html=True)
+        st.subheader("Ananea Scorecard")
+        st.caption("Latest available score per source. Competitor values are red when higher than Ananea and green when lower.")
+        scorecard = latest_scorecard_table(history_df, selected_sources)
+        kpi = ananea_competitive_index(history_df, selected_sources)
 
-    kpi_col1, kpi_col2, kpi_col3 = st.columns(3)
-    with kpi_col1:
-        if pd.notna(kpi["ananea_index"]):
-            st.metric("Ananea Competitive Index", f"{kpi['ananea_index']:.2f}/100")
-        else:
-            st.metric("Ananea Competitive Index", "N/A")
-    with kpi_col2:
-        if pd.notna(kpi["peers_index"]):
-            st.metric("Peers Index", f"{kpi['peers_index']:.2f}/100")
-        else:
-            st.metric("Peers Index", "N/A")
-    with kpi_col3:
-        if pd.notna(kpi["edge_pp"]):
-            st.metric("Edge vs Peers", f"{kpi['edge_pp']:+.2f} pp")
-        else:
-            st.metric("Edge vs Peers", "N/A")
-    st.caption(
-        "Competitive Index formula: for each selected source, normalize score to 0-100 "
-        f"(score / source max * 100), then average across sources. "
-        "Peers Index uses the average competitor score per source."
-    )
+        kpi_col1, kpi_col2, kpi_col3 = st.columns(3)
+        with kpi_col1:
+            if pd.notna(kpi["ananea_index"]):
+                st.metric("Ananea Competitive Index", f"{kpi['ananea_index']:.2f}/100")
+            else:
+                st.metric("Ananea Competitive Index", "N/A")
+        with kpi_col2:
+            if pd.notna(kpi["peers_index"]):
+                st.metric("Peers Index", f"{kpi['peers_index']:.2f}/100")
+            else:
+                st.metric("Peers Index", "N/A")
+        with kpi_col3:
+            if pd.notna(kpi["edge_pp"]):
+                st.metric("Edge vs Peers", f"{kpi['edge_pp']:+.2f} pp")
+            else:
+                st.metric("Edge vs Peers", "N/A")
+        st.caption(
+            "Competitive Index formula: for each selected source, normalize score to 0-100 "
+            f"(score / source max * 100), then average across sources. "
+            "Peers Index uses the average competitor score per source."
+        )
 
-    if scorecard.empty:
-        st.warning("No Ananea scorecard data available for the selected sources.")
-    else:
-        st.dataframe(style_scorecard(scorecard.sort_values("Source")), use_container_width=True)
+        if scorecard.empty:
+            st.warning("No Ananea scorecard data available for the selected sources.")
+        else:
+            st.dataframe(style_scorecard(scorecard.sort_values("Source")), use_container_width=True)
 
     current_year = datetime.now().year
     previous_year = current_year - 1
@@ -937,65 +953,68 @@ def main() -> None:
 
     # Combine selected review sources for overall summary
     all_reviews_data = reviews_data + google_reviews_data + holidaycheck_reviews_data + expedia_reviews_data + booking_reviews_data
+    selected_year = current_year  # default; overridden by radio button below
 
     # ---- Overall Sources Topic Sentiment ---- #
-    st.subheader("Overall Sources Topic Sentiment")
-    st.caption("Aggregated topic sentiment across selected review sources.")
+    with st.container():
+        st.markdown('<div class="summary-block"></div>', unsafe_allow_html=True)
+        st.subheader("Overall Sources Topic Sentiment")
+        st.caption("Aggregated topic sentiment across selected review sources.")
 
-    if not all_reviews_data:
-        st.info("No review data available yet.")
-    else:
-        review_year_option = st.radio(
-            "Period",
-            [f"YTD {current_year}", f"Full Year {previous_year}"],
-            horizontal=True,
-            key="review_year_toggle",
-        )
-        selected_year = current_year if review_year_option.startswith("YTD") else previous_year
-        # Year-over-year comparison (previous year vs YTD)
-        overall_qtr_df = _quarter_topic_comparison(all_reviews_data, ANANEA_HOTEL, year=selected_year)
-        _render_quarter_comparison(overall_qtr_df)
-
-        overall_topic_df, overall_total = _ytd_topic_summary(all_reviews_data, ANANEA_HOTEL, year=selected_year)
-
-        if overall_topic_df[["Positive", "Negative"]].sum().sum() == 0:
-            st.info(f"No classified reviews found for {selected_year}.")
+        if not all_reviews_data:
+            st.info("No review data available yet.")
         else:
-            overall_label = f"YTD {selected_year}" if selected_year == current_year else str(selected_year)
-            overall_insights = _ytd_topic_insights(all_reviews_data, ANANEA_HOTEL, year=selected_year)
-            chart_col, insights_col = st.columns([3, 2])
-            with chart_col:
-                fig = go.Figure()
-                fig.add_trace(go.Bar(
-                    y=overall_topic_df["Topic"],
-                    x=overall_topic_df["Positive"],
-                    name="Positive",
-                    orientation="h",
-                    marker_color="#15803d",
-                    text=[f"{v}%" for v in overall_topic_df["Positive"]],
-                    textposition="auto",
-                ))
-                fig.add_trace(go.Bar(
-                    y=overall_topic_df["Topic"],
-                    x=overall_topic_df["Negative"],
-                    name="Negative",
-                    orientation="h",
-                    marker_color="#b91c1c",
-                    text=[f"{v}%" for v in overall_topic_df["Negative"]],
-                    textposition="auto",
-                ))
-                fig.update_layout(
-                    barmode="group",
-                    margin={"l": 20, "r": 20, "t": 30, "b": 20},
-                    height=450,
-                    xaxis_title="% of Reviews",
-                    xaxis_range=[0, 100],
-                    yaxis_title="",
-                    title=f"Overall Topic Sentiment – {overall_label} ({overall_total} reviews)",
-                )
-                st.plotly_chart(fig, use_container_width=True)
-            with insights_col:
-                _render_topic_insights(overall_topic_df, overall_insights)
+            review_year_option = st.radio(
+                "Period",
+                [f"YTD {current_year}", f"Full Year {previous_year}"],
+                horizontal=True,
+                key="review_year_toggle",
+            )
+            selected_year = current_year if review_year_option.startswith("YTD") else previous_year
+            # Year-over-year comparison (previous year vs YTD)
+            overall_qtr_df = _quarter_topic_comparison(all_reviews_data, ANANEA_HOTEL, year=selected_year)
+            _render_quarter_comparison(overall_qtr_df)
+
+            overall_topic_df, overall_total = _ytd_topic_summary(all_reviews_data, ANANEA_HOTEL, year=selected_year)
+
+            if overall_topic_df[["Positive", "Negative"]].sum().sum() == 0:
+                st.info(f"No classified reviews found for {selected_year}.")
+            else:
+                overall_label = f"YTD {selected_year}" if selected_year == current_year else str(selected_year)
+                overall_insights = _ytd_topic_insights(all_reviews_data, ANANEA_HOTEL, year=selected_year)
+                chart_col, insights_col = st.columns([3, 2])
+                with chart_col:
+                    fig = go.Figure()
+                    fig.add_trace(go.Bar(
+                        y=overall_topic_df["Topic"],
+                        x=overall_topic_df["Positive"],
+                        name="Positive",
+                        orientation="h",
+                        marker_color="#15803d",
+                        text=[f"{v}%" for v in overall_topic_df["Positive"]],
+                        textposition="auto",
+                    ))
+                    fig.add_trace(go.Bar(
+                        y=overall_topic_df["Topic"],
+                        x=overall_topic_df["Negative"],
+                        name="Negative",
+                        orientation="h",
+                        marker_color="#b91c1c",
+                        text=[f"{v}%" for v in overall_topic_df["Negative"]],
+                        textposition="auto",
+                    ))
+                    fig.update_layout(
+                        barmode="group",
+                        margin={"l": 20, "r": 20, "t": 30, "b": 20},
+                        height=450,
+                        xaxis_title="% of Reviews",
+                        xaxis_range=[0, 100],
+                        yaxis_title="",
+                        title=f"Overall Topic Sentiment – {overall_label} ({overall_total} reviews)",
+                    )
+                    st.plotly_chart(fig, use_container_width=True)
+                with insights_col:
+                    _render_topic_insights(overall_topic_df, overall_insights)
 
     # ---- TripAdvisor ---- #
     if "Tripadvisor" in selected_sources:
