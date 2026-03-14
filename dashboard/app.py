@@ -575,6 +575,9 @@ def _render_quarter_comparison(df: pd.DataFrame | None) -> None:
         with col:
             st.markdown(card_html, unsafe_allow_html=True)
 
+    # Add spacing between scorecards and the bar plot / insights below
+    st.markdown("<br>", unsafe_allow_html=True)
+
 
 def _ytd_topic_summary(reviews: list[dict], hotel: str, year: int | None = None) -> pd.DataFrame:
     target_year = str(year if year is not None else datetime.now().year)
