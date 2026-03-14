@@ -754,19 +754,6 @@ def main() -> None:
     st.title("Hotel Reputation Dashboard")
     st.caption("Biweekly reputation scores over time, pulled from source websites.")
 
-    # Subtle background for overall / summary sections (bordered containers)
-    st.markdown(
-        """
-        <style>
-        div[data-testid="stVerticalBlockBorderWrapper"]:has(div.summary-block) {
-            background-color: #f0f2f6;
-            border-radius: 10px;
-            padding: 0.5rem;
-        }
-        </style>
-        """,
-        unsafe_allow_html=True,
-    )
 
     source_dfs: dict[str, pd.DataFrame] = {}
     all_history = []
@@ -955,7 +942,6 @@ def main() -> None:
 
     # ---- Overall Sources Topic Sentiment ---- #
     with st.container(border=True):
-        st.markdown('<div class="summary-block"></div>', unsafe_allow_html=True)
         st.subheader("Overall Sources Topic Sentiment")
         st.caption("Aggregated topic sentiment across selected review sources.")
 
