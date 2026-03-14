@@ -77,6 +77,19 @@ def _load_google_query() -> str:
 ANANEA_GOOGLE_QUERY = _load_google_query()
 
 
+def _load_google_maps_url() -> str:
+    """Load the google_maps_url for Ananea from config."""
+    with open(CONFIG_PATH, encoding="utf-8") as f:
+        cfg = yaml.safe_load(f)
+    for h in cfg["hotels"]:
+        if h["name"] == ANANEA_HOTEL:
+            return h.get("google_maps_url", "")
+    return ""
+
+
+ANANEA_GOOGLE_MAPS_URL = _load_google_maps_url()
+
+
 # ---------------------- Google Places API ---------------------- #
 
 def google_get_reviews(query: str, api_key: str, timeout: int = 15) -> list[dict]:
@@ -200,6 +213,12 @@ def parse_args() -> argparse.Namespace:
                    help="Min delay (s) between requests (default: 2.5)")
     p.add_argument("--max-delay", type=float, default=5.0,
                    help="Max delay (s) between requests (default: 5.0)")
+    p.add_argument("--max-reviews", type=int, default=50,
+                   help="Max reviews to fetch via Playwright (default: 50)")
+    p.add_argument("--api-only", action="store_true",
+                   help="Skip Playwright scraping, use API only.")
+    p.add_argument("--playwright-only", action="store_true",
+                   help="Skip API, use Playwright scraping only.")
     return p.parse_args()
 
 
@@ -208,13 +227,14 @@ def main() -> int:
     args = parse_args()
 
     api_key = args.api_key or os.getenv("GOOGLE_MAPS_API_KEY")
-    if not api_key:
-        raise RuntimeError("No API key provided. Use --api-key or set GOOGLE_MAPS_API_KEY.")
+    use_playwright = not args.api_only
+    use_api = not args.playwright_only and bool(api_key)
 
-    # Only scrape Ananea
-    if not ANANEA_GOOGLE_QUERY:
-        logger.error("No google_query configured for %s", ANANEA_HOTEL)
-        return 1
+    if not use_playwright and not use_api:
+        raise RuntimeError(
+            "No API key provided and --api-only set. "
+            "Set GOOGLE_MAPS_API_KEY or use --playwright-only."
+        )
 
     existing_reviews = load_reviews(args.json)
 
@@ -244,26 +264,56 @@ def main() -> int:
         return 0
 
     # --- Normal scrape mode ---
-    logger.info("Fetching Google reviews for %s (query=%s)", ANANEA_HOTEL, ANANEA_GOOGLE_QUERY)
+    raw_reviews: list[dict] = []
 
-    try:
-        raw_reviews = google_get_reviews(ANANEA_GOOGLE_QUERY, api_key)
-    except Exception as e:
-        logger.error("Failed to fetch reviews: %s", e)
-        return 1
+    # Option A: Playwright scraping
+    if use_playwright and ANANEA_GOOGLE_MAPS_URL:
+        logger.info("Fetching Google reviews via Playwright for %s", ANANEA_HOTEL)
+        try:
+            from src.sites.google_scraper import google_get_reviews_playwright
+            raw_reviews = google_get_reviews_playwright(
+                ANANEA_GOOGLE_MAPS_URL,
+                max_reviews=args.max_reviews,
+            )
+            logger.info("Playwright returned %d reviews", len(raw_reviews))
+        except Exception as e:
+            logger.warning("Playwright fetch failed: %s", e)
 
-    logger.info("API returned %d reviews", len(raw_reviews))
+    # Fallback B: API
+    if not raw_reviews and use_api:
+        if not ANANEA_GOOGLE_QUERY:
+            logger.error("No google_query configured for %s", ANANEA_HOTEL)
+            return 1
+        logger.info("Falling back to API for %s (query=%s)", ANANEA_HOTEL, ANANEA_GOOGLE_QUERY)
+        try:
+            api_reviews = google_get_reviews(ANANEA_GOOGLE_QUERY, api_key)
+            # Convert API format to common format
+            for raw in api_reviews:
+                raw_reviews.append({
+                    "id": _extract_review_id(raw),
+                    "rating": raw.get("rating"),
+                    "title": "",
+                    "text": _extract_review_text(raw),
+                    "published_date": _extract_publish_date(raw),
+                    "author_name": (raw.get("authorAttribution", {}) or {}).get("displayName", ""),
+                })
+            logger.info("API returned %d reviews", len(raw_reviews))
+        except Exception as e:
+            logger.error("API fetch also failed: %s", e)
+            return 1
+
+    logger.info("Total raw reviews: %d", len(raw_reviews))
 
     existing_ids = {str(r["id"]) for r in existing_reviews}
     new_reviews: list[dict] = []
 
     for raw in raw_reviews:
-        review_id = _extract_review_id(raw)
+        review_id = str(raw.get("id", ""))
         if not review_id or review_id in existing_ids:
             logger.debug("Skipping duplicate review %s", review_id)
             continue
 
-        text = _extract_review_text(raw)
+        text = raw.get("text", "")
         topics: list[dict] = []
         classified = False
 
@@ -275,19 +325,15 @@ def main() -> int:
             except Exception as e:
                 logger.warning("  Classification failed for review %s: %s", review_id, e)
 
-        # Extract author info
-        author_attr = raw.get("authorAttribution", {})
-        author_name = author_attr.get("displayName", "") if isinstance(author_attr, dict) else ""
-
         review = {
             "id": review_id,
             "hotel": ANANEA_HOTEL,
             "source": "google",
             "rating": raw.get("rating"),
-            "title": "",  # Google reviews have no title
+            "title": raw.get("title", ""),
             "text": text,
-            "published_date": _extract_publish_date(raw),
-            "author_name": author_name,
+            "published_date": raw.get("published_date", ""),
+            "author_name": raw.get("author_name", ""),
             "scraped_date": args.date,
             "topics": topics,
             "classified": classified,

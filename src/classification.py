@@ -65,7 +65,7 @@ JSON array:"""
     resp = requests.post(
         f"{ollama_url}/api/generate",
         json=payload,
-        timeout=60,
+        timeout=120,
     )
     resp.raise_for_status()
     raw_response = resp.json().get("response", "")
@@ -141,7 +141,7 @@ JSON array:"""
     resp = requests.post(
         f"{ollama_url}/api/generate",
         json=payload,
-        timeout=60,
+        timeout=120,
     )
     resp.raise_for_status()
     raw_response = resp.json().get("response", "")

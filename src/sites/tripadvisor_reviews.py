@@ -7,6 +7,10 @@ Fetch TripAdvisor review text for Ananea Castelo Suites Hotel via the
 TripAdvisor Content API and classify each review by topic using Ollama
 (mistral:7b).
 
+TripAdvisor blocks direct web scraping (DataDome CAPTCHA) and Google Maps
+only shows truncated snippets of TripAdvisor reviews, so the Content API
+is the only reliable source for full review text.
+
 Reviews are stored in a JSON file and deduplicated by review ID across runs.
 Each review is classified into zero or more topics with positive/negative
 sentiment.  A single review can mention the same topic both positively and
@@ -226,7 +230,10 @@ def main() -> int:
 
     api_key = args.api_key or os.getenv("TRIPADVISOR_API_KEY")
     if not api_key:
-        raise RuntimeError("No API key provided. Use --api-key or set TRIPADVISOR_API_KEY.")
+        raise RuntimeError(
+            "No API key provided. "
+            "Set TRIPADVISOR_API_KEY env var or pass --api-key."
+        )
 
     # Only scrape Ananea
     location_id = LOCATION_IDS.get(ANANEA_HOTEL)
@@ -261,18 +268,34 @@ def main() -> int:
         logger.info("Reclassified %d reviews.", reclassified)
         return 0
 
-    # --- Normal scrape mode ---
-    logger.info("Fetching reviews for %s (location_id=%s)", ANANEA_HOTEL, location_id)
+    # --- Normal scrape mode (API only) ---
+    logger.info("Fetching TripAdvisor reviews via API for %s (location_id=%s)", ANANEA_HOTEL, location_id)
 
     try:
-        raw_reviews = ta_get_reviews(
+        api_reviews = ta_get_reviews(
             location_id, api_key,
             languages=args.languages,
             max_pages=args.max_pages,
         )
     except Exception as e:
-        logger.error("Failed to fetch reviews: %s", e)
+        logger.error("API fetch failed: %s", e)
         return 1
+
+    # Convert API format to common format
+    raw_reviews: list[dict] = []
+    for raw in api_reviews:
+        raw_reviews.append({
+            "id": str(raw.get("id", "")),
+            "rating": raw.get("rating"),
+            "title": raw.get("title", ""),
+            "text": raw.get("text", ""),
+            "published_date": raw.get("published_date", ""),
+            "author_name": (raw.get("user") or {}).get("username", ""),
+            "travel_date": raw.get("travel_date", ""),
+            "trip_type": raw.get("trip_type", ""),
+            "subratings": raw.get("subratings", {}),
+            "helpful_votes": raw.get("helpful_votes", 0),
+        })
 
     logger.info("API returned %d reviews", len(raw_reviews))
 
@@ -313,7 +336,7 @@ def main() -> int:
         review = {
             "id": review_id,
             "hotel": ANANEA_HOTEL,
-            "location_id": location_id,
+            "location_id": location_id or "",
             "rating": raw.get("rating"),
             "title": raw.get("title", ""),
             "text": text,
