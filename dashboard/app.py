@@ -193,18 +193,25 @@ def latest_scorecard_table(history_df: pd.DataFrame, sources: list[str]) -> pd.D
 
         ananea_score = round(float(ananea["Score"].iloc[0]), 2)
 
-        # Compute Ananea delta vs the last value from a previous month.
-        # Walk backwards through dates until we find one whose month differs
-        # from latest_date's month.
+        # Compute Ananea delta vs a year-based reference point:
+        #   1) Last score from the previous year (preferred)
+        #   2) First score from the current year (fallback)
         ananea_delta = None
-        latest_month = (latest_date.year, latest_date.month)
-        for d in reversed(unique_dates[:-1]):
-            if (d.year, d.month) == latest_month:
-                continue
-            prev = src[(src["Date"] == d) & (src["Hotel"] == ANANEA_HOTEL)]
+        latest_year = latest_date.year
+        prev_year_dates = [d for d in unique_dates if d.year == latest_year - 1]
+        curr_year_dates = [d for d in unique_dates if d.year == latest_year]
+
+        if prev_year_dates:
+            ref_date = prev_year_dates[-1]  # last data point of previous year
+        elif len(curr_year_dates) > 1:
+            ref_date = curr_year_dates[0]   # first data point of current year
+        else:
+            ref_date = None  # only one data point, cannot compare
+
+        if ref_date is not None and ref_date != latest_date:
+            prev = src[(src["Date"] == ref_date) & (src["Hotel"] == ANANEA_HOTEL)]
             if not prev.empty:
                 ananea_delta = round(ananea_score - float(prev["Score"].iloc[0]), 2)
-                break
 
         row: dict[str, object] = {
             "Source": source,
