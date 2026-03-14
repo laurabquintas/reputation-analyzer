@@ -10,8 +10,10 @@ Reviews are stored in a JSON file and deduplicated by review ID across runs.
 Each review is classified into zero or more topics with positive/negative
 sentiment.
 
-HolidayCheck does not offer a public review API, so this scraper fetches the
-hotel reviews page (``/hrd/`` path) and parses the HTML with BeautifulSoup.
+HolidayCheck does not offer a public review API, so this scraper uses
+Playwright to load the hotel reviews page, sort by newest, and then visits
+each individual review detail page (``/hrd/`` path) to extract the full
+review text — including all topic sections (Allgemein, Zimmer, Service, etc.).
 
 USAGE
 -----
@@ -26,7 +28,7 @@ Reclassify previously unclassified reviews:
 
 REQUIREMENTS
 ------------
-requests, beautifulsoup4, PyYAML
+playwright, beautifulsoup4, PyYAML
 """
 
 from __future__ import annotations
@@ -35,19 +37,19 @@ import argparse
 import hashlib
 import json
 import logging
-import os
 import random
 import re
 from datetime import datetime
 from pathlib import Path
 from time import sleep
 
-import requests
 import yaml
 from bs4 import BeautifulSoup, Tag
+from playwright.async_api import async_playwright
+from playwright.sync_api import sync_playwright
 
 from src.classification import (
-    classify_review,
+    classify_holidaycheck_review,
     is_ollama_available,
 )
 
@@ -63,13 +65,86 @@ DEFAULT_JSON_PATH = str(DATA_DIR / "holidaycheck_reviews.json")
 
 ANANEA_HOTEL = "Ananea Castelo Suites Hotel"
 
-UA_HEADERS = {
-    "User-Agent": (
-        "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) "
-        "AppleWebKit/537.36 (KHTML, like Gecko) "
-        "Chrome/124.0.0.0 Safari/537.36"
-    ),
-    "Accept-Language": "en-US,en;q=0.9,de;q=0.8",
+USER_AGENTS = [
+    "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 "
+    "(KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36",
+    "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 "
+    "(KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36",
+    "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 "
+    "(KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36",
+]
+
+# Known HolidayCheck review section headings (German).
+HC_SECTION_HEADINGS = [
+    "Allgemein",
+    "Zimmer",
+    "Service",
+    "Lage & Umgebung",
+    "Lage",
+    "Gastronomie",
+    "Restaurant & Bars",
+    "Sport & Unterhaltung",
+    "Hotel",
+    "Pool",
+    "Strand",
+    "Verkehrsanbindung",
+    "Preis-Leistung",
+]
+
+# German → English translation for reviewer country names.
+_COUNTRY_DE_TO_EN: dict[str, str] = {
+    "Deutschland": "Germany",
+    "Österreich": "Austria",
+    "Schweiz": "Switzerland",
+    "Niederlande": "Netherlands",
+    "Belgien": "Belgium",
+    "Frankreich": "France",
+    "Italien": "Italy",
+    "Spanien": "Spain",
+    "Portugal": "Portugal",
+    "Großbritannien": "United Kingdom",
+    "Irland": "Ireland",
+    "Dänemark": "Denmark",
+    "Schweden": "Sweden",
+    "Norwegen": "Norway",
+    "Finnland": "Finland",
+    "Polen": "Poland",
+    "Tschechien": "Czech Republic",
+    "Ungarn": "Hungary",
+    "Rumänien": "Romania",
+    "Griechenland": "Greece",
+    "Türkei": "Turkey",
+    "Russland": "Russia",
+    "Luxemburg": "Luxembourg",
+    "Kroatien": "Croatia",
+    "Serbien": "Serbia",
+    "Bulgarien": "Bulgaria",
+    "Slowenien": "Slovenia",
+    "Slowakei": "Slovakia",
+    "Estland": "Estonia",
+    "Lettland": "Latvia",
+    "Litauen": "Lithuania",
+    "USA": "USA",
+    "Kanada": "Canada",
+    "Brasilien": "Brazil",
+    "Australien": "Australia",
+    "China": "China",
+    "Japan": "Japan",
+    "Indien": "India",
+    "Südafrika": "South Africa",
+    "Israel": "Israel",
+    "Ägypten": "Egypt",
+    "Marokko": "Morocco",
+}
+
+# German → English translation for trip type.
+_TRIP_TYPE_DE_TO_EN: dict[str, str] = {
+    "Paar": "Couple",
+    "Freunde": "Friends",
+    "Familie": "Family",
+    "Allein/Geschäftlich": "Solo/Business",
+    "Allein": "Solo",
+    "Geschäftlich": "Business",
 }
 
 
@@ -358,6 +433,192 @@ def _parse_html_review(element: Tag) -> dict:
     }
 
 
+def _extract_all_section_texts(soup: BeautifulSoup) -> str:
+    """Extract review text from all topic sections on a detail page.
+
+    HolidayCheck review detail pages show the review split into sections
+    (Allgemein, Zimmer, Service, Lage, etc.).  Each section lives in a
+    container whose first child holds the heading and whose second child
+    holds the review text.
+
+    Returns a combined string with ``[SectionName]`` labels, e.g.::
+
+        [Allgemein] Ein neues Hotel…
+
+        [Zimmer] Moderne Ausstattung…
+    """
+    parts: list[str] = []
+
+    for heading_text in HC_SECTION_HEADINGS:
+        heading_el = soup.find(string=heading_text)
+        if not heading_el:
+            continue
+
+        # Walk up to the section container: text → <div heading> → <div wrapper> → <div section>
+        section = heading_el
+        for _ in range(3):
+            if section.parent:
+                section = section.parent
+            else:
+                break
+
+        # The section container's second child div holds the review text
+        children = [c for c in section.children if hasattr(c, "name") and c.name]
+        if len(children) < 2:
+            continue
+
+        text = children[1].get_text(strip=True)
+        if not text:
+            continue
+
+        # Skip sections that only contain rating labels without real prose
+        # (e.g. "ZimmergrößeSehr gutSchlafqualitätSehr gut")
+        if len(text) < 20 and re.match(r"^[A-ZÄÖÜa-zäöüß\s]+$", text):
+            continue
+
+        parts.append(f"[{heading_text}] {text}")
+
+    return "\n\n".join(parts)
+
+
+def _extract_reviewer_country(soup: BeautifulSoup) -> str:
+    """Extract reviewer country from a detail page (translated to English).
+
+    HolidayCheck shows e.g. "Aus Deutschland" in a <span> under the
+    reviewer's name.  We strip the "Aus " prefix, translate to English,
+    and return the country name.
+    """
+    span = soup.find("span", string=re.compile(r"^Aus\s+"))
+    if span:
+        text = span.get_text(strip=True)
+        country_de = re.sub(r"^Aus\s+", "", text)
+        if country_de:
+            return _COUNTRY_DE_TO_EN.get(country_de, country_de)
+    return ""
+
+
+def _extract_trip_type(soup: BeautifulSoup) -> str:
+    """Extract trip type from a detail page (translated to English).
+
+    HolidayCheck shows e.g. "Verreist als Freunde • August 2025 • Strand"
+    in a <span>.  We extract the portion after "Verreist als " and before
+    the first bullet/dot separator (e.g. "Freunde" → "Friends").
+    """
+    span = soup.find("span", string=re.compile(r"^Verreist\s+als\s+"))
+    if span:
+        text = span.get_text(strip=True)
+        # Remove "Verreist als " prefix
+        after_prefix = re.sub(r"^Verreist\s+als\s+", "", text)
+        # Take everything before the first bullet (•) or middle-dot (·) separator
+        trip_type_de = re.split(r"[•·]", after_prefix)[0].strip()
+        if trip_type_de:
+            return _TRIP_TYPE_DE_TO_EN.get(trip_type_de, trip_type_de)
+    return ""
+
+
+def _extract_title_from_html(soup: BeautifulSoup) -> str:
+    """Extract review title from the detail page HTML.
+
+    On HolidayCheck detail pages the title sits inside
+    ``<div class="hotel-review-header">`` as a ``<span>`` child (child #4).
+    Falls back to generic heading selectors.
+    """
+    header = soup.find("div", class_="hotel-review-header")
+    if header:
+        # The title is the <span> child whose text is longer and is not the author/country/trip
+        children = [c for c in header.children if hasattr(c, "name") and c.name]
+        for child in children:
+            if child.name == "span":
+                text = child.get_text(strip=True)
+                # Skip avatar (empty), author/age (short with parentheses), country, trip
+                if (
+                    text
+                    and len(text) > 15
+                    and not text.startswith("Aus ")
+                    and not text.startswith("Verreist ")
+                    and "/ 6" not in text
+                ):
+                    return text
+
+    # Fallback: generic heading selectors
+    for sel in [
+        {"attrs": {"itemprop": "name"}},
+        {"attrs": {"itemprop": "headline"}},
+    ]:
+        el = soup.find(**sel)
+        if el:
+            text = el.get_text(strip=True)
+            if text and len(text) > 5:
+                return text
+    return ""
+
+
+def _extract_rating_from_html(soup: BeautifulSoup) -> float | None:
+    """Extract review rating from the detail page HTML.
+
+    On HolidayCheck detail pages the review rating appears as
+    ``X,X / 6`` inside ``<div class="hotel-review-header">``.
+    The hotel-level overall score lives in a separate
+    ``<div class="HotelReviewBar ...">`` and must be excluded.
+    """
+    header = soup.find("div", class_="hotel-review-header")
+    if header:
+        # Look for text matching "X,X" followed by "/ 6"
+        rating_text = header.find(string=re.compile(r"[0-6][.,]\d"))
+        if rating_text:
+            return _parse_rating(rating_text.strip())
+
+    # Fallback: look for itemprop="ratingValue" (sometimes present)
+    el = soup.find(attrs={"itemprop": "ratingValue"})
+    if el:
+        return _parse_rating(el.get("content", "") or el.get_text(strip=True))
+
+    return None
+
+
+def _extract_author_from_html(soup: BeautifulSoup) -> str:
+    """Extract reviewer name from the detail page HTML.
+
+    The ``hotel-review-header`` contains a ``<span>`` with text like
+    ``"Frank(56-60)"``.  We strip the age-range suffix.
+    """
+    header = soup.find("div", class_="hotel-review-header")
+    if header:
+        children = [c for c in header.children if hasattr(c, "name") and c.name]
+        for child in children:
+            if child.name == "span":
+                text = child.get_text(strip=True)
+                # Match name optionally followed by (age-range)
+                if text and re.match(r"^[A-ZÄÖÜa-zäöüß]", text) and "/ 6" not in text:
+                    # Strip age range like "(56-60)" or "(26-30)"
+                    name = re.sub(r"\s*\(\d+-\d+\)\s*$", "", text).strip()
+                    if name and len(name) < 60 and not name.startswith("Aus ") and not name.startswith("Verreist "):
+                        return name
+    return ""
+
+
+def _extract_travel_date_from_html(soup: BeautifulSoup) -> str:
+    """Extract travel date from the detail page HTML.
+
+    The trip-type string (e.g. "Verreist als Paar • September 2025 • Strand")
+    contains a German month + year segment.  We parse it with ``_parse_date``.
+    """
+    span = soup.find("span", string=re.compile(r"^Verreist\s+als\s+"))
+    if not span:
+        # Also check <div> — some pages use div instead of span
+        span = soup.find("div", string=re.compile(r"^Verreist\s+als\s+"))
+    if span:
+        text = span.get_text(strip=True)
+        # Split by bullet separators and look for a month+year segment
+        parts = re.split(r"[•·]", text)
+        for part in parts:
+            part = part.strip()
+            # Match German month + year (e.g. "September 2025", "August 2025")
+            if re.search(r"(?:Januar|Februar|März|April|Mai|Juni|Juli|August|September|Oktober|November|Dezember)\s+\d{4}", part, re.IGNORECASE):
+                return _parse_date(part)
+    return ""
+
+
 def _extract_review_detail_links(html: str, base_url: str = "https://www.holidaycheck.de") -> list[str]:
     """Extract individual review detail page links from a reviews listing page.
 
@@ -380,98 +641,364 @@ def _extract_review_detail_links(html: str, base_url: str = "https://www.holiday
     return links
 
 
-def _scrape_full_review(url: str, timeout: int = 15) -> dict:
-    """Fetch a single review detail page and extract the full review text."""
-    resp = requests.get(url, headers=UA_HEADERS, timeout=timeout)
-    resp.raise_for_status()
-    reviews = _scrape_reviews_from_html(resp.text)
-    if reviews:
-        return reviews[0]
-    return {}
+def _scrape_full_review_from_html(html: str) -> dict:
+    """Parse a single review detail page HTML and extract all section texts."""
+    soup = BeautifulSoup(html, "html.parser")
+
+    # Get metadata (id, rating, title, date, author) from JSON-LD / HTML
+    reviews = _scrape_reviews_from_html(html)
+    review = reviews[0] if reviews else {}
+
+    # Fallback: metadata is often missing from the detail page's JSON-LD.
+    # Extract from the visible HTML when absent.
+    if not review.get("title"):
+        review["title"] = _extract_title_from_html(soup)
+    if review.get("rating") is None:
+        review["rating"] = _extract_rating_from_html(soup)
+    if not review.get("author_name"):
+        review["author_name"] = _extract_author_from_html(soup)
+    if not review.get("travel_date"):
+        review["travel_date"] = _extract_travel_date_from_html(soup)
+
+    # Extract the full text from all topic sections
+    all_sections_text = _extract_all_section_texts(soup)
+    if all_sections_text and len(all_sections_text) > len(review.get("text", "")):
+        review["text"] = all_sections_text
+
+    # Extract reviewer country and trip type from the detail page
+    review["country"] = _extract_reviewer_country(soup)
+    review["trip_type"] = _extract_trip_type(soup)
+
+    return review
+
+
+def _dismiss_cookie_banner(page) -> None:
+    """Dismiss the HolidayCheck cookie consent banner if present."""
+    try:
+        # Common HolidayCheck cookie consent selectors
+        for selector in [
+            "button[data-testid='uc-accept-all-button']",
+            "#onetrust-reject-all-handler",
+            "button.uc-btn-accept",
+            "button[id*='accept']",
+        ]:
+            btn = page.locator(selector)
+            if btn.count() > 0:
+                btn.first.click()
+                sleep(0.5)
+                return
+    except Exception:
+        pass
+
+
+async def _async_dismiss_cookie_banner(page) -> None:
+    """Async version: dismiss HolidayCheck cookie consent banner."""
+    import asyncio
+    try:
+        for selector in [
+            "button[data-testid='uc-accept-all-button']",
+            "#onetrust-reject-all-handler",
+            "button.uc-btn-accept",
+            "button[id*='accept']",
+        ]:
+            btn = page.locator(selector)
+            if await btn.count() > 0:
+                await btn.first.click()
+                await asyncio.sleep(0.5)
+                return
+    except Exception:
+        pass
+
+
+def _sync_hc_get_reviews(
+    hotel_url: str,
+    max_pages: int = 10,
+    timeout: int = 30,
+    min_delay: float = 2.5,
+    max_delay: float = 5.0,
+    sort_newest: bool = True,
+) -> list[dict]:
+    """Fetch reviews from HolidayCheck using Playwright.
+
+    1. Opens the reviews listing page (/hr/bewertungen-...) sorted by
+       newest (``?sort=entrydate``).
+    2. Extracts individual review detail links (/hrd/...).
+    3. Navigates to each detail page to get the full review text
+       including all topic sections (Allgemein, Zimmer, Service, etc.).
+    4. Paginates through listing pages.
+    """
+    reviews_url = _hotel_url_to_reviews_url(hotel_url)
+    all_reviews: list[dict] = []
+    seen_ids: set[str] = set()
+    timeout_ms = timeout * 1000
+
+    try:
+        with sync_playwright() as p:
+            browser = p.chromium.launch(headless=True)
+            context = browser.new_context(
+                user_agent=random.choice(USER_AGENTS),
+                locale="de-DE",
+            )
+            page = context.new_page()
+
+            try:
+                for page_num in range(1, max_pages + 1):
+                    # Build listing URL with sort parameter
+                    if sort_newest:
+                        url = (
+                            f"{reviews_url}?sort=entrydate"
+                            if page_num == 1
+                            else f"{reviews_url}?sort=entrydate&p={page_num}"
+                        )
+                    else:
+                        url = (
+                            reviews_url
+                            if page_num == 1
+                            else f"{reviews_url}?p={page_num}"
+                        )
+
+                    logger.info("Fetching listing page %d: %s", page_num, url)
+                    page.goto(url, timeout=timeout_ms, wait_until="domcontentloaded")
+
+                    if page_num == 1:
+                        _dismiss_cookie_banner(page)
+
+                    sleep(random.uniform(1, 2))
+
+                    listing_html = page.content()
+                    count_before = len(all_reviews)
+
+                    detail_links = _extract_review_detail_links(listing_html)
+
+                    if detail_links:
+                        logger.info(
+                            "Found %d review detail links on page %d",
+                            len(detail_links), page_num,
+                        )
+                        for detail_url in detail_links:
+                            sleep(random.uniform(min_delay, max_delay))
+                            try:
+                                page.goto(detail_url, timeout=timeout_ms, wait_until="domcontentloaded")
+                                sleep(random.uniform(1, 2))
+                                detail_html = page.content()
+                                full_review = _scrape_full_review_from_html(detail_html)
+                                if full_review and full_review.get("text"):
+                                    rid = full_review.get("id", "")
+                                    if not rid:
+                                        content = (
+                                            full_review.get("text", "")
+                                            + full_review.get("title", "")
+                                        ).encode()
+                                        rid = hashlib.md5(content).hexdigest()[:16]
+                                        full_review["id"] = rid
+                                    if rid not in seen_ids:
+                                        all_reviews.append(full_review)
+                                        seen_ids.add(rid)
+                                        logger.info(
+                                            "  Fetched full review: %s",
+                                            full_review.get("title", rid)[:50],
+                                        )
+                            except Exception as exc:
+                                logger.warning(
+                                    "  Failed to fetch detail page %s: %s",
+                                    detail_url, exc,
+                                )
+                    else:
+                        # Fallback: use reviews from the listing page (truncated)
+                        page_reviews = _scrape_reviews_from_html(listing_html)
+                        for review in page_reviews:
+                            rid = review.get("id", "")
+                            if not rid:
+                                content = (
+                                    review.get("text", "")
+                                    + review.get("title", "")
+                                ).encode()
+                                rid = hashlib.md5(content).hexdigest()[:16]
+                                review["id"] = rid
+                            if rid not in seen_ids:
+                                all_reviews.append(review)
+                                seen_ids.add(rid)
+
+                    new_on_page = len(all_reviews) - count_before
+                    logger.info(
+                        "Page %d: %d new reviews (%d total)",
+                        page_num, new_on_page, len(all_reviews),
+                    )
+
+                    if new_on_page == 0:
+                        logger.info("No new reviews on page %d, stopping.", page_num)
+                        break
+
+            finally:
+                browser.close()
+
+    except Exception as exc:
+        logger.warning("Playwright fetch failed: %s", exc)
+
+    logger.info("Fetched %d unique reviews total", len(all_reviews))
+    return all_reviews
+
+
+async def _async_hc_get_reviews(
+    hotel_url: str,
+    max_pages: int = 10,
+    timeout: int = 30,
+    min_delay: float = 2.5,
+    max_delay: float = 5.0,
+    sort_newest: bool = True,
+) -> list[dict]:
+    """Async: fetch reviews from HolidayCheck (for Jupyter compatibility)."""
+    import asyncio
+
+    reviews_url = _hotel_url_to_reviews_url(hotel_url)
+    all_reviews: list[dict] = []
+    seen_ids: set[str] = set()
+    timeout_ms = timeout * 1000
+
+    try:
+        async with async_playwright() as p:
+            browser = await p.chromium.launch(headless=True)
+            context = await browser.new_context(
+                user_agent=random.choice(USER_AGENTS),
+                locale="de-DE",
+            )
+            page = await context.new_page()
+
+            try:
+                for page_num in range(1, max_pages + 1):
+                    if sort_newest:
+                        url = (
+                            f"{reviews_url}?sort=entrydate"
+                            if page_num == 1
+                            else f"{reviews_url}?sort=entrydate&p={page_num}"
+                        )
+                    else:
+                        url = (
+                            reviews_url
+                            if page_num == 1
+                            else f"{reviews_url}?p={page_num}"
+                        )
+
+                    logger.info("Fetching listing page %d: %s", page_num, url)
+                    await page.goto(url, timeout=timeout_ms, wait_until="domcontentloaded")
+
+                    if page_num == 1:
+                        await _async_dismiss_cookie_banner(page)
+
+                    await asyncio.sleep(random.uniform(1, 2))
+
+                    listing_html = await page.content()
+                    count_before = len(all_reviews)
+
+                    detail_links = _extract_review_detail_links(listing_html)
+
+                    if detail_links:
+                        logger.info(
+                            "Found %d review detail links on page %d",
+                            len(detail_links), page_num,
+                        )
+                        for detail_url in detail_links:
+                            await asyncio.sleep(random.uniform(min_delay, max_delay))
+                            try:
+                                await page.goto(
+                                    detail_url, timeout=timeout_ms,
+                                    wait_until="domcontentloaded",
+                                )
+                                await asyncio.sleep(random.uniform(1, 2))
+                                detail_html = await page.content()
+                                full_review = _scrape_full_review_from_html(detail_html)
+                                if full_review and full_review.get("text"):
+                                    rid = full_review.get("id", "")
+                                    if not rid:
+                                        content = (
+                                            full_review.get("text", "")
+                                            + full_review.get("title", "")
+                                        ).encode()
+                                        rid = hashlib.md5(content).hexdigest()[:16]
+                                        full_review["id"] = rid
+                                    if rid not in seen_ids:
+                                        all_reviews.append(full_review)
+                                        seen_ids.add(rid)
+                                        logger.info(
+                                            "  Fetched full review: %s",
+                                            full_review.get("title", rid)[:50],
+                                        )
+                            except Exception as exc:
+                                logger.warning(
+                                    "  Failed to fetch detail page %s: %s",
+                                    detail_url, exc,
+                                )
+                    else:
+                        page_reviews = _scrape_reviews_from_html(listing_html)
+                        for review in page_reviews:
+                            rid = review.get("id", "")
+                            if not rid:
+                                content = (
+                                    review.get("text", "")
+                                    + review.get("title", "")
+                                ).encode()
+                                rid = hashlib.md5(content).hexdigest()[:16]
+                                review["id"] = rid
+                            if rid not in seen_ids:
+                                all_reviews.append(review)
+                                seen_ids.add(rid)
+
+                    new_on_page = len(all_reviews) - count_before
+                    logger.info(
+                        "Page %d: %d new reviews (%d total)",
+                        page_num, new_on_page, len(all_reviews),
+                    )
+
+                    if new_on_page == 0:
+                        logger.info("No new reviews on page %d, stopping.", page_num)
+                        break
+
+            finally:
+                await browser.close()
+
+    except Exception as exc:
+        logger.warning("Playwright fetch failed: %s", exc)
+
+    logger.info("Fetched %d unique reviews total", len(all_reviews))
+    return all_reviews
 
 
 def hc_get_reviews(
     hotel_url: str,
     max_pages: int = 10,
-    timeout: int = 15,
+    timeout: int = 30,
     min_delay: float = 2.5,
     max_delay: float = 5.0,
+    sort_newest: bool = True,
 ) -> list[dict]:
-    """Fetch reviews from HolidayCheck with full text from detail pages.
+    """Fetch reviews from HolidayCheck using Playwright.
 
-    1. Scrapes the reviews listing page (/hr/bewertungen-...) for review
-       links and preview data.
-    2. Follows each individual review detail link (/hrd/...) to get the
-       full review text (the listing page only shows truncated text).
+    Automatically uses the async Playwright API when called inside an
+    existing event loop (e.g. Jupyter notebooks), and the sync API otherwise.
+
+    1. Opens the reviews listing page sorted by newest (``?sort=entrydate``).
+    2. Navigates to each detail page to extract all topic sections.
+    3. Paginates through listing pages.
     """
-    reviews_url = _hotel_url_to_reviews_url(hotel_url)
-    all_reviews: list[dict] = []
-    seen_ids: set[str] = set()
+    import asyncio
 
-    for page in range(1, max_pages + 1):
-        url = reviews_url if page == 1 else f"{reviews_url}?p={page}"
-        logger.info("Fetching listing page %d: %s", page, url)
+    try:
+        loop = asyncio.get_running_loop()
+    except RuntimeError:
+        loop = None
 
-        try:
-            resp = requests.get(url, headers=UA_HEADERS, timeout=timeout)
-            resp.raise_for_status()
-        except requests.HTTPError as exc:
-            logger.warning("HTTP error on page %d: %s", page, exc)
-            break
-        except requests.RequestException as exc:
-            logger.warning("Request error on page %d: %s", page, exc)
-            break
-
-        count_before = len(all_reviews)
-
-        # Extract individual review detail links (/hrd/...) for full text
-        detail_links = _extract_review_detail_links(resp.text)
-
-        if detail_links:
-            # Follow each detail link to get the full review text
-            logger.info("Found %d review detail links on page %d", len(detail_links), page)
-            for detail_url in detail_links:
-                sleep(random.uniform(min_delay, max_delay))
-                try:
-                    full_review = _scrape_full_review(detail_url, timeout=timeout)
-                    if full_review and full_review.get("text"):
-                        rid = full_review.get("id", "")
-                        if not rid:
-                            content = (full_review.get("text", "") + full_review.get("title", "")).encode()
-                            rid = hashlib.md5(content).hexdigest()[:16]
-                            full_review["id"] = rid
-                        if rid not in seen_ids:
-                            all_reviews.append(full_review)
-                            seen_ids.add(rid)
-                            logger.info("  Fetched full review: %s", full_review.get("title", rid)[:50])
-                except Exception as exc:
-                    logger.warning("  Failed to fetch detail page %s: %s", detail_url, exc)
-        else:
-            # Fallback: use reviews from the listing page (may be truncated)
-            page_reviews = _scrape_reviews_from_html(resp.text)
-            for review in page_reviews:
-                rid = review.get("id", "")
-                if not rid:
-                    content = (review.get("text", "") + review.get("title", "")).encode()
-                    rid = hashlib.md5(content).hexdigest()[:16]
-                    review["id"] = rid
-                if rid not in seen_ids:
-                    all_reviews.append(review)
-                    seen_ids.add(rid)
-
-        new_on_page = len(all_reviews) - count_before
-        logger.info("Page %d: %d new reviews (%d total)", page, new_on_page, len(all_reviews))
-
-        if new_on_page == 0:
-            logger.info("No new reviews on page %d, stopping.", page)
-            break
-
-        # Polite delay between listing pages (detail page delays are inline above)
-        if not detail_links:
-            sleep(random.uniform(min_delay, max_delay))
-
-    logger.info("Fetched %d unique reviews total", len(all_reviews))
-    return all_reviews
+    if loop is not None:
+        import nest_asyncio
+        nest_asyncio.apply()
+        return loop.run_until_complete(
+            _async_hc_get_reviews(
+                hotel_url, max_pages, timeout, min_delay, max_delay, sort_newest,
+            )
+        )
+    else:
+        return _sync_hc_get_reviews(
+            hotel_url, max_pages, timeout, min_delay, max_delay, sort_newest,
+        )
 
 
 # ---------------------- JSON storage ---------------------- #
@@ -538,12 +1065,16 @@ def parse_args() -> argparse.Namespace:
         help="Reclassify reviews that have classified=false.",
     )
     p.add_argument(
+        "--sort-newest", action="store_true", default=True,
+        help="Sort reviews by newest first (default: True).",
+    )
+    p.add_argument(
         "--max-pages", type=int, default=10,
         help="Max review pages to fetch (default: 10)",
     )
     p.add_argument(
-        "--timeout", type=int, default=15,
-        help="HTTP timeout per request in seconds (default: 15)",
+        "--timeout", type=int, default=30,
+        help="Page load timeout in seconds (default: 30)",
     )
     p.add_argument(
         "--min-delay", type=float, default=2.5,
@@ -590,7 +1121,7 @@ def main() -> int:
         for review in existing_reviews:
             if not review.get("classified", False) and review.get("text"):
                 try:
-                    topics = classify_review(review["text"], args.ollama_url)
+                    topics = classify_holidaycheck_review(review["text"], args.ollama_url)
                     review["topics"] = topics
                     review["classified"] = True
                     reclassified += 1
@@ -617,6 +1148,7 @@ def main() -> int:
             timeout=args.timeout,
             min_delay=args.min_delay,
             max_delay=args.max_delay,
+            sort_newest=args.sort_newest,
         )
     except Exception as e:
         logger.error("Failed to scrape reviews: %s", e)
@@ -639,7 +1171,7 @@ def main() -> int:
 
         if ollama_ok and text:
             try:
-                topics = classify_review(text, args.ollama_url)
+                topics = classify_holidaycheck_review(text, args.ollama_url)
                 classified = True
                 logger.info(
                     "  Review %s: %d topics classified",
@@ -660,6 +1192,8 @@ def main() -> int:
             "text": text,
             "published_date": raw.get("travel_date", ""),
             "author_name": raw.get("author_name", ""),
+            "country": raw.get("country", ""),
+            "trip_type": raw.get("trip_type", ""),
             "scraped_date": args.date,
             "topics": topics,
             "classified": classified,
