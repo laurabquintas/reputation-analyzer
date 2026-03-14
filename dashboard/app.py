@@ -905,15 +905,25 @@ def main() -> None:
     # Internal Analysis – Reviews
     # ================================================================== #
     st.header("Internal Analysis - Reviews")
-    st.caption(
-        "**Employees** — staff, service, friendliness, helpfulness, reception, concierge, team, waiters, management · "
-        "**Commodities** — amenities, facilities, pool, gym, spa, room features, wifi, parking, fridge, toiletries, TV, AC, balcony, shuttle, entertainment · "
-        "**Comfort** — room comfort, bed quality, noise, quiet, space, temperature, room size, mattress, pillow, decor, ambiance, view · "
-        "**Cleaning** — cleanliness, hygiene, tidiness, housekeeping, dirty, stains, towels changed · "
-        "**Quality / Price** — value for money, pricing, worth, cost, overpriced, good deal, expensive, affordable · "
-        "**Meals** — food, breakfast, restaurant, dining, bar, drinks, buffet, dinner, cuisine, menu, snacks, variety · "
-        "**Return** — whether the guest would return, come back, visit again, recommend, revisit"
-    )
+    with st.expander("ℹ️ Topic definitions", expanded=False):
+        st.markdown(
+            """
+<span style="color: grey;">
+
+| Topic | What it covers |
+|-------|---------------|
+| **Employees** | Staff, service, friendliness, helpfulness, reception, concierge, team, waiters, management |
+| **Commodities** | Amenities, facilities, pool, gym, spa, room features, wifi, parking, fridge, toiletries, TV, air conditioning, balcony, shuttle, iron, entertainment, music |
+| **Comfort** | Room comfort, bed quality, noise, quiet, space, temperature, room size, mattress, pillow, decor, ambiance, construction noise, view |
+| **Cleaning** | Cleanliness, hygiene, tidiness, housekeeping, spotless, dirty, stains, towels changed, room serviced |
+| **Quality / Price** | Value for money, pricing, worth, cost, overpriced, good deal, expensive, cheap, affordable, half board value |
+| **Meals** | Food, breakfast, restaurant, dining, bar, drinks, buffet, dinner, lunch, cuisine, menu, chef, kitchen, snacks, repetitive food, variety |
+| **Return** | Whether the guest would return, come back, visit again, recommend, revisit, not return, wouldn't go back |
+
+</span>
+""",
+            unsafe_allow_html=True,
+        )
 
     # Load review sources based on selection
     reviews_data = _load_reviews_json(REVIEWS_JSON_PATH) if "Tripadvisor" in selected_sources else []
