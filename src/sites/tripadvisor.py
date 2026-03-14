@@ -9,8 +9,9 @@ TripAdvisor Content API and update a CSV with the following layout:
 - One column per run date (YYYY-MM-DD) with the score (float, 0-5)
 - An "Average Score" column computed across all date columns
 
-The scraper uses the official TripAdvisor Content API (location details
-endpoint) to retrieve the aggregate rating for each hotel.
+TripAdvisor blocks direct web scraping (DataDome CAPTCHA) and Google
+Search score cards are not always reliable, so the Content API is the
+only consistent source for TripAdvisor scores.
 
 CSV details:
 - Default file: tripadvisor_scores.csv
@@ -67,6 +68,7 @@ def _load_location_ids() -> dict[str, str]:
     with open(_CONFIG_PATH, encoding="utf-8") as f:
         cfg = yaml.safe_load(f)
     return {h["name"]: h["tripadvisor_location_id"] for h in cfg["hotels"] if h.get("tripadvisor_location_id")}
+
 
 # Map of hotel display name -> TripAdvisor location ID
 LOCATION_IDS = _load_location_ids()
@@ -166,10 +168,13 @@ def main():
     # Validate date format early
     if not DATE_COL_RE.fullmatch(args.date):
         raise ValueError(f"--date must be YYYY-MM-DD, got: {args.date}")
-    # Resolve API key (environment variable only – never pass keys via CLI)
+
     api_key = os.getenv("TRIPADVISOR_API_KEY")
     if not api_key:
-        raise RuntimeError("No API key provided. Set the TRIPADVISOR_API_KEY environment variable.")
+        raise RuntimeError(
+            "No API key provided. "
+            "Set TRIPADVISOR_API_KEY env var."
+        )
 
     hotels = list(LOCATION_IDS.keys())
     df = ensure_csv(args.csv, args.sep, hotels)
@@ -179,11 +184,18 @@ def main():
 
     logger.info("Writing scores into column: %s", today_col)
 
-    for i, (hotel, url) in enumerate(LOCATION_IDS.items(), start=1):
+    for i, (hotel, location_id) in enumerate(LOCATION_IDS.items(), start=1):
         logger.info("%02d/%d → %s", i, len(LOCATION_IDS), hotel)
-        score, n = ta_get_rating(url, api_key=api_key)
-        score = sanitize_tripadvisor_score(score)
+        score = None
+
+        try:
+            score, n = ta_get_rating(location_id, api_key=api_key)
+            score = sanitize_tripadvisor_score(score)
+        except Exception as e:
+            logger.warning("  API failed: %s", e)
+
         new_scores[hotel] = score
+
         if score is not None:
             logger.info("  %s/5", score)
         else:

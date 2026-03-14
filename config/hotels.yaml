@@ -12,6 +12,7 @@ hotels:
     aliases: ["ananea", "ananea castelo"]
     booking_url: "https://www.booking.com/hotel/pt/castelo-suites.en-gb.html"
     tripadvisor_location_id: "33299137"
+    tripadvisor_url: "https://www.tripadvisor.com/Hotel_Review-g189112-d33299137-Reviews-Castelo_Suites_Hotel_ananea-Albufeira_Faro_District_Algarve.html"
     google_query: "Ananea Castelo Suites Algarve, Portugal"
     google_place_id: ""
     google_maps_url: "https://maps.app.goo.gl/QsTaS8vLupyrC3hQ8"
@@ -23,6 +24,7 @@ hotels:
     aliases: []
     booking_url: "https://www.booking.com/hotel/pt/porto-bay-falesia.en-gb.html"
     tripadvisor_location_id: "625806"
+    tripadvisor_url: "https://www.tripadvisor.com/Hotel_Review-g1190872-d625806-Reviews-PortoBay_Falesia-Olhos_de_Agua_Albufeira_Faro_District_Algarve.html"
     google_query: "PortoBay Falésia, Albufeira, Portugal"
     google_place_id: ""
     google_maps_url: "https://maps.app.goo.gl/DxodrUv4ub7qp89eA"
@@ -34,6 +36,7 @@ hotels:
     aliases: []
     booking_url: "https://www.booking.com/hotel/pt/regency-salgados-amp-spa.en-gb.html"
     tripadvisor_location_id: "23418643"
+    tripadvisor_url: "https://www.tripadvisor.com/Hotel_Review-g11855863-d23418643-Reviews-Regency_Salgados_Hotel_Spa-Gale_Albufeira_Faro_District_Algarve.html"
     google_query: "Regency Salgados Hotel & Spa, Algarve, Portugal"
     google_place_id: ""
     google_maps_url: "https://maps.app.goo.gl/UZ6dAot3VC4eWV3U7"
@@ -45,6 +48,7 @@ hotels:
     aliases: []
     booking_url: "https://www.booking.com/hotel/pt/sao-rafael-suites-all-inclusive.en-gb.html"
     tripadvisor_location_id: "289104"
+    tripadvisor_url: "https://www.tripadvisor.com/Hotel_Review-g26493305-d289104-Reviews-NAU_Sao_Rafael_Suites-Evaristo_Albufeira_Faro_District_Algarve.html"
     google_query: "NAU São Rafael Atlântico, Albufeira, Portugal"
     google_place_id: ""
     google_maps_url: "https://maps.app.goo.gl/G3Nfg49qBYQkR2xr5"
@@ -56,6 +60,7 @@ hotels:
     aliases: []
     booking_url: "https://www.booking.com/hotel/pt/westin-salgados-beach-resort-algarve.en-gb.html"
     tripadvisor_location_id: "1772673"
+    tripadvisor_url: "https://www.tripadvisor.com/Hotel_Review-g189112-d33078128-Reviews-The_Westin_Salgados_Beach_Resort_Algarve-Albufeira_Faro_District_Algarve.html"
     google_query: "The Westin Salgados Beach Resort, Albufeira, Portugal"
     google_place_id: ""
     google_maps_url: "https://maps.app.goo.gl/CxCEgfZkiXnzAEsy9"
@@ -67,6 +72,7 @@ hotels:
     aliases: []
     booking_url: "https://www.booking.com/hotel/pt/vidamar-algarve-hotel.en-gb.html"
     tripadvisor_location_id: "3927147"
+    tripadvisor_url: "https://www.tripadvisor.com/Hotel_Review-g189112-d3927147-Reviews-VidaMar_Algarve-Albufeira_Faro_District_Algarve.html"
     google_query: "Vidamar Resort Hotel Algarve, Albufeira, Portugal"
     google_place_id: ""
     google_maps_url: "https://maps.app.goo.gl/etAzqPDxgnjJ2DDu7"
