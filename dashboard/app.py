@@ -1490,11 +1490,12 @@ def main() -> None:
             )
             _last = _mr_sorted[0]
             _last_date = _last.get("published_date", "")[:10]
+            _last_author = _last.get("author_name", "") or "Anonymous"
             _last_title = _last.get("title", "—") or "—"
             _last_rating = _last.get("rating", "—")
             st.info(
                 f"**Last {mr_source} review:** {_last_date} · "
-                f"Rating {_last_rating} · \"{_last_title}\" "
+                f"{_last_author} · Rating {_last_rating} · \"{_last_title}\" "
                 f"({len(_mr_reviews)} reviews total)"
             )
         else:
