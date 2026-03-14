@@ -72,6 +72,89 @@ JSON array:"""
     return _parse_classification(raw_response)
 
 
+def classify_holidaycheck_review(text: str, ollama_url: str = "http://localhost:11434") -> list[dict]:
+    """Classify a HolidayCheck review using its section labels for better accuracy.
+
+    HolidayCheck reviews contain section labels like ``[Zimmer]``, ``[Service]``,
+    ``[Gastronomie]``, etc.  This function tells the LLM what each section means
+    so it can assign topics and sentiments more accurately than the generic
+    ``classify_review`` prompt.
+
+    Falls back to the generic ``classify_review`` when no section labels are
+    detected in the text.
+    """
+    # If no section labels, fall back to generic classification
+    if "[" not in text:
+        return classify_review(text, ollama_url)
+
+    prompt = f"""You are a hotel review analyst. The review below is from HolidayCheck (a German hotel review site). It is structured into SECTIONS marked with labels in square brackets like [Zimmer], [Service], etc.
+
+SECTION LABEL → TOPIC MAPPING (use this to assign topics accurately):
+- [Allgemein] (General) → may contain ANY topic — read carefully
+- [Zimmer] (Room) → comfort, commodities (room features, space, bed, furniture, AC, view)
+- [Service] → employees (staff, friendliness, helpfulness, reception, management)
+- [Lage & Umgebung] or [Lage] (Location) → commodities (location, surroundings, transport, beach access)
+- [Gastronomie] or [Restaurant & Bars] → meals (food, breakfast, restaurant, drinks, buffet, bar)
+- [Sport & Unterhaltung] (Sports & Entertainment) → commodities (pool, gym, spa, entertainment, activities)
+- [Hotel] → commodities, comfort (general hotel facilities, ambiance, decor, lobby)
+- [Pool] → commodities (pool facilities, pool temperature, pool area)
+- [Strand] (Beach) → commodities (beach quality, beach access, beach facilities)
+- [Preis-Leistung] (Value for money) → quality_price
+- [Verkehrsanbindung] (Transport connections) → commodities (transport, shuttle, taxi, airport)
+
+TOPICS (use these exact keys):
+- employees: staff, service, friendliness, helpfulness, reception, concierge, team, waiters, management
+- commodities: amenities, facilities, pool, gym, spa, room features, wifi, parking, fridge, toiletries, TV, air conditioning, balcony, shuttle, iron, entertainment, music, location, beach
+- comfort: room comfort, bed quality, noise, quiet, space, temperature, room size, mattress, pillow, decor, ambiance, construction noise, view
+- cleaning: cleanliness, hygiene, tidiness, housekeeping, spotless, dirty, stains, towels changed, room serviced
+- quality_price: value for money, pricing, worth, cost, overpriced, good deal, expensive, cheap, affordable, half board value
+- meals: food, breakfast, restaurant, dining, bar, drinks, buffet, dinner, lunch, cuisine, menu, chef, kitchen, snacks, repetitive food, variety
+- return: whether the guest would return, come back, visit again, recommend, revisit, not return, wouldn't go back
+
+RULES:
+1. Use the section labels to guide topic assignment. Text under [Gastronomie] is almost certainly about meals; text under [Service] is about employees; etc.
+2. The [Allgemein] section is a general summary — it may touch on ANY topic. Analyze it sentence by sentence.
+3. A single section CAN contain both positive AND negative sentiments. For example [Zimmer] might praise the bed but complain about noise.
+4. Even brief or indirect mentions count.
+5. Complaints, cons, "could be better", "didn't work well", suggestions for improvement = NEGATIVE.
+6. The review text is in German — identify topics regardless of language.
+7. For each entry include a "detail" field: a short phrase (2-4 words) in English describing the specific aspect mentioned. Use lowercase.
+8. Output ONLY a JSON array. No explanation, no markdown.
+
+EXAMPLE INPUT:
+\"\"\"[Allgemein] Das Hotel ist modern und das Personal freundlich. Wir kommen gerne wieder.
+
+[Zimmer] Geräumig und sauber, aber die Klimaanlage war laut.
+
+[Gastronomie] Frühstück war abwechslungsreich.\"\"\"
+
+EXAMPLE OUTPUT: [{{"topic":"commodities","sentiment":"positive","detail":"modern hotel"}},{{"topic":"employees","sentiment":"positive","detail":"friendly staff"}},{{"topic":"return","sentiment":"positive","detail":"would return"}},{{"topic":"comfort","sentiment":"positive","detail":"spacious room"}},{{"topic":"cleaning","sentiment":"positive","detail":"clean room"}},{{"topic":"comfort","sentiment":"negative","detail":"loud air conditioning"}},{{"topic":"meals","sentiment":"positive","detail":"varied breakfast"}}]
+
+Now analyze this review:
+\"\"\"{text}\"\"\"
+
+JSON array:"""
+
+    payload = {
+        "model": "mistral:7b",
+        "prompt": prompt,
+        "stream": False,
+        "options": {
+            "temperature": 0.1,
+            "num_predict": 768,
+        },
+    }
+
+    resp = requests.post(
+        f"{ollama_url}/api/generate",
+        json=payload,
+        timeout=120,
+    )
+    resp.raise_for_status()
+    raw_response = resp.json().get("response", "")
+    return _parse_classification(raw_response)
+
+
 def classify_booking_review(
     positive_text: str,
     negative_text: str,
