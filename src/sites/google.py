@@ -73,8 +73,14 @@ def _load_hotel_queries() -> Dict[str, str]:
         cfg = yaml.safe_load(f)
     return {h["name"]: h["google_query"] for h in cfg["hotels"] if h.get("google_query")}
 
+def _load_google_maps_urls() -> Dict[str, str]:
+    with open(_CONFIG_PATH, encoding="utf-8") as f:
+        cfg = yaml.safe_load(f)
+    return {h["name"]: h["google_maps_url"] for h in cfg["hotels"] if h.get("google_maps_url")}
+
 # Map of hotel display name -> text query for Places search
 HOTEL_QUERIES: Dict[str, str] = _load_hotel_queries()
+GOOGLE_MAPS_URLS: Dict[str, str] = _load_google_maps_urls()
 
 DATE_COL_RE = re.compile(r"^\d{4}-\d{2}-\d{2}$")  # YYYY-MM-DD
 
@@ -182,7 +188,7 @@ def update_average(df: pd.DataFrame) -> None:
 
 def parse_args() -> argparse.Namespace:
     p = argparse.ArgumentParser(
-        description="Fetch Google Maps ratings (Places API) and update a semicolon CSV."
+        description="Fetch Google Maps ratings and update a semicolon CSV."
     )
     p.add_argument(
         "--csv",
@@ -205,6 +211,14 @@ def parse_args() -> argparse.Namespace:
         default=DEFAULT_TIMEOUT,
         help=f"HTTP timeout per hotel (default: {DEFAULT_TIMEOUT})",
     )
+    p.add_argument(
+        "--api-only", action="store_true",
+        help="Skip Playwright scraping, use API only.",
+    )
+    p.add_argument(
+        "--playwright-only", action="store_true",
+        help="Skip API, use Playwright scraping only.",
+    )
     return p.parse_args()
 
 
@@ -216,11 +230,15 @@ def main():
     if not DATE_COL_RE.fullmatch(args.date):
         raise ValueError(f"--date must be YYYY-MM-DD, got: {args.date}")
 
-    # Resolve API key (environment variable only – never pass keys via CLI)
+    # Resolve API key
     api_key = os.getenv("GOOGLE_MAPS_API_KEY")
-    if not api_key:
+    use_playwright = not args.api_only
+    use_api = not args.playwright_only and bool(api_key)
+
+    if not use_playwright and not use_api:
         raise RuntimeError(
-            "No API key provided. Set the GOOGLE_MAPS_API_KEY environment variable."
+            "No API key provided and --api-only set. "
+            "Set GOOGLE_MAPS_API_KEY or use --playwright-only."
         )
 
     hotels = list(HOTEL_QUERIES.keys())
@@ -233,17 +251,39 @@ def main():
 
     for i, (hotel, query) in enumerate(HOTEL_QUERIES.items(), start=1):
         logger.info("%02d/%d → %s", i, len(HOTEL_QUERIES), hotel)
-        try:
-            score = get_google_rating(query, api_key=api_key, timeout=args.timeout)
-        except Exception as e:
-            logger.error("  %s", e)
-            score = None
+        score = None
+        source = None
 
-        score = sanitize_google_score(score)
+        # Option A: Playwright scraping
+        if use_playwright and score is None:
+            maps_url = GOOGLE_MAPS_URLS.get(hotel)
+            if maps_url:
+                try:
+                    from src.sites.google_scraper import fetch_google_rating_playwright
+                    pw_score, _ = fetch_google_rating_playwright(maps_url, retries=1)
+                    pw_score = sanitize_google_score(pw_score)
+                    if pw_score is not None:
+                        score = pw_score
+                        source = "playwright"
+                except Exception as e:
+                    logger.warning("  Playwright failed: %s", e)
+
+        # Fallback B: API
+        if use_api and score is None:
+            if source is None:
+                logger.info("  Falling back to API")
+            try:
+                score = get_google_rating(query, api_key=api_key, timeout=args.timeout)
+                score = sanitize_google_score(score)
+                if score is not None:
+                    source = "api"
+            except Exception as e:
+                logger.warning("  API failed: %s", e)
+
         new_scores[hotel] = score
 
         if score is not None:
-            logger.info("  %s/5", score)
+            logger.info("  %s/5 (via %s)", score, source)
         else:
             logger.warning("  (no score)")
 

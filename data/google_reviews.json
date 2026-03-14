@@ -1,19 +1,266 @@
 {
   "meta": {
-    "last_updated": "2026-03-11T23:19:10",
+    "last_updated": "2026-03-14T02:17:50",
     "total_reviews": 33
   },
   "reviews": [
     {
+      "id": "Ci9DQUlRQUNvZENodHljRjlvT2xaUVVHdzJaR1V3UkcxeVJXNVVaRGhFTURaQ1FYYxAB",
+      "hotel": "Ananea Castelo Suites Hotel",
+      "source": "google",
+      "rating": 5.0,
+      "title": "",
+      "text": "Everything was perfect: the cleanliness, the setting, the attentive staff, and the location.",
+      "published_date": "2026-01-13",
+      "author_name": "Anne b",
+      "scraped_date": "2026-03-14",
+      "topics": [
+        {
+          "topic": "employees",
+          "sentiment": "positive",
+          "detail": "attentive staff"
+        },
+        {
+          "topic": "commodities",
+          "sentiment": "positive",
+          "detail": "setting"
+        }
+      ],
+      "classified": true
+    },
+    {
+      "id": "Ci9DQUlRQUNvZENodHljRjlvT20xUlVGTlJOa0pqTURSTVlVNWpSM2xRZURkRFZuYxAB",
+      "hotel": "Ananea Castelo Suites Hotel",
+      "source": "google",
+      "rating": 5.0,
+      "title": "",
+      "text": "Go without hesitation! The location is very quiet, and everyone is very kind and courteous. Breakfast and dinner were delicious. We plan to return very soon. Thank you for everything.",
+      "published_date": "2026-01-13",
+      "author_name": "Anita",
+      "scraped_date": "2026-03-14",
+      "topics": [
+        {
+          "topic": "employees",
+          "sentiment": "positive",
+          "detail": "kind and courteous"
+        },
+        {
+          "topic": "meals",
+          "sentiment": "positive",
+          "detail": "delicious breakfast and dinner"
+        }
+      ],
+      "classified": true
+    },
+    {
+      "id": "Ci9DQUlRQUNvZENodHljRjlvT2tVNFEzQjVlWE5XT1VNNU9GbEhWVWxGWDNFNGFHYxAB",
+      "hotel": "Ananea Castelo Suites Hotel",
+      "source": "google",
+      "rating": 5.0,
+      "title": "",
+      "text": "Impeccable service. The staff were extremely kind, attentive, and always smiling. The overall atmosphere of the hotel is pleasant, from the decor to the ambiance. Breakfast and dinner were excellent (featuring local products). A big thank you to the entire team who helped make our stay so enjoyable.",
+      "published_date": "2026-01-13",
+      "author_name": "Alex Vl",
+      "scraped_date": "2026-03-14",
+      "topics": [
+        {
+          "topic": "employees",
+          "sentiment": "positive",
+          "detail": "impeccable service"
+        },
+        {
+          "topic": "comfort",
+          "sentiment": "positive",
+          "detail": "pleasant atmosphere"
+        },
+        {
+          "topic": "meals",
+          "sentiment": "positive",
+          "detail": "excellent breakfast"
+        }
+      ],
+      "classified": true
+    },
+    {
+      "id": "Ci9DQUlRQUNvZENodHljRjlvT2t4cmF6QklPV1ZhV1VKVFJuZzBWRlZKV2pGc2VXYxAB",
+      "hotel": "Ananea Castelo Suites Hotel",
+      "source": "google",
+      "rating": 5.0,
+      "title": "",
+      "text": "We held our Christmas event at Castelo Suites and they were impeccable. The hotel is beautiful, the decor is wonderful, and the staff are attentive. It exceeded all expectations. I highly recommend it.",
+      "published_date": "2026-01-13",
+      "author_name": "Gisele Secco",
+      "scraped_date": "2026-03-14",
+      "topics": [
+        {
+          "topic": "employees",
+          "sentiment": "positive",
+          "detail": "attentive staff"
+        },
+        {
+          "topic": "commodities",
+          "sentiment": "positive",
+          "detail": "beautiful hotel"
+        },
+        {
+          "topic": "comfort",
+          "sentiment": "positive",
+          "detail": "wonderful decor"
+        }
+      ],
+      "classified": true
+    },
+    {
+      "id": "Ci9DQUlRQUNvZENodHljRjlvT2pCTU4wZDRNMGQzTkRkWVlsaFhOWFowVlRWMFVGRRAB",
+      "hotel": "Ananea Castelo Suites Hotel",
+      "source": "google",
+      "rating": 5.0,
+      "title": "",
+      "text": "We enjoyed a few days at this beautiful hotel. Modern room and facilities, a lovely garden with an exceptional pool. The staff, from reception to the housekeeper and waiters, were incredibly friendly and helpful. At breakfast, Jackson, always smiling, and his colleagues made sure we had an AMAZING breakfast. Thank you all three! And at the SUPER DINNER, ALEX!!! Super attentive in every way, friendly, helpful, polite, and a true professional, he made our dinners not only exquisite but also very SPECIAL. Thank you so much for everything, Alex! Hugs! Thank you and congratulations to the chefs for their fantastic presentation of dishes and delicious food! Thank you a thousand times over!",
+      "published_date": "2025-12-14",
+      "author_name": "Rubia Cordero",
+      "scraped_date": "2026-03-14",
+      "topics": [
+        {
+          "topic": "employees",
+          "sentiment": "positive",
+          "detail": "friendly and helpful staff"
+        },
+        {
+          "topic": "commodities",
+          "sentiment": "positive",
+          "detail": "modern room and facilities"
+        },
+        {
+          "topic": "meals",
+          "sentiment": "positive",
+          "detail": "amazing breakfast"
+        }
+      ],
+      "classified": true
+    },
+    {
+      "id": "Ci9DQUlRQUNvZENodHljRjlvT2tnMFRUTmpWMlYyYkV4Rk56VnRjR0ppYW5STllrRRAB",
+      "hotel": "Ananea Castelo Suites Hotel",
+      "source": "google",
+      "rating": 5.0,
+      "title": "",
+      "text": "We stayed during the Constitution Day long weekend and the newly opened hotel was very new, clean, and comfortable. When all the services are up and running, it will be spectacular. The service, from reception to the housekeeping staff, was excellent, with special mention to Alex, our dinner waiter. He was a super friendly guy, always available for anything we needed. He took great care of us, and the food was amazing—a 10 out of 10 for him! Then, at breakfast, which was also spectacular, Jackson served us, an equally diligent and friendly guy. You couldn't ask for more from them. Totally recommended; 10/10 for value.",
+      "published_date": "2025-12-14",
+      "author_name": "Manolo",
+      "scraped_date": "2026-03-14",
+      "topics": [
+        {
+          "topic": "employees",
+          "sentiment": "positive",
+          "detail": "reception"
+        },
+        {
+          "topic": "meals",
+          "sentiment": "positive",
+          "detail": "dinner food"
+        },
+        {
+          "topic": "quality_price",
+          "sentiment": "positive",
+          "detail": "value for money"
+        }
+      ],
+      "classified": true
+    },
+    {
+      "id": "Ci9DQUlRQUNvZENodHljRjlvT2t3d1dHSktkMHMxZUhaUGR6Vm5NVTFMTUhONmFHYxAB",
+      "hotel": "Ananea Castelo Suites Hotel",
+      "source": "google",
+      "rating": 5.0,
+      "title": "",
+      "text": "We're spending a few days here and have been pleasantly surprised by how new, modern, and clean the hotel is. The staff are also incredibly friendly, especially Alex, our waiter who serves us dinner. A highly recommended place. The breakfasts are spectacular and very well served by Jackson, who is very friendly and helpful.",
+      "published_date": "2025-12-14",
+      "author_name": "francisco cordero",
+      "scraped_date": "2026-03-14",
+      "topics": [
+        {
+          "topic": "employees",
+          "sentiment": "positive",
+          "detail": "incredibly friendly staff"
+        },
+        {
+          "topic": "commodities",
+          "sentiment": "positive",
+          "detail": "new, modern hotel"
+        },
+        {
+          "topic": "cleaning",
+          "sentiment": "positive",
+          "detail": "clean hotel"
+        },
+        {
+          "topic": "meals",
+          "sentiment": "positive",
+          "detail": "spectacular breakfasts"
+        }
+      ],
+      "classified": true
+    },
+    {
+      "id": "Ci9DQUlRQUNvZENodHljRjlvT2xOdE9GRlNNVEp1T0VsdlNHMVVWMHR4VEhwQ1puYxAB",
+      "hotel": "Ananea Castelo Suites Hotel",
+      "source": "google",
+      "rating": 4.0,
+      "title": "",
+      "text": "We stayed here for a week. A great hotel that only opened this summer. The service was very good and friendly. The rooms and balcony were very nice and spacious, but there was limited storage space for clothes. This would be a welcome improvement. Ten hangers on a clothes rail and one drawer for two people is rather meager. The price for the evening buffet was €30 per person per evening. Drinks were not included. Even the water at the evening buffet was not free, although it was stated as such on the website. The breakfast buffet was very varied, but the same every morning. More variety would have been nice. We had a lovely time and can recommend this hotel.",
+      "published_date": "2025-12-14",
+      "author_name": "Susi Sorglos",
+      "scraped_date": "2026-03-14",
+      "topics": [
+        {
+          "topic": "employees",
+          "sentiment": "positive",
+          "detail": "friendly service"
+        },
+        {
+          "topic": "commodities",
+          "sentiment": "positive",
+          "detail": "nice rooms, spacious balcony"
+        },
+        {
+          "topic": "commodities",
+          "sentiment": "negative",
+          "detail": "limited storage space for clothes"
+        },
+        {
+          "topic": "quality_price",
+          "sentiment": "negative",
+          "detail": "expensive evening buffet (30 euros per person)"
+        },
+        {
+          "topic": "meals",
+          "sentiment": "positive",
+          "detail": "varied breakfast buffet"
+        },
+        {
+          "topic": "meals",
+          "sentiment": "negative",
+          "detail": "same breakfast every morning"
+        },
+        {
+          "topic": "return",
+          "sentiment": "positive",
+          "detail": "can recommend this hotel"
+        }
+      ],
+      "classified": true
+    },
+    {
       "id": "Ci9DQUlRQUNvZENodHljRjlvT2tkMlkwOVZTRmhJTmpOVFJrZzRTVkZsZGxCeE9FRRAB",
       "hotel": "Ananea Castelo Suites Hotel",
       "source": "google",
-      "rating": 4,
+      "rating": 4.0,
       "title": "",
-      "text": "I booked this hotel on a whim as there were no jet 2 reviews on site. I did take a look at trip advisor which had a mixed bag and took the gamble anyway, definitely paid off!\n\nThe hotel is in a great location, they have a shuttle to the beach which I did not use, as I would say to three of the closest beaches it was less than a 20 walk. The room had a great view of the pool area, spacious enough for two people, smart tv which is a nice touch. Iron is available upon request.\n\nPros:\n\n- [ ] Great customer service all around, no issues which is hard to come by.\n- [ ] Plenty of sunbeds available and no rush to secure one like some other hotels\n- [ ] I liked that it was quiet, note this isn’t an adult only hotel, as during my stay there were a family with younger children. Which could be a problem during peak season/school holidays\n- [ ] Walkable distance to many good restaurants and room service is adequate too\n- [ ] Decor is wonderful and modern\n- [ ] Breakfast had a wide selection of fruit, hot food, pastries and alternate milks\n- [ ] House keeping staff do a great job of cleaning up the rooms\n- [ ] Note the shower gel etc included is currently rituals which is a nice touch and Im glad for once that I didn’t bring my own\n\nCons (if any)\n- [ ] Some construction/building work going on which could be heard during the day, not too loud and was during parable hours where you wouldn’t really be in\n- [ ] Minor touches need finishing off\n- [ ] If you were here for a long period the breakfast could get a bit repetitive\n- [ ] The air con didn’t seem to do the best job of keeping the room cool\n- [ ] Could do with music at the main pool during the day\n\nOverall if you’re looking to stay, book it, you won’t regret staying here. One of the best hotels I have stayed at this year",
-      "published_date": "2025-11-11",
+      "text": "I booked this hotel on a whim as there were no jet 2 reviews on site. I did take a look at trip advisor which had a mixed bag and took the gamble anyway, definitely paid off! The hotel is in a great location, they have a shuttle to the beach which I did not use, as I would say to three of the closest beaches it was less than a 20 walk. The room had a great view of the pool area, spacious enough for two people, smart tv which is a nice touch. Iron is available upon request. Pros: - [ ] Great customer service all around, no issues which is hard to come by. - [ ] Plenty of sunbeds available and no rush to secure one like some other hotels - [ ] I liked that it was quiet, note this isn’t an adult only hotel, as during my stay there were a family with younger children. Which could be a problem during peak season/school holidays - [ ] Walkable distance to many good restaurants and room service is adequate too - [ ] Decor is wonderful and modern - [ ] Breakfast had a wide selection of fruit, hot food, pastries and alternate milks - [ ] House keeping staff do a great job of cleaning up the rooms - [ ] Note the shower gel etc included is currently rituals which is a nice touch and Im glad for once that I didn’t bring my own Cons (if any) - [ ] Some construction/building work going on which could be heard during the day, not too loud and was during parable hours where you wouldn’t really be in - [ ] Minor touches need finishing off - [ ] If you were here for a long period the breakfast could get a bit repetitive - [ ] The air con didn’t seem to do the best job of keeping the room cool - [ ] Could do with music at the main pool during the day Overall if you’re looking to stay, book it, you won’t regret staying here. One of the best hotels I have stayed at this year",
+      "published_date": "2025-11-14",
       "author_name": "Raj",
-      "scraped_date": "2026-03-04",
+      "scraped_date": "2026-03-14",
       "topics": [
         {
           "topic": "employees",
@@ -26,19 +273,14 @@
           "detail": "smart tv"
         },
         {
+          "topic": "commodities",
+          "sentiment": "negative",
+          "detail": "some construction noise"
+        },
+        {
           "topic": "comfort",
           "sentiment": "positive",
-          "detail": "quiet hotel"
-        },
-        {
-          "topic": "meals",
-          "sentiment": "positive",
-          "detail": "wide selection for breakfast"
-        },
-        {
-          "topic": "cleaning",
-          "sentiment": "positive",
-          "detail": "house keeping staff do a great job"
+          "detail": "spacious room"
         },
         {
           "topic": "comfort",
@@ -47,13 +289,494 @@
         },
         {
           "topic": "meals",
+          "sentiment": "positive",
+          "detail": "wide selection of food at breakfast"
+        },
+        {
+          "topic": "cleaning",
+          "sentiment": "positive",
+          "detail": "house keeping staff do a great job"
+        },
+        {
+          "topic": "meals",
           "sentiment": "negative",
           "detail": "breakfast could get repetitive"
+        }
+      ],
+      "classified": true
+    },
+    {
+      "id": "Ci9DQUlRQUNvZENodHljRjlvT2s5cFpra3pVMjFHWlUxT2FsUnlPVkZ4YlMxSVkxRRAB",
+      "hotel": "Ananea Castelo Suites Hotel",
+      "source": "google",
+      "rating": 5.0,
+      "title": "",
+      "text": "We were very satisfied. The room was excellently equipped. The breakfast buffet offered a wide selection. Everything was freshly prepared. Very clean. Friendly staff. We would gladly return.",
+      "published_date": "2025-11-14",
+      "author_name": "Sonja Ludwig",
+      "scraped_date": "2026-03-14",
+      "topics": [
+        {
+          "topic": "employees",
+          "sentiment": "positive",
+          "detail": "friendly staff"
+        },
+        {
+          "topic": "commodities",
+          "sentiment": "positive",
+          "detail": "excellently equipped room"
+        },
+        {
+          "topic": "meals",
+          "sentiment": "positive",
+          "detail": "wide selection breakfast buffet"
+        },
+        {
+          "topic": "cleaning",
+          "sentiment": "positive",
+          "detail": "very clean"
+        },
+        {
+          "topic": "return",
+          "sentiment": "positive",
+          "detail": "would gladly return"
+        }
+      ],
+      "classified": true
+    },
+    {
+      "id": "Ci9DQUlRQUNvZENodHljRjlvT25WaVFWSm9OSFpmWlhsQ1p6RmFWMmhZY0RKR2MxRRAB",
+      "hotel": "Ananea Castelo Suites Hotel",
+      "source": "google",
+      "rating": 5.0,
+      "title": "",
+      "text": "A wonderful vacation, with a comeback recommendation The Hotel Castelo Suites is located in Patroves (Albufeira), just a 15-minute walk from the beaches of Praia da Castelo, Praia da Evaristo, and Praia da Coelha. The sandy beaches are integrated into the rugged cliffs and have their own unique flair. All three beach areas have restaurants and restrooms. The most beautiful view is from the plateau above Praia da Castelo. The town of Patroves is home to many hotels, apartments, and villas and is almost entirely touristy. There are numerous restaurants, mini-markets, and larger grocery stores. Prices are higher than in Germany. There is no shopping mall in the immediate vicinity. Nightlife is also limited to the hotels and restaurants. The Castelo Suites offers live music at the lobby bar on Thursdays, Fridays, and Saturdays. On Wednesdays and Sundays, there is musical entertainment at the pool bar in the late afternoon. The hotel is new and very modern. We were there during the soft opening phase. The rooms have a great design, with many modern features. For example, the doors open and close automatically when entering and leaving the room. The TV is integrated into a huge mirror, which also has its drawbacks because it's reflective. Instead of a closet, there's an open clothes rail and only two spacious drawers, one of which houses the safe. A large, long desk with a bench in front of it provides ample storage space. A small refrigerator is also available. The bathroom has a sink, numerous spacious shelves, a toilet, and a rain shower. Hand soap, lotion, shower gel, and conditioner are from Rituals. The large beds are comfortable. Two different pillows are standard. The balcony is large, with a table, two chairs, and a portable towel dryer. Upon arrival in the room, you'll find a bottle of water in a luxurious glass bottle and two Nespresso capsules for the Nespresso machine. Tip: Tip room service regularly, and you'll get a little surprise every now and then. The room cleaning was always excellent, by the way. In general, the staff is always friendly, attentive, and mostly young. Breakfast offered a large selection of baked goods, nuts, muesli, honey, jams, scrambled eggs, fried eggs, fried bacon, sausage, cheese, fruit, juices, sparkling wine, and much more. You can have an omelet made at the grill. In the evening, the food was varied, as there was a different theme every day, e.g., Portugal, Italy, Asia, the Algarve, the sea, etc. The quality of the food offered was very good. It is one of the few hotel restaurants we know where the chef can also add seasoning. The pool and garden area is spacious, with three different pools, so children can also enjoy the water. However, there are no slides or water fountains. The garden is newly landscaped; Clearly, some plants still need to grow. The numerous olive trees, pomegranate trees, palm trees, and strelitzias are particularly beautiful. There are plenty of loungers with thick cushions, even free Balinese loungers. A lovely pool bar and the unusual architecture complete the picture. The rooftop terrace features a fantastic infinity pool and a magnificent view with beautiful sunsets. We felt very comfortable here and hardly missed anything. There's always room for improvement, but these were minor details. In our opinion, the hotel is very close to 5 stars. We recommend the hotel without reservation.",
+      "published_date": "2025-11-14",
+      "author_name": "Mobilfunk Guru",
+      "scraped_date": "2026-03-14",
+      "topics": [
+        {
+          "topic": "employees",
+          "sentiment": "positive",
+          "detail": "friendly, attentive, young staff"
+        },
+        {
+          "topic": "commodities",
+          "sentiment": "positive",
+          "detail": "modern features in rooms"
+        },
+        {
+          "topic": "comfort",
+          "sentiment": "positive",
+          "detail": "large beds, comfortable pillows"
+        },
+        {
+          "topic": "cleaning",
+          "sentiment": "positive",
+          "detail": "excellent room cleaning"
+        },
+        {
+          "topic": "meals",
+          "sentiment": "positive",
+          "detail": "large breakfast selection, good food quality"
         },
         {
           "topic": "commodities",
           "sentiment": "negative",
-          "detail": "could do with music at main pool"
+          "detail": "no slides or water fountains for children"
+        }
+      ],
+      "classified": true
+    },
+    {
+      "id": "Ci9DQUlRQUNvZENodHljRjlvT2taTVkwUk9PVWRtWVV4RFp6QnROVUpQYVVWbGNsRRAB",
+      "hotel": "Ananea Castelo Suites Hotel",
+      "source": "google",
+      "rating": 5.0,
+      "title": "",
+      "text": "Top-notch, new hotel. Very friendly staff, always available with a smile! Excellent half-board meals. Very comfortable and well-soundproofed standard room. 2 swimming pools... a little cold for our taste, but well-designed. Car recommended for getting to the center of Albufeira... 5 km",
+      "published_date": "2025-11-14",
+      "author_name": "Martine Labille",
+      "scraped_date": "2026-03-14",
+      "topics": [
+        {
+          "topic": "employees",
+          "sentiment": "positive",
+          "detail": "friendly staff"
+        },
+        {
+          "topic": "quality_price",
+          "sentiment": "positive",
+          "detail": "excellent half-board meals"
+        },
+        {
+          "topic": "commodities",
+          "sentiment": "positive",
+          "detail": "well-soundproofed standard room"
+        },
+        {
+          "topic": "comfort",
+          "sentiment": "positive",
+          "detail": "very comfortable room"
+        },
+        {
+          "topic": "commodities",
+          "sentiment": "negative",
+          "detail": "cold swimming pools"
+        }
+      ],
+      "classified": true
+    },
+    {
+      "id": "Ci9DQUlRQUNvZENodHljRjlvT25Kd1NIRldlbWRHUVVWSk0wdDBaa1ZMZW1KNFZHYxAB",
+      "hotel": "Ananea Castelo Suites Hotel",
+      "source": "google",
+      "rating": 4.0,
+      "title": "",
+      "text": "The hotel's current room layout makes it unsuitable for extended stays. There's only one drawer per room, no closet, just a rail with hangers. The luggage racks aren't usable as such, as they would prevent you from opening the safe and one of the drawers. There's no place to hang wet clothes (bathing suits, etc.). You can't wash anything in the sink either, as there's no closable drain. Furthermore, our accommodation, booked as an \"adults-only suite,\" consisted of only two adjoining rooms (which are usually rented individually). There was no mention of a \"suite\" at all! Since the second room only had sheets on the beds, we used it merely as storage space. The hotel's roof terrace is very nice! The service was good, as was the room cleaning. The buffet, although small, was good, but the food was good. There are very beautiful beaches and a magnificent coastline near the hotel.",
+      "published_date": "2025-11-14",
+      "author_name": "Angelika Hoffmann",
+      "scraped_date": "2026-03-14",
+      "topics": [
+        {
+          "topic": "commodities",
+          "sentiment": "negative",
+          "detail": "unsuitable room layout for extended stays"
+        },
+        {
+          "topic": "employees",
+          "sentiment": "positive",
+          "detail": "good service"
+        },
+        {
+          "topic": "cleaning",
+          "sentiment": "positive",
+          "detail": "good room cleaning"
+        },
+        {
+          "topic": "commodities",
+          "sentiment": "positive",
+          "detail": "nice roof terrace"
+        },
+        {
+          "topic": "meals",
+          "sentiment": "positive",
+          "detail": "good buffet"
+        }
+      ],
+      "classified": true
+    },
+    {
+      "id": "Ci9DQUlRQUNvZENodHljRjlvT2w5U2NGQXROazF2WVVNNFdWZEtUbWRKY3pSNFVuYxAB",
+      "hotel": "Ananea Castelo Suites Hotel",
+      "source": "google",
+      "rating": 5.0,
+      "title": "",
+      "text": "Very nice, new establishment Great amenities, pleasant and very helpful staff",
+      "published_date": "2025-11-14",
+      "author_name": "Christophe LEHMANN",
+      "scraped_date": "2026-03-14",
+      "topics": [
+        {
+          "topic": "employees",
+          "sentiment": "positive",
+          "detail": "pleasant and helpful staff"
+        },
+        {
+          "topic": "commodities",
+          "sentiment": "positive",
+          "detail": "new establishment"
+        }
+      ],
+      "classified": true
+    },
+    {
+      "id": "Ci9DQUlRQUNvZENodHljRjlvT25KRWVtNXVhVkJhU0RkUldXNVJUVzlET0VoWWRHYxAB",
+      "hotel": "Ananea Castelo Suites Hotel",
+      "source": "google",
+      "rating": 5.0,
+      "title": "",
+      "text": "We stayed at the Ananea Castelo Suites Hotel in the Algarve at the beginning of October and had a very pleasant stay overall. Our first impressions were extremely positive – the hotel lives up to the promise of the photos and descriptions. The location is quiet and ideal for those traveling by rental car. There are many beautiful sights in the area, and from the hotel, you have a view of the sea, which is about a kilometer away. The area seems safe, well-maintained, and very attractive. Our room was spacious, well-equipped, and the bed extremely comfortable. The balcony overlooking the pools and the sea was particularly nice. Only the cleanliness could be improved somewhat – coffee capsules were not always emptied, and some surfaces were not thoroughly wiped. The pool areas are excellently maintained. The rooftop pool bar with sea views is a particular highlight, as is the lovingly landscaped outdoor area with beautiful plants. The breakfast was varied and of very good quality – with fresh products and a wide selection. The staff was rather neutral, not overly friendly, but polite and unobtrusive – which didn't bother us personally. Overall, the hotel offers very good value for money and is a wonderful choice for travelers who appreciate peace, design, and a well-maintained environment. We would definitely recommend the hotel and give it 5 out of 5 stars. The reason we gave it full marks despite minor cleanliness issues is that everything else was truly excellent. Since the hotel only opened in June, we expect it to need some time to get started and certain processes still need to be established. We hope that more attention will be paid to cleanliness in the future. Finally, a special thank you: The birthday surprise – sparkling wine and a small cake with candles in the room – was a wonderful gesture and we were very pleased. The surprise was absolutely a success – thank you so much. 🤗💚❤️ We will definitely be back 🌞🌺",
+      "published_date": "2025-11-14",
+      "author_name": "Caroline Schwenz",
+      "scraped_date": "2026-03-14",
+      "topics": [
+        {
+          "topic": "commodities",
+          "sentiment": "positive",
+          "detail": "hotel lives up to promises, quiet location, beautiful sights, sea view, spacious room, well-equipped room, comfortable bed, balcony overlooking pools and sea, excellently maintained pool areas, rooftop pool bar with sea views, lovingly landscaped outdoor area"
+        },
+        {
+          "topic": "cleaning",
+          "sentiment": "negative",
+          "detail": "coffee capsules not always emptied, some surfaces not thoroughly wiped"
+        },
+        {
+          "topic": "quality_price",
+          "sentiment": "positive",
+          "detail": "good value for money"
+        },
+        {
+          "topic": "meals",
+          "sentiment": "positive",
+          "detail": "varied and good quality breakfast"
+        },
+        {
+          "topic": "return",
+          "sentiment": "positive",
+          "detail": "would definitely recommend and return"
+        }
+      ],
+      "classified": true
+    },
+    {
+      "id": "Ci9DQUlRQUNvZENodHljRjlvT21Wd1drTndSa2gyZG5oNGRuSjJjWHAxTVZkeU1FRRAB",
+      "hotel": "Ananea Castelo Suites Hotel",
+      "source": "google",
+      "rating": 5.0,
+      "title": "",
+      "text": "My girlfriend and I had a fantastic experience at this new hotel. The staff is very friendly and competent. The hotel itself is very beautiful, clean and organized. The pool area is gorgeous and I also recommend watching the sunset from the rooftop pool area. At reception they noticed it was my girlfriend's birthday and surprised us with a bottle of sparkling wine and a birthday cake with candles and a congratulatory note in our room. We were pleasantly surprised :) 10 out of 10!! The room is very well decorated, as is the whole hotel, and the TV in the giant mirror is very original and unique. Finally, we ordered room service for dinner. The steaks were TOP! I only have good things to say and I will be back soon. Keep up the good work and I wish the whole team much success. A benchmark hotel! Congratulations!!",
+      "published_date": "2025-11-14",
+      "author_name": "FBDVM",
+      "scraped_date": "2026-03-14",
+      "topics": [
+        {
+          "topic": "employees",
+          "sentiment": "positive",
+          "detail": "friendly and competent staff"
+        },
+        {
+          "topic": "commodities",
+          "sentiment": "positive",
+          "detail": "beautiful, clean, organized hotel"
+        },
+        {
+          "topic": "comfort",
+          "sentiment": "positive",
+          "detail": "well decorated room"
+        },
+        {
+          "topic": "meals",
+          "sentiment": "positive",
+          "detail": "top steaks"
+        },
+        {
+          "topic": "return",
+          "sentiment": "positive",
+          "detail": "will be back soon"
+        }
+      ],
+      "classified": true
+    },
+    {
+      "id": "Ci9DQUlRQUNvZENodHljRjlvT2s5RVF6ZHZNVGhaVjNGaWJYWktia3hIZDFsbVkyYxAB",
+      "hotel": "Ananea Castelo Suites Hotel",
+      "source": "google",
+      "rating": 5.0,
+      "title": "",
+      "text": "Wonderful place to stay, lovely breakfast and fabulous staff",
+      "published_date": "2025-10-15",
+      "author_name": "Helen Turner",
+      "scraped_date": "2026-03-14",
+      "topics": [
+        {
+          "topic": "employees",
+          "sentiment": "positive",
+          "detail": "fabulous staff"
+        },
+        {
+          "topic": "meals",
+          "sentiment": "positive",
+          "detail": "lovely breakfast"
+        }
+      ],
+      "classified": true
+    },
+    {
+      "id": "Ci9DQUlRQUNvZENodHljRjlvT2taVUxYRTVRemRVV1dGdmRrZ3RkRVpzU25kaVdWRRAB",
+      "hotel": "Ananea Castelo Suites Hotel",
+      "source": "google",
+      "rating": 5.0,
+      "title": "",
+      "text": "A very nice new hotel with a beach shuttle. Very friendly and discreet staff. A varied evening buffet and a plentiful breakfast buffet. Some finishing work is still being done here and there, but everything is discreet and with little disruption or noise. We had a very nice week here.",
+      "published_date": "2025-10-15",
+      "author_name": "Waechter Hamburg",
+      "scraped_date": "2026-03-14",
+      "topics": [
+        {
+          "topic": "employees",
+          "sentiment": "positive",
+          "detail": "friendly and discreet staff"
+        },
+        {
+          "topic": "commodities",
+          "sentiment": "positive",
+          "detail": "beach shuttle"
+        },
+        {
+          "topic": "meals",
+          "sentiment": "positive",
+          "detail": "varied evening buffet, plentiful breakfast buffet"
+        },
+        {
+          "topic": "cleaning",
+          "sentiment": "positive",
+          "detail": "little disruption or noise"
+        }
+      ],
+      "classified": true
+    },
+    {
+      "id": "Ci9DQUlRQUNvZENodHljRjlvT2t4MlRsTkZiRXRCWjNSUFZrZzFhWGt5VlVGWGNrRRAB",
+      "hotel": "Ananea Castelo Suites Hotel",
+      "source": "google",
+      "rating": 5.0,
+      "title": "",
+      "text": "Great, newly opened hotel in a quiet, somewhat secluded location. Positives: -Excellent staff (service, reception, and housekeeping) -Delicious breakfast and dinner -Quiet location -Great beaches within 10-15 minutes; alternatively, there's a hotel shuttle service -Functional, good-sized rooms Negatives: -Only some remaining construction work is disruptive, but this all takes place during the day. Since we mostly went on excursions or were at the beach during the day, this wasn't a problem for us.",
+      "published_date": "2025-10-15",
+      "author_name": "Max L.",
+      "scraped_date": "2026-03-14",
+      "topics": [
+        {
+          "topic": "employees",
+          "sentiment": "positive",
+          "detail": "excellent staff"
+        },
+        {
+          "topic": "meals",
+          "sentiment": "positive",
+          "detail": "delicious breakfast and dinner"
+        },
+        {
+          "topic": "commodities",
+          "sentiment": "negative",
+          "detail": "disruptive construction work"
+        },
+        {
+          "topic": "comfort",
+          "sentiment": "positive",
+          "detail": "good-sized rooms"
+        },
+        {
+          "topic": "commodities",
+          "sentiment": "positive",
+          "detail": "hotel shuttle service"
+        }
+      ],
+      "classified": true
+    },
+    {
+      "id": "Ci9DQUlRQUNvZENodHljRjlvT21aT2MyRlJla1pGZDFoRVRXdHZVamRDTFROTk9VRRAB",
+      "hotel": "Ananea Castelo Suites Hotel",
+      "source": "google",
+      "rating": 4.0,
+      "title": "",
+      "text": "The ambiance is good, everything is new. However, the design isn't always well thought out (e.g., there's no storage space in the rooms). Even though everything looks classy, ​​some parts are built very practically. Nevertheless, a good hotel with good service, great food, very quiet, and a somewhat remote location. A rental car is essential if you want to see anything.",
+      "published_date": "2025-10-15",
+      "author_name": "TobyTestet",
+      "scraped_date": "2026-03-14",
+      "topics": [
+        {
+          "topic": "employees",
+          "sentiment": "positive",
+          "detail": "good service"
+        },
+        {
+          "topic": "commodities",
+          "sentiment": "positive",
+          "detail": "new hotel"
+        },
+        {
+          "topic": "comfort",
+          "sentiment": "positive",
+          "detail": "quiet location"
+        },
+        {
+          "topic": "commodities",
+          "sentiment": "negative",
+          "detail": "no storage space in rooms"
+        },
+        {
+          "topic": "meals",
+          "sentiment": "positive",
+          "detail": "great food"
+        }
+      ],
+      "classified": true
+    },
+    {
+      "id": "Ci9DQUlRQUNvZENodHljRjlvT2toTU1sRXRTV1ppZUU0dExVZHlOMWMxVWtGdE4zYxAB",
+      "hotel": "Ananea Castelo Suites Hotel",
+      "source": "google",
+      "rating": 4.0,
+      "title": "",
+      "text": "A very quiet hotel. Not really suitable for children. No major entertainment. Rooms facing the street are very noisy, except with the window open.",
+      "published_date": "2025-10-15",
+      "author_name": "Seba Le",
+      "scraped_date": "2026-03-14",
+      "topics": [
+        {
+          "topic": "commodities",
+          "sentiment": "positive",
+          "detail": "quiet hotel"
+        },
+        {
+          "topic": "comfort",
+          "sentiment": "negative",
+          "detail": "noisy rooms facing the street"
+        }
+      ],
+      "classified": true
+    },
+    {
+      "id": "Ci9DQUlRQUNvZENodHljRjlvT2xKT1FXdFZOVlJtUmpoVU4xVlBTR3QwTUU5WFduYxAB",
+      "hotel": "Ananea Castelo Suites Hotel",
+      "source": "google",
+      "rating": 5.0,
+      "title": "",
+      "text": "Fantastic new hotel. Good breakfast buffet, very comfortable beds, lovely room with a balcony and a stunning view. The dinner buffet was also very good. Parking was easy. All in all, a great stay.",
+      "published_date": "2025-10-15",
+      "author_name": "Hans Naus",
+      "scraped_date": "2026-03-14",
+      "topics": [
+        {
+          "topic": "commodities",
+          "sentiment": "positive",
+          "detail": "good parking"
+        },
+        {
+          "topic": "comfort",
+          "sentiment": "positive",
+          "detail": "very comfortable beds"
+        }
+      ],
+      "classified": true
+    },
+    {
+      "id": "Ci9DQUlRQUNvZENodHljRjlvT25KTmF6aEVhekpWT1hSSGNqUnBNVFpPVldsVFpYYxAB",
+      "hotel": "Ananea Castelo Suites Hotel",
+      "source": "google",
+      "rating": 4.0,
+      "title": "",
+      "text": "A very beautiful, modern hotel with a rooftop pool where you can watch the sunset. Stylish elements throughout the hotel. Very good breakfast. Free parking in front of the hotel. Shuttle service to the nearby beach. PV system to support the electricity supply. Very friendly staff.",
+      "published_date": "2025-10-15",
+      "author_name": "Pete",
+      "scraped_date": "2026-03-14",
+      "topics": [
+        {
+          "topic": "commodities",
+          "sentiment": "positive",
+          "detail": "rooftop pool"
+        },
+        {
+          "topic": "employees",
+          "sentiment": "positive",
+          "detail": "friendly staff"
+        },
+        {
+          "topic": "comfort",
+          "sentiment": "positive",
+          "detail": "stylish elements"
         }
       ],
       "classified": true
@@ -62,12 +785,12 @@
       "id": "Ci9DQUlRQUNvZENodHljRjlvT2tJNVZtcFlOVXgwYkdkQk1tdHZjMHN5U0dOS2QyYxAB",
       "hotel": "Ananea Castelo Suites Hotel",
       "source": "google",
-      "rating": 5,
+      "rating": 5.0,
       "title": "",
-      "text": "The hotel was amazing! We stayed in the Maretta suite for a week and were very pleased with the room design and amenities. The pools are wonderful, with plenty of sunbeds. The staff is young and friendly, always happy and willing to help. Beach was around 10 minutes away and very accessible. The hotel is in a very quiet area - a less “touristy “ area of Albufeira (no clubs, shops, etc. very nearby).\nI must also note we felt very safe and welcomed as a same sex couple :)\n\nThe hotel is freshly opened, which can be noticed as there are few little details that could use small improvements (nothing crucial, just little things that would complete the whole experience):\n- small hygiene kits in the rooms (containing q-tips, cotton pads maybe mini toothpaste/toothbrush)\n-a bit of background music around the pools ( although it is wonderfully quiet, sometimes it gets a little too quiet)\n- although the breakfast is quiet diverse it does present the same elements everyday, which can feel a bit repetitive if you have a longer stay.\n- the TV is wonderful but unfortunately we didn’t manage to connect our phones to it or use any streaming services\n- the toilet is not very sound proof so make sure you’re comfortable with whoever you’re going to stay :)",
-      "published_date": "2025-09-18",
+      "text": "The hotel was amazing! We stayed in the Maretta suite for a week and were very pleased with the room design and amenities. The pools are wonderful, with plenty of sunbeds. The staff is young and friendly, always happy and willing to help. Beach was around 10 minutes away and very accessible. The hotel is in a very quiet area - a less “touristy “ area of Albufeira (no clubs, shops, etc. very nearby). I must also note we felt very safe and welcomed as a same sex couple :) The hotel is freshly opened, which can be noticed as there are few little details that could use small improvements (nothing crucial, just little things that would complete the whole experience): - small hygiene kits in the rooms (containing q-tips, cotton pads maybe mini toothpaste/toothbrush) -a bit of background music around the pools ( although it is wonderfully quiet, sometimes it gets a little too quiet) - although the breakfast is quiet diverse it does present the same elements everyday, which can feel a bit repetitive if you have a longer stay. - the TV is wonderful but unfortunately we didn’t manage to connect our phones to it or use any streaming services - the toilet is not very sound proof so make sure you’re comfortable with whoever you’re going to stay :)",
+      "published_date": "2025-10-15",
       "author_name": "Lorena David",
-      "scraped_date": "2026-03-04",
+      "scraped_date": "2026-03-14",
       "topics": [
         {
           "topic": "employees",
@@ -77,7 +800,7 @@
         {
           "topic": "commodities",
           "sentiment": "positive",
-          "detail": "amazing hotel, Maretta suite, wonderful pools, sunbeds"
+          "detail": "Maretta suite design and amenities"
         },
         {
           "topic": "comfort",
@@ -87,27 +810,163 @@
         {
           "topic": "cleaning",
           "sentiment": "positive",
-          "detail": "felt very safe and welcomed as a same sex couple"
+          "detail": "hotel is freshly opened"
+        },
+        {
+          "topic": "cleaning",
+          "sentiment": "negative",
+          "detail": "small hygiene kits could be improved"
         },
         {
           "topic": "commodities",
           "sentiment": "negative",
-          "detail": "small hygiene kits missing"
-        },
-        {
-          "topic": "comfort",
-          "sentiment": "negative",
-          "detail": "toilet not very sound proof"
+          "detail": "no background music around pools"
         },
         {
           "topic": "meals",
           "sentiment": "positive",
-          "detail": "quiet diverse breakfast"
+          "detail": "diverse breakfast"
         },
         {
           "topic": "meals",
           "sentiment": "negative",
           "detail": "repetitive elements everyday"
+        },
+        {
+          "topic": "comfort",
+          "sentiment": "negative",
+          "detail": "non-soundproof toilet"
+        }
+      ],
+      "classified": true
+    },
+    {
+      "id": "Ci9DQUlRQUNvZENodHljRjlvT2tWRVpFUnhOV3ROYVhGSU1uaGZhM0pLV0hscmVXYxAB",
+      "hotel": "Ananea Castelo Suites Hotel",
+      "source": "google",
+      "rating": 4.0,
+      "title": "",
+      "text": "A very nice, chic, new hotel. Certainly not everything is running smoothly yet, and there's still room for improvement in a few areas. Water and coffee are only refilled on a whim; perhaps a housekeeper should check this. The restaurant staff deserve special mention; they were always friendly and helpful every day, even though there were often not enough seats at breakfast, and they always tried to change the menu as quickly as possible. The food every evening (half board) was truly delicious. Unfortunately, there isn't much around the hotel, so I definitely recommend renting a car.",
+      "published_date": "2025-10-15",
+      "author_name": "Silke Engeln",
+      "scraped_date": "2026-03-14",
+      "topics": [
+        {
+          "topic": "commodities",
+          "sentiment": "negative",
+          "detail": "water and coffee refill irregular"
+        },
+        {
+          "topic": "employees",
+          "sentiment": "positive",
+          "detail": "friendly and helpful restaurant staff"
+        },
+        {
+          "topic": "meals",
+          "sentiment": "positive",
+          "detail": "delicious evening meals"
+        },
+        {
+          "topic": "return",
+          "sentiment": "positive",
+          "detail": "recommend renting a car"
+        }
+      ],
+      "classified": true
+    },
+    {
+      "id": "Ci9DQUlRQUNvZENodHljRjlvT25wYWMyZFBiSFpzZWtNd1Z6UlNaRVZRVG5rM09YYxAB",
+      "hotel": "Ananea Castelo Suites Hotel",
+      "source": "google",
+      "rating": 3.0,
+      "title": "",
+      "text": "Plenty of room for improvement! ... Positive: - Beautiful lobby/bar area with high-quality furnishings - Lovely room design with a comfortable bed, stylish TV mirror, chic bathroom alcove, and high-quality materials - Nice balcony with comfortable and high-quality chairs - Comfortable pool loungers with high-quality cushions and aluminum frames - Excellent (!) breakfast with fresh (!) and ripe fruit and unadulterated juices As well as very good, fresh Nespresso coffee (!) from the machine and delicious, fresh, and varied pastries - Good starting point for excursions with a rental car (only conditionally recommended without one) - Beautiful bay in a stunning setting just 1 km away Negative: - More than a month after opening (as of September 25th), construction work is still taking place at the hotel (e.g., the underground parking garage is not finished) -> Construction noise is audible everywhere during the day - The ugliest grounds of any luxury hotel I have ever seen -> The vegetation Present only in isolated instances and partially defunct; completely lacking in concept and harmony; No outdoor lighting along the pathways - Pools are not heated and are already VERY cold even with an outside temperature of 28 degrees Celsius and sunshine - There is no fitness area, only a kind of poorly designed and pointless exercise trail - Room cleaning is terrible, careless, and with blatant cleanliness deficiencies (apparently a temporary staffing agency is used) - The air conditioning doesn't work properly (barely cools), and there's no improvement even after multiple attempts to adjust it/reset it - The entire staff fails to reflect the elegant, sometimes luxurious character of the hotel -> often unprofessional, inattentive, insecure, and always without a smile on their faces (and this is just one month after the hotel opened) - Far too little storage space for clothes in the room - TV without German channels and no option to connect anything - The safe is loose in a drawer - All windows are dirty (room, balcony, outdoor areas) - When the hotel is fully booked (as it was during our stay), there are set breakfast times (Three meal times available) - The restaurant is far too small (when fully booked) - No changing breakfast menu - The dinner menu is very limited -> especially compared to the quality of the breakfast, dinner is less than convincing; sometimes bland, lukewarm, and repetitive - The rooftop bar is not open; a waiter only ventures up there three times a day Conclusion: There are problems everywhere at the ananea Castelo Suites. The hotel management seems inexperienced and lacks the necessary skill to transform this hotel, which has potential, into a good 4-star hotel. Overall, the value for money is poor, even though it would take very little to provide a pleasant and satisfying stay. All of the points mentioned were discussed with management during our stay, and they have already made concessions. Therefore, we award a well-intentioned 3 out of 5 stars.",
+      "published_date": "2025-09-15",
+      "author_name": "Lucas Geimer",
+      "scraped_date": "2026-03-14",
+      "topics": [
+        {
+          "topic": "employees",
+          "sentiment": "negative",
+          "detail": "unprofessional, inattentive, insecure, no smile"
+        },
+        {
+          "topic": "commodities",
+          "sentiment": "negative",
+          "detail": "not heated pools"
+        },
+        {
+          "topic": "comfort",
+          "sentiment": "negative",
+          "detail": "construction noise"
+        },
+        {
+          "topic": "meals",
+          "sentiment": "negative",
+          "detail": "dinner is less than convincing, sometimes bland, lukewarm, repetitive"
+        },
+        {
+          "topic": "quality_price",
+          "sentiment": "negative",
+          "detail": "poor value for money"
+        }
+      ],
+      "classified": true
+    },
+    {
+      "id": "Ci9DQUlRQUNvZENodHljRjlvT2kweVFtNTFSMlV3UVdrd2JuUlZVM1pLY1dkb1MzYxAB",
+      "hotel": "Ananea Castelo Suites Hotel",
+      "source": "google",
+      "rating": 5.0,
+      "title": "",
+      "text": "I appreciated the friendliness (even before arriving...), the reception and welcome at the location, the friendliness and tranquility during check-in and settling in, the architecture of the property, the design and quality of the facilities, the good taste and harmony of the decoration, with luxury and functionality appropriate to the location and without excesses. In short, a stay of quality, comfort, friendliness and well-being, in line with expectations, after reviewing the reviews, which in no way exaggerate the feeling of the experience. Comfortable rooms, with space, light and decoration capable of providing a peaceful and comforting stay. Everything necessary, in the right place and with that modern touch, functional and comfortable! Beautiful pool and excellent outdoor space, unexpectedly peaceful and \"natural\", despite the area where it is located. High-quality meals, with excellent products and even better preparation, in a pleasant space (don't miss the terrace) with compatible service. Absolutely unmissable! Oh, the sunset on that magnificent rooftop... On the negative side, nothing significant or that can't be overcome with the experience of the operation (the start-up always has \"challenges\") and the friendliness of the entire team!",
+      "published_date": "2025-09-15",
+      "author_name": "Duarte Brito Figueira",
+      "scraped_date": "2026-03-14",
+      "topics": [
+        {
+          "topic": "employees",
+          "sentiment": "positive",
+          "detail": "friendliness"
+        },
+        {
+          "topic": "commodities",
+          "sentiment": "positive",
+          "detail": "architecture of the property"
+        },
+        {
+          "topic": "comfort",
+          "sentiment": "positive",
+          "detail": "comfortable rooms"
+        },
+        {
+          "topic": "meals",
+          "sentiment": "positive",
+          "detail": "high-quality meals"
+        },
+        {
+          "topic": "return",
+          "sentiment": "negative",
+          "detail": "nothing significant or that can't be overcome with the experience of the operation"
+        }
+      ],
+      "classified": true
+    },
+    {
+      "id": "Ci9DQUlRQUNvZENodHljRjlvT25Ob2MwVkZiRTV0VkdOaFNrZFNWMmRRVUdsRGQzYxAB",
+      "hotel": "Ananea Castelo Suites Hotel",
+      "source": "google",
+      "rating": 5.0,
+      "title": "",
+      "text": "I loved the violinist that plays in the hotel ! His music has a modern twist like Bridgerton 🎻🎻 … ",
+      "published_date": "2025-09-15",
+      "author_name": "Izzy Roberts",
+      "scraped_date": "2026-03-14",
+      "topics": [
+        {
+          "topic": "employees",
+          "sentiment": "positive",
+          "detail": "violinist"
         }
       ],
       "classified": true
@@ -116,12 +975,12 @@
       "id": "Ci9DQUlRQUNvZENodHljRjlvT25CdVVrZHRjbGRoU25aMlEybHpSVWs1VFdSdU1FRRAB",
       "hotel": "Ananea Castelo Suites Hotel",
       "source": "google",
-      "rating": 5,
+      "rating": 5.0,
       "title": "",
       "text": "The best  hotel and staff, beautifull rooms and pool, the view, everything is great, i wish come back already, my family had a wonderfull time, 🥰🥰",
-      "published_date": "2025-09-09",
+      "published_date": "2025-09-15",
       "author_name": "Elzbieta Krzyszton",
-      "scraped_date": "2026-03-04",
+      "scraped_date": "2026-03-14",
       "topics": [
         {
           "topic": "employees",
@@ -141,1011 +1000,206 @@
         {
           "topic": "return",
           "sentiment": "positive",
-          "detail": "wish come back already"
+          "detail": "wish to come back already"
         }
       ],
       "classified": true
     },
     {
-      "id": "Ci9DQUlRQUNvZENodHljRjlvT25Ob2MwVkZiRTV0VkdOaFNrZFNWMmRRVUdsRGQzYxAB",
+      "id": "Ci9DQUlRQUNvZENodHljRjlvT2pGRFNWaGZaRk54U0VORWFGcHRaR0oyV0ZsRlVXYxAB",
       "hotel": "Ananea Castelo Suites Hotel",
       "source": "google",
-      "rating": 5,
+      "rating": 4.0,
       "title": "",
-      "text": "I loved the violinist that plays in the hotel ! His music has a modern twist like Bridgerton 🎻🎻",
-      "published_date": "2025-09-10",
-      "author_name": "Izzy Roberts",
-      "scraped_date": "2026-03-04",
+      "text": "The hotel is recommended for a short stay. Stylish, but lacking in functionality, with many impractical details and poorly designed rooms. Good, quiet location, with a bus stop and kiosk nearby. The food is good, but the extras for those paying extra are unexpectedly expensive. The staff is young and dedicated. The value for money is just about satisfactory.",
+      "published_date": "2025-09-15",
+      "author_name": "Mark Rudolff",
+      "scraped_date": "2026-03-14",
       "topics": [
         {
           "topic": "employees",
           "sentiment": "positive",
-          "detail": "violinist"
-        }
-      ],
-      "classified": true
-    },
-    {
-      "id": "Ci9DQUlRQUNvZENodHljRjlvT2s5RVF6ZHZNVGhaVjNGaWJYWktia3hIZDFsbVkyYxAB",
-      "hotel": "Ananea Castelo Suites Hotel",
-      "source": "google",
-      "rating": 5,
-      "title": "",
-      "text": "Wonderful place to stay, lovely breakfast and fabulous staff",
-      "published_date": "2025-10-03",
-      "author_name": "Helen Turner",
-      "scraped_date": "2026-03-04",
-      "topics": [
-        {
-          "topic": "employees",
-          "sentiment": "positive",
-          "detail": "fabulous staff"
-        },
-        {
-          "topic": "meals",
-          "sentiment": "positive",
-          "detail": "lovely breakfast"
-        }
-      ],
-      "classified": true
-    },
-    {
-      "id": "manual_dfdc075d487a",
-      "hotel": "Ananea Castelo Suites Hotel",
-      "source": "google",
-      "rating": 5,
-      "title": "",
-      "text": "Tout était parfait: la propreté, le cadre, le personnel aux petits soins et l'emplacement. Quartos: 5.0, Serviço: 5.0, Localização: 5.0. Destaques do hotel: Ótimo valor.",
-      "published_date": "2026-01-04",
-      "author_name": "Anne b",
-      "scraped_date": "2026-03-04",
-      "topics": [
-        {
-          "topic": "commodities",
-          "sentiment": "positive",
-          "detail": "cleanliness"
-        },
-        {
-          "topic": "employees",
-          "sentiment": "positive",
-          "detail": "attention to detail"
-        },
-        {
-          "topic": "quality_price",
-          "sentiment": "positive",
-          "detail": "good value"
-        }
-      ],
-      "classified": true,
-      "manual": true
-    },
-    {
-      "id": "manual_0fd6cc99e349",
-      "hotel": "Ananea Castelo Suites Hotel",
-      "source": "google",
-      "rating": 5,
-      "title": "",
-      "text": "Allez les yeux fermés ! Emplacement très calme, tout le monde est très gentil et courtois. Le petit-déjeuner et le repas étaient délicieux. Nous comptons revenir très prochainement. Merci pour tout. Quartos: 5.0, Serviço: 5.0, Localização: 5.0.",
-      "published_date": "2026-01-04",
-      "author_name": "Anita",
-      "scraped_date": "2026-03-04",
-      "topics": [
-        {
-          "topic": "employees",
-          "sentiment": "positive",
-          "detail": "everyone is kind and courteous"
-        },
-        {
-          "topic": "meals",
-          "sentiment": "positive",
-          "detail": "delicious breakfast and meals"
-        },
-        {
-          "topic": "return",
-          "sentiment": "positive",
-          "detail": "will return soon"
-        }
-      ],
-      "classified": true,
-      "manual": true
-    },
-    {
-      "id": "manual_4e9d4e65b35a",
-      "hotel": "Ananea Castelo Suites Hotel",
-      "source": "google",
-      "rating": 5,
-      "title": "",
-      "text": "Service impeccable. Personnel extrêmement gentil, attentif et souriant. L’atmosphère générale de l’hôtel est agréable, que ce soit la décoration ou l’ambiance. Le petit déjeuner et le dîner sont excellents (à base de produits locaux). Un grand merci à toute l’équipe qui a participé à embellir notre séjour. Quartos: 5.0, Serviço: 5.0, Localização: 5.0.",
-      "published_date": "2026-01-04",
-      "author_name": "Alex Vl",
-      "scraped_date": "2026-03-04",
-      "topics": [
-        {
-          "topic": "employees",
-          "sentiment": "positive",
-          "detail": "impeccable service"
-        },
-        {
-          "topic": "comfort",
-          "sentiment": "positive",
-          "detail": "5.0 rooms"
-        },
-        {
-          "topic": "cleaning",
-          "sentiment": "positive",
-          "detail": "5.0 service"
-        },
-        {
-          "topic": "meals",
-          "sentiment": "positive",
-          "detail": "excellent breakfast and dinner"
-        }
-      ],
-      "classified": true,
-      "manual": true
-    },
-    {
-      "id": "manual_401022d0324f",
-      "hotel": "Ananea Castelo Suites Hotel",
-      "source": "google",
-      "rating": 5,
-      "title": "",
-      "text": "Realizamos o nosso evento de natal no Castelo Suites e eles foram impecáveis. O hotel é belíssimo, decoração maravilhosa e funcionários atenciosos. Superou todas as expectativas. Recomendo vivamente. Quartos: 5.0, Serviço: 5.0, Localização: 5.0. Destaques do hotel: Sossegado.",
-      "published_date": "2026-01-04",
-      "author_name": "Gisele Secco",
-      "scraped_date": "2026-03-04",
-      "topics": [
-        {
-          "topic": "employees",
-          "sentiment": "positive",
-          "detail": "attentive staff"
-        },
-        {
-          "topic": "commodities",
-          "sentiment": "positive",
-          "detail": "beautiful hotel decoration"
-        },
-        {
-          "topic": "comfort",
-          "sentiment": "positive",
-          "detail": "5.0 rooms"
-        },
-        {
-          "topic": "quality_price",
-          "sentiment": "positive",
-          "detail": "5.0 service"
-        },
-        {
-          "topic": "return",
-          "sentiment": "positive",
-          "detail": "recommended"
-        }
-      ],
-      "classified": true,
-      "manual": true
-    },
-    {
-      "id": "manual_df351baaf508",
-      "hotel": "Ananea Castelo Suites Hotel",
-      "source": "google",
-      "rating": 5,
-      "title": "",
-      "text": "Quartos: 5.0, Serviço: 5.0, Localização: 5.0. Destaques do hotel: Luxo · Vista fantástica · Romântico · Sossegado · Ótimo valor · Alta tecnologia.",
-      "published_date": "2026-01-04",
-      "author_name": "Diogo Bacalhau",
-      "scraped_date": "2026-03-04",
-      "topics": [
-        {
-          "topic": "commodities",
-          "sentiment": "positive",
-          "detail": "luxury"
-        },
-        {
-          "topic": "comfort",
-          "sentiment": "positive",
-          "detail": "fantastic view"
-        },
-        {
-          "topic": "quality_price",
-          "sentiment": "positive",
-          "detail": "good value"
-        }
-      ],
-      "classified": true,
-      "manual": true
-    },
-    {
-      "id": "manual_c64922703fd8",
-      "hotel": "Ananea Castelo Suites Hotel",
-      "source": "google",
-      "rating": 5,
-      "title": "",
-      "text": "Hemos disfrutado unos días en este precioso hotel. Habitación e instalaciones modernas, un precioso jardín con una piscina fuera de lo común. El personal desde recepción, camarera de piso y camareros, super amables y simpáticos. En el desayuno atendidos por Jackson, siempre con una sonrisa, y sus compañeras, nos hacían disfrutar de un increíble desayuno. Y en la super cena, Alex fue muy atento, simpático, servicial y un gran profesional, haciendo nuestras cenas además de exquisitas muy especiales. Enhorabuena a los cocineros por su fantástica presentación de platos y riquísima comida. Quartos: 5.0, Serviço: 5.0, Localização: 5.0. Destaques do hotel: Romântico. Alimentos e bebidas: Desayuno y cena espectaculares, todo realmente riquísimo.",
-      "published_date": "2026-01-04",
-      "author_name": "Rubia Cordero",
-      "scraped_date": "2026-03-04",
-      "topics": [
-        {
-          "topic": "employees",
-          "sentiment": "positive",
-          "detail": "reception, housekeeping, waiters"
-        },
-        {
-          "topic": "commodities",
-          "sentiment": "positive",
-          "detail": "modern facilities, beautiful garden, unique pool"
-        },
-        {
-          "topic": "comfort",
-          "sentiment": "positive",
-          "detail": "5.0 rooms"
-        },
-        {
-          "topic": "cleaning",
-          "sentiment": "positive",
-          "detail": "spotless"
-        },
-        {
-          "topic": "meals",
-          "sentiment": "positive",
-          "detail": "spectacular breakfast and dinner"
-        }
-      ],
-      "classified": true,
-      "manual": true
-    },
-    {
-      "id": "manual_249ec0c3921a",
-      "hotel": "Ananea Castelo Suites Hotel",
-      "source": "google",
-      "rating": 5,
-      "title": "",
-      "text": "Henos estado en el puente de la constitución y el hotel recién estrenado todo muy nuevo limpio y cómodo. Cuando lo tengan todos los servicios estará espectacular. La atención desde la recepción hasta las camareras de piso fue excelente, con especial mención a Alex, nuestro camarero en la cena: muy amable y siempre disponible. La comida impresionante, un 10 para él. En el desayuno también espectacular, nos atendió Jackson, igualmente diligente y amable. Totalmente recomendable, calidad-precio de 10. Quartos: 5.0, Serviço: 5.0, Localização: 4.0. Destaques do hotel: Romântico · Sossegado · Ótimo valor · Alta tecnologia. Quartos: Muy acogedora, limpia y muy moderna. Alimentos e bebidas: De lujo.",
-      "published_date": "2026-01-04",
-      "author_name": "Manolo",
-      "scraped_date": "2026-03-04",
-      "topics": [
-        {
-          "topic": "commodities",
-          "sentiment": "positive",
-          "detail": "new hotel"
-        },
-        {
-          "topic": "cleaning",
-          "sentiment": "positive",
-          "detail": "clean"
-        },
-        {
-          "topic": "comfort",
-          "sentiment": "positive",
-          "detail": "comfortable"
-        },
-        {
-          "topic": "employees",
-          "sentiment": "positive",
-          "detail": "excellent reception"
-        },
-        {
-          "topic": "meals",
-          "sentiment": "positive",
-          "detail": "impressive food"
-        },
-        {
-          "topic": "quality_price",
-          "sentiment": "positive",
-          "detail": "good value for money"
-        }
-      ],
-      "classified": true,
-      "manual": true
-    },
-    {
-      "id": "manual_a64c11a85f61",
-      "hotel": "Ananea Castelo Suites Hotel",
-      "source": "google",
-      "rating": 5,
-      "title": "",
-      "text": "Estamos pasando unos días aquí y nos ha sorprendido el hotel por lo nuevo, moderno y limpio. Además, el trato del personal es exquisito, resaltando a Alex, camarero que nos da las cenas. Un sitio muy recomendable. Los desayunos son espectaculares y muy bien atendidos por Jackson, muy simpático y amable. Quartos: 5.0, Serviço: 5.0, Localização: 4.0.",
-      "published_date": "2026-01-04",
-      "author_name": "francisco cordero",
-      "scraped_date": "2026-03-04",
-      "topics": [
-        {
-          "topic": "commodities",
-          "sentiment": "positive",
-          "detail": "new and modern hotel"
-        },
-        {
-          "topic": "cleaning",
-          "sentiment": "positive",
-          "detail": "clean hotel"
-        },
-        {
-          "topic": "employees",
-          "sentiment": "positive",
-          "detail": "exquisite treatment from staff"
-        },
-        {
-          "topic": "meals",
-          "sentiment": "positive",
-          "detail": "spectacular breakfast"
-        }
-      ],
-      "classified": true,
-      "manual": true
-    },
-    {
-      "id": "manual_cee963794467",
-      "hotel": "Ananea Castelo Suites Hotel",
-      "source": "google",
-      "rating": 4,
-      "title": "",
-      "text": "Wir waren hier für eine Woche. Ein tolles Hotel das erst im Sommer eröffnet wurde. Der Service sehr gut und freundlich. Die Zimmer und Balkon sehr schön und großzügig jedoch mit wenig Platz für Kleidung. Hier wäre es schön wenn nachgebessert werden würde. 10 Kleiderbügel auf Kleiderstange und eine Schublade für 2 Personen sind etwas dürftig. Preis für das Abendbuffet 30 €/Person und Abend. Die Getränke nicht inklusive. Auch das Wasser zum Abendbuffet ist nicht kostenfrei, obwohl es auf der Webseite so vermerkt war. Das Frühstücksbuffet sehr abwechslungsreich, jedoch jeden Morgen das gleiche. Hier wäre mehr Abwechslung gut gewesen. Wir hatten eine schöne Zeit und können dieses Hotel empfehlen. Quartos: 4.0, Serviço: 5.0, Localização: 5.0. Destaques do hotel: Sossegado.",
-      "published_date": "2025-12-04",
-      "author_name": "Susi Sorglos",
-      "scraped_date": "2026-03-04",
-      "topics": [
-        {
-          "topic": "employees",
-          "sentiment": "positive",
-          "detail": "good and friendly service"
+          "detail": "young and dedicated staff"
         },
         {
           "topic": "commodities",
           "sentiment": "negative",
-          "detail": "insufficient number of clothes hangers and storage space"
-        },
-        {
-          "topic": "quality_price",
-          "sentiment": "negative",
-          "detail": "expensive evening buffet (30 €/person) with drinks not included"
-        },
-        {
-          "topic": "meals",
-          "sentiment": "positive",
-          "detail": "varied breakfast buffet"
-        },
-        {
-          "topic": "meals",
-          "sentiment": "negative",
-          "detail": "repetitive dinner buffet"
-        },
-        {
-          "topic": "return",
-          "sentiment": "positive",
-          "detail": "can recommend the hotel"
-        },
-        {
-          "topic": "comfort",
-          "sentiment": "positive",
-          "detail": "beautiful and spacious rooms with balcony"
-        }
-      ],
-      "classified": true,
-      "manual": true
-    },
-    {
-      "id": "manual_ac598fc3132e",
-      "hotel": "Ananea Castelo Suites Hotel",
-      "source": "google",
-      "rating": 5,
-      "title": "",
-      "text": "Quartos: 5.0, Serviço: 5.0, Localização: 5.0. Destaques do hotel: Luxo · Vista fantástica · Sossegado · Ótimo valor · Alta tecnologia.",
-      "published_date": "2025-11-04",
-      "author_name": "Jorge Madeira",
-      "scraped_date": "2026-03-04",
-      "topics": [
-        {
-          "topic": "commodities",
-          "sentiment": "positive",
-          "detail": "luxury"
-        },
-        {
-          "topic": "employees",
-          "sentiment": "positive",
-          "detail": "excellent service"
-        },
-        {
-          "topic": "quality_price",
-          "sentiment": "positive",
-          "detail": "good value"
-        }
-      ],
-      "classified": true,
-      "manual": true
-    },
-    {
-      "id": "manual_ca4eedb2579c",
-      "hotel": "Ananea Castelo Suites Hotel",
-      "source": "google",
-      "rating": 5,
-      "title": "",
-      "text": "Wir waren sehr zufrieden. Top Zimmer Ausstattung. Das Frühstücksbüfee hatte ein sehr großes Angebot. Alles war frisch zubereitet. Sehr sauber. Freundliches Personal. Gern kommen wir wieder zurück. Quartos: 5.0, Serviço: 5.0, Localização: 5.0. Destaques do hotel: Luxo · Vista fantástica · Alta tecnologia. Quartos: Sehr schön. Komfortable.",
-      "published_date": "2025-11-04",
-      "author_name": "Sonja Ludwig",
-      "scraped_date": "2026-03-04",
-      "topics": [
-        {
-          "topic": "employees",
-          "sentiment": "positive",
-          "detail": "friendly personnel"
-        },
-        {
-          "topic": "commodities",
-          "sentiment": "positive",
-          "detail": "top room amenities"
-        },
-        {
-          "topic": "meals",
-          "sentiment": "positive",
-          "detail": "extensive breakfast buffet"
-        },
-        {
-          "topic": "cleaning",
-          "sentiment": "positive",
-          "detail": "very clean"
-        },
-        {
-          "topic": "comfort",
-          "sentiment": "positive",
-          "detail": "beautiful rooms"
-        }
-      ],
-      "classified": true,
-      "manual": true
-    },
-    {
-      "id": "manual_6afd0e1a510b",
-      "hotel": "Ananea Castelo Suites Hotel",
-      "source": "google",
-      "rating": 5,
-      "title": "",
-      "text": "Quartos: 5.0, Serviço: 5.0, Localização: 4.0. Destaques do hotel: Luxo · Vista fantástica · Sossegado · Alta tecnologia.",
-      "published_date": "2025-11-04",
-      "author_name": "K IKA",
-      "scraped_date": "2026-03-04",
-      "topics": [
-        {
-          "topic": "commodities",
-          "sentiment": "positive",
-          "detail": "luxury"
-        },
-        {
-          "topic": "comfort",
-          "sentiment": "positive",
-          "detail": "peaceful"
-        }
-      ],
-      "classified": true,
-      "manual": true
-    },
-    {
-      "id": "manual_4c88a4ebaa61",
-      "hotel": "Ananea Castelo Suites Hotel",
-      "source": "google",
-      "rating": 5,
-      "title": "",
-      "text": "Schöner Urlaub mit Comeback Empfehlung. Das Hotel Castelo Suites liegt in Patroves (Albufeira), etwa 15 Minuten zu Fuß von den Stränden Praia do Castelo, Praia do Evaristo und Praia da Coelha entfernt. Das Hotel ist neu und modern mit sehr gut ausgestatteten Zimmern und freundlichem Personal. Frühstück und Abendessen bieten eine große Auswahl und gute Qualität. Die Pool- und Gartenanlage ist großzügig mit mehreren Pools und vielen Liegen. Besonders beeindruckend ist die Dachterrasse mit Infinitypool und wunderschöner Aussicht. Quartos: 4.0, Serviço: 5.0, Localização: 4.0. Destaques do hotel: Luxo · Vista fantástica · Ótimo valor · Alta tecnologia.",
-      "published_date": "2025-11-04",
-      "author_name": "Mobilfunk Guru",
-      "scraped_date": "2026-03-04",
-      "topics": [
-        {
-          "topic": "employees",
-          "sentiment": "positive",
-          "detail": "friendly personnel"
-        },
-        {
-          "topic": "commodities",
-          "sentiment": "positive",
-          "detail": "well-equipped rooms"
-        },
-        {
-          "topic": "meals",
-          "sentiment": "positive",
-          "detail": "varied and good quality breakfast and dinner"
-        },
-        {
-          "topic": "quality_price",
-          "sentiment": "positive",
-          "detail": "good value"
-        },
-        {
-          "topic": "return",
-          "sentiment": "positive",
-          "detail": "recommendation for return"
-        }
-      ],
-      "classified": true,
-      "manual": true
-    },
-    {
-      "id": "manual_409a36c71bbf",
-      "hotel": "Ananea Castelo Suites Hotel",
-      "source": "google",
-      "rating": 5,
-      "title": "",
-      "text": "Hôtel au top et neuf. Personnel très sympa et toujours disponible avec le sourire. Repas en demi-pension excellents. Chambre standard très confortable et bien insonorisée. Deux piscines un peu froides à notre goût mais bien conçues. Voiture recommandée pour se rendre au centre d'Albufeira à environ 5 km. Quartos: 5.0, Serviço: 5.0, Localização: 4.0.",
-      "published_date": "2025-11-04",
-      "author_name": "Martine Labille",
-      "scraped_date": "2026-03-04",
-      "topics": [
-        {
-          "topic": "employees",
-          "sentiment": "positive",
-          "detail": "friendly staff"
-        },
-        {
-          "topic": "commodities",
-          "sentiment": "negative",
-          "detail": "cold pools"
-        },
-        {
-          "topic": "comfort",
-          "sentiment": "positive",
-          "detail": "comfortable room"
-        }
-      ],
-      "classified": true,
-      "manual": true
-    },
-    {
-      "id": "manual_698639736ebf",
-      "hotel": "Ananea Castelo Suites Hotel",
-      "source": "google",
-      "rating": 4,
-      "title": "",
-      "text": "Das Hotel ist nach der jetzigen Ausstattung der Zimmer nicht für einen längeren Aufenthalt geeignet. Es gibt nur eine Schublade pro Zimmer und keinen Schrank, nur eine Kleiderstange mit Bügeln. Die Kofferablagen blockieren Safe und Schublade. Es fehlt auch eine Möglichkeit, nasse Kleidung aufzuhängen. Unsere als \"Suite adults only\" gebuchte Unterkunft bestand lediglich aus zwei nebeneinanderliegenden Zimmern. Sehr schön ist die Dachterrasse des Hotels. Der Service war gut, ebenso die Zimmerreinigung. Das Büffet ist zwar klein, aber das Essen war gut. In der Nähe des Hotels gibt es sehr schöne Strände und eine herrliche Küste. Quartos: 3.0, Serviço: 5.0, Localização: 5.0.",
-      "published_date": "2025-11-04",
-      "author_name": "Angelika Hoffmann",
-      "scraped_date": "2026-03-04",
-      "topics": [
-        {
-          "topic": "commodities",
-          "sentiment": "negative",
-          "detail": "lack of closet and drawer"
-        },
-        {
-          "topic": "comfort",
-          "sentiment": "positive",
-          "detail": "nice rooftop terrace of the hotel"
-        },
-        {
-          "topic": "employees",
-          "sentiment": "positive",
-          "detail": "good service"
-        },
-        {
-          "topic": "cleaning",
-          "sentiment": "positive",
-          "detail": "good room cleaning"
-        },
-        {
-          "topic": "meals",
-          "sentiment": "positive",
-          "detail": "good buffet"
-        }
-      ],
-      "classified": true,
-      "manual": true
-    },
-    {
-      "id": "manual_c88d1528dbeb",
-      "hotel": "Ananea Castelo Suites Hotel",
-      "source": "google",
-      "rating": 5,
-      "title": "",
-      "text": "Quartos: 5.0, Serviço: 5.0, Localização: 5.0. Destaques do hotel: Luxo · Sossegado · Alta tecnologia.",
-      "published_date": "2025-11-04",
-      "author_name": "Larissa Goldnik",
-      "scraped_date": "2026-03-04",
-      "topics": [],
-      "classified": true,
-      "manual": true
-    },
-    {
-      "id": "manual_d00f66f5920c",
-      "hotel": "Ananea Castelo Suites Hotel",
-      "source": "google",
-      "rating": 5,
-      "title": "",
-      "text": "Très bel établissement récent. Belles prestations, personnel agréable et très serviable. Quartos: 5.0, Serviço: 5.0, Localização: 4.0. Destaques do hotel: Luxo · Vista fantástica · Sossegado · Alta tecnologia.",
-      "published_date": "2025-11-04",
-      "author_name": "Christophe LEHMANN",
-      "scraped_date": "2026-03-04",
-      "topics": [
-        {
-          "topic": "employees",
-          "sentiment": "positive",
-          "detail": "agreeable and very serviable staff"
-        },
-        {
-          "topic": "commodities",
-          "sentiment": "positive",
-          "detail": "luxury"
-        },
-        {
-          "topic": "comfort",
-          "sentiment": "positive",
-          "detail": "5.0 rated rooms"
-        }
-      ],
-      "classified": true,
-      "manual": true
-    },
-    {
-      "id": "manual_40aed75c2b2a",
-      "hotel": "Ananea Castelo Suites Hotel",
-      "source": "google",
-      "rating": 5,
-      "title": "",
-      "text": "Wir waren Anfang Oktober im Ananea Castelo Suites Hotel an der Algarve und hatten insgesamt einen sehr angenehmen Aufenthalt. Das Hotel entspricht den Erwartungen der Fotos und Beschreibungen. Die Lage ist ruhig und ideal für Reisende mit Mietwagen. Unser Zimmer war großzügig, gut ausgestattet und das Bett sehr bequem. Besonders schön war der Balkon mit Blick auf die Pools und das Meer. Die Poolbereiche sind sehr gepflegt und die Rooftop-Poolbar mit Meerblick ist ein besonderes Highlight. Das Frühstück war abwechslungsreich und von sehr guter Qualität. Insgesamt bietet das Hotel ein sehr gutes Preis-Leistungs-Verhältnis und ist eine tolle Wahl für Reisende, die Ruhe, Design und eine gepflegte Umgebung schätzen. Quartos: 5.0, Serviço: 5.0, Localização: 5.0. Destaques do hotel: Vista fantástica · Sossegado · Ótimo valor.",
-      "published_date": "2025-11-04",
-      "author_name": "Caroline Schwenz",
-      "scraped_date": "2026-03-04",
-      "topics": [
-        {
-          "topic": "commodities",
-          "sentiment": "positive",
-          "detail": "hotel matches expectations"
-        },
-        {
-          "topic": "comfort",
-          "sentiment": "positive",
-          "detail": "spacious room"
-        },
-        {
-          "topic": "meals",
-          "sentiment": "positive",
-          "detail": "varied and high quality breakfast"
-        },
-        {
-          "topic": "quality_price",
-          "sentiment": "positive",
-          "detail": "good value for money"
-        }
-      ],
-      "classified": true,
-      "manual": true
-    },
-    {
-      "id": "manual_2a6a8f93ee26",
-      "hotel": "Ananea Castelo Suites Hotel",
-      "source": "google",
-      "rating": 5,
-      "title": "",
-      "text": "Eu e a minha namorada tivemos uma experiência fantástica neste novo hotel. O staff é muito simpático e competente. O hotel é muito bonito, limpo e organizado. A zona da piscina é lindíssima e recomendamos ver o pôr do sol na piscina do último piso. Na recepção repararam que era o aniversário da minha namorada e deixaram no quarto uma garrafa de espumante e um bolo com velas, o que foi uma surpresa maravilhosa. O quarto é muito bem decorado e a TV no espelho gigante é original. Também pedimos room service e os bifes estavam excelentes. Só temos coisas boas a dizer e voltaremos em breve. Quartos: 5.0, Serviço: 5.0, Localização: 5.0. Destaques do hotel: Vista fantástica · Romântico · Sossegado · Ótimo valor.",
-      "published_date": "2025-11-04",
-      "author_name": "FBDVM",
-      "scraped_date": "2026-03-04",
-      "topics": [
-        {
-          "topic": "employees",
-          "sentiment": "positive",
-          "detail": "sympathetic and competent staff"
-        },
-        {
-          "topic": "commodities",
-          "sentiment": "positive",
-          "detail": "beautiful, clean and organized hotel"
-        },
-        {
-          "topic": "comfort",
-          "sentiment": "positive",
-          "detail": "well decorated room"
-        },
-        {
-          "topic": "meals",
-          "sentiment": "positive",
-          "detail": "excellent room service steaks"
-        },
-        {
-          "topic": "quality_price",
-          "sentiment": "positive",
-          "detail": "good value"
-        },
-        {
-          "topic": "return",
-          "sentiment": "positive",
-          "detail": "will return soon"
-        }
-      ],
-      "classified": true,
-      "manual": true
-    },
-    {
-      "id": "manual_1f244b4b450e",
-      "hotel": "Ananea Castelo Suites Hotel",
-      "source": "google",
-      "rating": 5,
-      "title": "",
-      "text": "Ein sehr schönes neues Hotel mit einem Strandshuttle. Sehr freundliches diskretes Personal. Abwechslungsreiches Abendbuffet und reichliches Frühstücksbuffet. Noch wird hier und da etwas fertig gestellt, aber alles diskret und mit wenig Belästigung oder Lärm. Wir hatten hier eine sehr schöne Woche. Quartos: 5.0, Serviço: 5.0, Localização: 3.0.",
-      "published_date": "2025-10-04",
-      "author_name": "Waechter Hamburg",
-      "scraped_date": "2026-03-04",
-      "topics": [
-        {
-          "topic": "employees",
-          "sentiment": "positive",
-          "detail": "friendly and discrete personal"
-        },
-        {
-          "topic": "commodities",
-          "sentiment": "positive",
-          "detail": "varied evening buffet"
-        },
-        {
-          "topic": "cleaning",
-          "sentiment": "positive",
-          "detail": "quiet and little disturbance"
-        },
-        {
-          "topic": "comfort",
-          "sentiment": "positive",
-          "detail": "beautiful hotel"
-        },
-        {
-          "topic": "return",
-          "sentiment": "positive",
-          "detail": "had a nice week"
-        }
-      ],
-      "classified": true,
-      "manual": true
-    },
-    {
-      "id": "manual_a4e41d78069c",
-      "hotel": "Ananea Castelo Suites Hotel",
-      "source": "google",
-      "rating": 5,
-      "title": "",
-      "text": "Tolles, neueröffnetes Hotel in ruhiger, etwas abgelegener Lage. Hervorragende Mitarbeiter im Service, an der Rezeption und bei der Reinigung. Sehr leckeres Frühstück und Abendessen. Ruhige Lage mit tollen Stränden in 10–15 Minuten Entfernung, alternativ mit hoteleigenem Shuttleservice. Funktionale Zimmer mit guter Größe. Einzige kleine Einschränkung sind einige verbleibende Bauarbeiten, die jedoch tagsüber stattfinden und für uns nicht störend waren. Quartos: 5.0, Serviço: 5.0, Localização: 5.0. Destaques do hotel: Luxo · Vista fantástica · Romântico · Sossegado · Ótimo valor · Alta tecnologia. Quartos: Doppelzimmer mit Poolblick. Atividades próximas: Surfen, Jetski, Wandern, Strand. Alimentos e bebidas: Ausgezeichnet.",
-      "published_date": "2025-10-04",
-      "author_name": "Max L.",
-      "scraped_date": "2026-03-04",
-      "topics": [
-        {
-          "topic": "employees",
-          "sentiment": "positive",
-          "detail": "hervorragende Mitarbeiter im Service, an der Rezeption und bei der Reinigung"
-        },
-        {
-          "topic": "commodities",
-          "sentiment": "positive",
-          "detail": "ruhige Lage"
-        },
-        {
-          "topic": "comfort",
-          "sentiment": "negative",
-          "detail": "einige verbleibende Bauarbeiten"
-        },
-        {
-          "topic": "quality_price",
-          "sentiment": "positive",
-          "detail": "ótimo valor"
-        },
-        {
-          "topic": "meals",
-          "sentiment": "positive",
-          "detail": "sehr leckeres Frühstück und Abendessen"
-        }
-      ],
-      "classified": true,
-      "manual": true
-    },
-    {
-      "id": "manual_fa9725f7d711",
-      "hotel": "Ananea Castelo Suites Hotel",
-      "source": "google",
-      "rating": 4,
-      "title": "",
-      "text": "Ambiente gut, alles neu. Gestaltung jedoch nicht immer gut bedacht (z.B. keinen Stauraum im Zimmer). Auch wenn alles nobel aussieht, ist manches sehr pragmatisch gebaut. Dennoch gutes Hotel mit gutem Service, tollem Essen, sehr ruhig und etwas abgelegen. Mietwagen ist Pflicht, wenn man etwas sehen möchte. Quartos: 4.0, Serviço: 5.0, Localização: 3.0.",
-      "published_date": "2025-10-04",
-      "author_name": "TobyTestet",
-      "scraped_date": "2026-03-04",
-      "topics": [
-        {
-          "topic": "commodities",
-          "sentiment": "positive",
-          "detail": "new amenities"
-        },
-        {
-          "topic": "comfort",
-          "sentiment": "positive",
-          "detail": "nice atmosphere"
-        },
-        {
-          "topic": "employees",
-          "sentiment": "positive",
-          "detail": "good service"
+          "detail": "impractical details"
         },
         {
           "topic": "meals",
           "sentiment": "positive",
           "detail": "good food"
-        },
-        {
-          "topic": "commodities",
-          "sentiment": "negative",
-          "detail": "mandatory car rental to see sights"
         }
       ],
-      "classified": true,
-      "manual": true
+      "classified": true
     },
     {
-      "id": "manual_b88b47a9fb64",
+      "id": "Ci9DQUlRQUNvZENodHljRjlvT2pJek9FWlVkVmh6UTNsVFIxZElVRlpqVG1SQmQxRRAB",
       "hotel": "Ananea Castelo Suites Hotel",
       "source": "google",
-      "rating": 4,
+      "rating": 5.0,
       "title": "",
-      "text": "Sehr ruhiges Hotel. Eher nicht für Kinder geeignet, da es keine großen Unterhaltungsangebote gibt. Zimmer zur Straßenseite sind bei offenem Fenster recht laut. Quartos: 4.0, Serviço: 5.0, Localização: 4.0. Destaques do hotel: Ótimo valor. Quartos: Ohne Schränke. Atividades próximas: Alles was man möchte, jedoch meist mit Bus oder Auto erreichbar. Segurança: Sehr sicher. Acessibilidade a pé: Zwei schöne Strände – Castelo und Evaristo. Alimentos e bebidas: Super lecker.",
-      "published_date": "2025-10-04",
-      "author_name": "Seba Le",
-      "scraped_date": "2026-03-04",
+      "text": "A truly wonderful hotel! It only opened at the end of July 2025 and is therefore brand new. You hardly notice the recent opening; in fact, everything is running very smoothly. However, not all areas of the hotel are currently open, and the spa area, in particular, appears to be unfinished. The hotel's location is good: several beautiful stretches of beach on the Algarve are within a 15-20 minute walk, and there are also plenty of restaurants nearby. It's advisable to check reviews before choosing one (there are some rather negative ones). The hotel rooms are very nice, bright, all with balconies, and all offer sea views – at least those on the upper floors. There are still a few minor teething problems in the rooms, such as a balcony screen that rattles in the wind or a slightly dripping sink drain – but these should be resolved very soon. The pool is very large and has – at least for now – more than enough sun loungers. The hotel rooms are very nice, bright, and all have balconies. We were very impressed with the breakfast, which truly left nothing to be desired. Even more impressive was the dinner, which, for the relatively low price of €30, offered a generous buffet featuring a daily changing selection of regional cuisine. Finally, we were extremely impressed by the exceptionally friendly and competent staff, who truly went out of their way to ensure guests had a wonderful stay. We felt very comfortable and would love to return!",
+      "published_date": "2025-09-15",
+      "author_name": "iurista82",
+      "scraped_date": "2026-03-14",
       "topics": [
         {
           "topic": "employees",
           "sentiment": "positive",
-          "detail": "service 5.0"
+          "detail": "friendly and competent staff"
+        },
+        {
+          "topic": "commodities",
+          "sentiment": "positive",
+          "detail": "brand new hotel"
         },
         {
           "topic": "commodities",
           "sentiment": "negative",
-          "detail": "no large entertainment options for children"
-        },
-        {
-          "topic": "comfort",
-          "sentiment": "negative",
-          "detail": "rooms near street side loud with open window"
-        },
-        {
-          "topic": "quality_price",
-          "sentiment": "positive",
-          "detail": "good value"
-        }
-      ],
-      "classified": true,
-      "manual": true
-    },
-    {
-      "id": "manual_78b232e5f117",
-      "hotel": "Ananea Castelo Suites Hotel",
-      "source": "google",
-      "rating": 5,
-      "title": "",
-      "text": "Fantastisch nieuw hotel. Goed ontbijt buffet, zeer goede bedden, kamer mooi met balkon en schitterend uitzicht. Diner buffet was ook zeer goed. Auto kon fijn geparkeerd worden. Al met al prima verblijf gehad. Quartos: 5.0, Serviço: 5.0, Localização: 5.0.",
-      "published_date": "2025-10-04",
-      "author_name": "Hans Naus",
-      "scraped_date": "2026-03-04",
-      "topics": [
-        {
-          "topic": "commodities",
-          "sentiment": "positive",
-          "detail": "good parking"
-        },
-        {
-          "topic": "meals",
-          "sentiment": "positive",
-          "detail": "good breakfast buffet"
-        },
-        {
-          "topic": "employees",
-          "sentiment": "positive",
-          "detail": "good service"
+          "detail": "unfinished spa area"
         },
         {
           "topic": "comfort",
           "sentiment": "positive",
-          "detail": "beautiful room with balcony and view"
+          "detail": "comfortable rooms"
         },
         {
-          "topic": "quality_price",
-          "sentiment": "positive",
-          "detail": "prima stay"
-        }
-      ],
-      "classified": true,
-      "manual": true
-    },
-    {
-      "id": "manual_5f727cf1ea44",
-      "hotel": "Ananea Castelo Suites Hotel",
-      "source": "google",
-      "rating": 5,
-      "title": "",
-      "text": "Quartos: 5.0, Serviço: 4.0, Localização: 5.0. Destaques do hotel: Vista fantástica · Sossegado · Alta tecnologia.",
-      "published_date": "2025-10-04",
-      "author_name": "Heger",
-      "scraped_date": "2026-03-04",
-      "topics": [],
-      "classified": true,
-      "manual": true
-    },
-    {
-      "id": "manual_c45b6c800787",
-      "hotel": "Ananea Castelo Suites Hotel",
-      "source": "google",
-      "rating": 4,
-      "title": "",
-      "text": "Quartos: 5.0, Serviço: 5.0, Localização: 3.0.",
-      "published_date": "2025-10-04",
-      "author_name": "Ersen Unsurorlu",
-      "scraped_date": "2026-03-04",
-      "topics": [
-        {
-          "topic": "employees",
-          "sentiment": "positive",
-          "detail": "service"
-        },
-        {
-          "topic": "commodities",
-          "sentiment": "positive",
-          "detail": "rooms"
-        }
-      ],
-      "classified": true,
-      "manual": true
-    },
-    {
-      "id": "manual_22d6d0bcc986",
-      "hotel": "Ananea Castelo Suites Hotel",
-      "source": "google",
-      "rating": 4,
-      "title": "",
-      "text": "Ein sehr schönes, modernes Hotel mit Rooftop-Pool, von dem aus man den Sonnenuntergang beobachten kann. Stylische Elemente im gesamten Hotel. Sehr gutes Frühstück. Kostenloses Parken vor dem Hotel und Shuttle-Service zum nahegelegenen Strand. Photovoltaikanlage zur Unterstützung der Stromversorgung. Sehr freundliches Personal. Quartos: 4.0, Serviço: 5.0, Localização: 4.0. Destaques do hotel: Ótimo valor · Alta tecnologia.",
-      "published_date": "2025-10-04",
-      "author_name": "Pete",
-      "scraped_date": "2026-03-04",
-      "topics": [
-        {
-          "topic": "commodities",
-          "sentiment": "positive",
-          "detail": "rooftop pool"
-        },
-        {
-          "topic": "employees",
-          "sentiment": "positive",
-          "detail": "friendly personnel"
-        },
-        {
-          "topic": "quality_price",
-          "sentiment": "positive",
-          "detail": "good value"
-        }
-      ],
-      "classified": true,
-      "manual": true
-    },
-    {
-      "id": "manual_ed1cc6d70495",
-      "hotel": "Ananea Castelo Suites Hotel",
-      "source": "google",
-      "rating": 4,
-      "title": "",
-      "text": "Sehr schönes, schickes, neues Hotel. Sicherlich noch nicht alles eingespielt und an den ein oder anderen Stellen noch verbesserungsfähig. Wasser und Kaffee werden nicht immer regelmäßig aufgefüllt. Besonders hervorzuheben sind die Mitarbeiter im Restaurant, die sich täglich freundlich bemüht haben, obwohl es beim Frühstück oft zu wenig Plätze gab. Das Abendessen (Halbpension) war jeden Abend sehr lecker. In der Umgebung des Hotels gibt es jedoch wenig, daher ist ein Mietwagen sehr zu empfehlen. Quartos: 5.0, Serviço: 4.0, Localização: 3.0. Destaques do hotel: Vista fantástica · Sossegado.",
-      "published_date": "2025-10-04",
-      "author_name": "Silke Engeln",
-      "scraped_date": "2026-03-04",
-      "topics": [
-        {
-          "topic": "employees",
-          "sentiment": "positive",
-          "detail": "restaurant staff"
+          "topic": "comfort",
+          "sentiment": "negative",
+          "detail": "minor teething problems in rooms"
         },
         {
           "topic": "meals",
           "sentiment": "positive",
-          "detail": "evening meal (half board)"
+          "detail": "impressive breakfast and dinner"
+        },
+        {
+          "topic": "quality_price",
+          "sentiment": "positive",
+          "detail": "relatively low price for dinner"
+        },
+        {
+          "topic": "return",
+          "sentiment": "positive",
+          "detail": "would love to return"
+        }
+      ],
+      "classified": true
+    },
+    {
+      "id": "Ci9DQUlRQUNvZENodHljRjlvT21WSWRsWklaalJYVURkbU55MWZTWEJCVkVZeGVGRRAB",
+      "hotel": "Ananea Castelo Suites Hotel",
+      "source": "google",
+      "rating": 5.0,
+      "title": "",
+      "text": "Beautiful, pleasant hotel The staff is welcoming The premises are clean, the decor is tasteful The meals are good I highly recommend it It's a shame there's no sign; we had doubts when we arrived.",
+      "published_date": "2025-09-15",
+      "author_name": "Nathalie Destraz",
+      "scraped_date": "2026-03-14",
+      "topics": [
+        {
+          "topic": "employees",
+          "sentiment": "positive",
+          "detail": "welcoming staff"
+        },
+        {
+          "topic": "commodities",
+          "sentiment": "positive",
+          "detail": "clean premises"
+        },
+        {
+          "topic": "meals",
+          "sentiment": "positive",
+          "detail": "good meals"
+        },
+        {
+          "topic": "return",
+          "sentiment": "positive",
+          "detail": "highly recommend"
         },
         {
           "topic": "commodities",
           "sentiment": "negative",
-          "detail": "water and coffee not always refilled regularly"
+          "detail": "no sign; doubts on arrival"
         }
       ],
-      "classified": true,
-      "manual": true
+      "classified": true
+    },
+    {
+      "id": "Ci9DQUlRQUNvZENodHljRjlvT2tsTFIxOTRTVUpoUjFFMGJtaExaa3d5YUcxQmRHYxAB",
+      "hotel": "Ananea Castelo Suites Hotel",
+      "source": "google",
+      "rating": 5.0,
+      "title": "",
+      "text": "We spent a week as a couple in Albufeira thanks to a Voyage Privé offer at this hotel, and we would first like to thank the agency for this wonderful opportunity. Overall, we had an excellent stay; both the country and the hotel were a wonderful discovery. The positives: New hotel, modern facilities, very comfortable room with quality bedding and a large, pleasant balcony. The half-board option was a real plus: excellent breakfast and dinner, varied menus, and quality products throughout the stay. Attractive location: 10 minutes from Albufeira by car and about 30 minutes from other major cities. A lovely beach is a 5-minute walk away, as well as some local shops. Beautiful pool, pleasant for enjoying the sunset. Reception staff very friendly, helpful, and responsive. A special mention goes to a French-speaking receptionist (I can't remember her first name, but she was of French origin) who was very helpful and kind, as were her colleagues, also of Spanish-Brazilian origin. Free parking in front of the hotel, and a very reasonable tourist tax. Appreciable services: affordable car rental, a very good selection of restaurants in the surrounding area, and a unique bonus: a lovely loose-leaf tea service available to guests. The prices of drinks and meals at the hotel were very reasonable, and the location was quiet and relaxing. Considerations for improvement: The hotel entrance doors regularly jammed and made noise. In the room: no bedside tables, curtains that didn't close completely (so we woke up very early with daylight), housekeeping was sometimes irregular and sometimes overlooked. There was a leak-proof sliding door between the shower and the bathroom, which leaked water. The supply of bottled water, tea, and coffee was irregular. Regarding the half-board option: in the morning, all drinks (coffee, tea, juice, etc.) were included, but in the evening, you had to pay for everything, even water. The provision of a simple water fountain or vending machine would have been greatly appreciated. The restaurant staff, although young and dynamic, sometimes lacked a smile and friendliness. A little more sociability and friendliness towards guests would have made the experience even more enjoyable. The hotel still lacked a few small finishing touches (accessories and details in the restaurant in particular), probably related to the fact that the establishment is new. A fitness room was mentioned, but in such a large hotel, there was no gym available, which we found a shame. In summary: a hotel with great charm and potential, remarkable quality of service and food, and a very positive experience overall. Despite a few small areas for improvement, we will definitely return and recommend this establishment.",
+      "published_date": "2025-09-15",
+      "author_name": "Dag",
+      "scraped_date": "2026-03-14",
+      "topics": [
+        {
+          "topic": "employees",
+          "sentiment": "positive",
+          "detail": "friendly, helpful, responsive reception staff"
+        },
+        {
+          "topic": "employees",
+          "sentiment": "negative",
+          "detail": "lack of friendliness from restaurant staff"
+        },
+        {
+          "topic": "commodities",
+          "sentiment": "positive",
+          "detail": "new hotel, modern facilities, large balcony, loose-leaf tea service"
+        },
+        {
+          "topic": "commodities",
+          "sentiment": "negative",
+          "detail": "no bedside tables, leaking shower door, irregular supply of bottled water, tea, coffee"
+        },
+        {
+          "topic": "comfort",
+          "sentiment": "positive",
+          "detail": "quality bedding"
+        },
+        {
+          "topic": "comfort",
+          "sentiment": "negative",
+          "detail": "irregular housekeeping, curtains that didn't close completely"
+        },
+        {
+          "topic": "cleaning",
+          "sentiment": "negative",
+          "detail": "irregular housekeeping"
+        },
+        {
+          "topic": "quality_price",
+          "sentiment": "positive",
+          "detail": "reasonable prices of drinks and meals"
+        },
+        {
+          "topic": "quality_price",
+          "sentiment": "negative",
+          "detail": "evening drinks not included in half-board option"
+        },
+        {
+          "topic": "meals",
+          "sentiment": "positive",
+          "detail": "excellent breakfast, dinner, varied menus, quality products"
+        },
+        {
+          "topic": "meals",
+          "sentiment": "negative",
+          "detail": "lack of water fountain or vending machine"
+        },
+        {
+          "topic": "return",
+          "sentiment": "positive",
+          "detail": "will definitely return and recommend this establishment"
+        }
+      ],
+      "classified": true
     }
   ]
 }
