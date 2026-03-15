@@ -519,7 +519,7 @@ def _parse_review_element(text: str, review_id: str = "") -> dict | None:
         "published_date": published_date,
         "author_name": author_name,
         "source_platform": source_line.lower() if source_line else "google",
-        "trip_type": trip_type,
+        "trip_type": trip_type or "Unknown",
         "travel_group": travel_group,
         "original_language": original_language,
     }

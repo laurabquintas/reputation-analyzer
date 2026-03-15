@@ -420,10 +420,10 @@ def _parse_review_card(card: Tag) -> dict:
         "published_date": published_date,
         "stay_date": stay_date,
         "room_name": room_name,
-        "traveler_type": traveler_type,
+        "traveler_type": traveler_type or "Unknown",
         "num_nights": num_nights,
         "author_name": author_name,
-        "country": country,
+        "country": country or "Unknown",
     }
 
 
@@ -674,9 +674,9 @@ def main() -> int:
             "published_date": raw.get("published_date", ""),
             "stay_date": raw.get("stay_date", ""),
             "room_name": raw.get("room_name", ""),
-            "traveler_type": raw.get("traveler_type", ""),
+            "traveler_type": raw.get("traveler_type", "") or "Unknown",
             "author_name": raw.get("author_name", ""),
-            "country": raw.get("country", ""),
+            "country": raw.get("country", "") or "Unknown",
             "scraped_date": args.date,
             "topics": topics,
             "classified": classified,
