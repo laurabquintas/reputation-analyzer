@@ -80,6 +80,38 @@ LOCATION_IDS = _load_location_ids()
 # Languages to fetch reviews in (covers most hotel review languages)
 DEFAULT_LANGUAGES = ["en", "pt", "de", "fr", "es", "it", "nl"]
 
+# Fallback: map API language code to a likely country when user_location
+# is missing.  This is a rough heuristic – the reviewer could come from
+# any country that speaks the language.
+_LANG_TO_COUNTRY: dict[str, str] = {
+    "pt": "Portugal",
+    "de": "Germany",
+    "fr": "France",
+    "es": "Spain",
+    "it": "Italy",
+    "nl": "Netherlands",
+}
+
+
+def _extract_country(raw: dict) -> str:
+    """Return the reviewer's country from user_location or language fallback.
+
+    The TripAdvisor API provides ``user.user_location.name`` as a
+    comma-separated string (e.g. "Leeds, West Yorkshire, England").
+    We take the **last** segment as the country.
+
+    When that field is absent we fall back to the language code that the
+    review was fetched with (``_language``).  English reviews are too
+    ambiguous to guess a country so we return an empty string.
+    """
+    user = raw.get("user") or {}
+    loc = (user.get("user_location") or {}).get("name", "")
+    if loc:
+        return loc.rsplit(",", 1)[-1].strip()
+    # Fallback to language
+    lang = raw.get("_language", "")
+    return _LANG_TO_COUNTRY.get(lang, "")
+
 
 # ---------------------- TripAdvisor API ---------------------- #
 
@@ -291,6 +323,7 @@ def main() -> int:
             "text": raw.get("text", ""),
             "published_date": raw.get("published_date", ""),
             "author_name": (raw.get("user") or {}).get("username", ""),
+            "country": _extract_country(raw),
             "travel_date": raw.get("travel_date", ""),
             "trip_type": raw.get("trip_type", ""),
             "subratings": raw.get("subratings", {}),
@@ -341,6 +374,8 @@ def main() -> int:
             "title": raw.get("title", ""),
             "text": text,
             "published_date": raw.get("published_date", ""),
+            "author_name": raw.get("author_name", ""),
+            "country": raw.get("country", ""),
             "travel_date": raw.get("travel_date", ""),
             "trip_type": raw.get("trip_type", ""),
             "subratings": subratings,
