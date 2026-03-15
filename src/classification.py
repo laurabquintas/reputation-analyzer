@@ -59,13 +59,14 @@ JSON array:"""
         "options": {
             "temperature": 0.1,
             "num_predict": 768,
+            "num_ctx": 2048,
         },
     }
 
     resp = requests.post(
         f"{ollama_url}/api/generate",
         json=payload,
-        timeout=120,
+        timeout=180,
     )
     resp.raise_for_status()
     raw_response = resp.json().get("response", "")
@@ -142,13 +143,14 @@ JSON array:"""
         "options": {
             "temperature": 0.1,
             "num_predict": 768,
+            "num_ctx": 2048,
         },
     }
 
     resp = requests.post(
         f"{ollama_url}/api/generate",
         json=payload,
-        timeout=120,
+        timeout=180,
     )
     resp.raise_for_status()
     raw_response = resp.json().get("response", "")
@@ -218,13 +220,14 @@ JSON array:"""
         "options": {
             "temperature": 0.1,
             "num_predict": 768,
+            "num_ctx": 2048,
         },
     }
 
     resp = requests.post(
         f"{ollama_url}/api/generate",
         json=payload,
-        timeout=120,
+        timeout=180,
     )
     resp.raise_for_status()
     raw_response = resp.json().get("response", "")
