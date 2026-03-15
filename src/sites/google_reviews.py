@@ -239,6 +239,13 @@ def main() -> int:
 
     existing_reviews = load_reviews(args.json)
 
+    # Backfill missing fields for old reviews
+    for r in existing_reviews:
+        if "country" not in r:
+            r["country"] = "Unknown"
+        if "trip_type" not in r:
+            r["trip_type"] = "Unknown"
+
     # Check Ollama
     ollama_ok = False if args.skip_classification else is_ollama_available(args.ollama_url)
     if not ollama_ok and not args.skip_classification:
@@ -338,6 +345,8 @@ def main() -> int:
             "text": text,
             "published_date": raw.get("published_date", ""),
             "author_name": raw.get("author_name", ""),
+            "country": raw.get("country", "") or "Unknown",
+            "trip_type": raw.get("trip_type", "") or "Unknown",
             "scraped_date": args.date,
             "topics": topics,
             "classified": classified,

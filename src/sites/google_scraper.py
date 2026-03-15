@@ -408,6 +408,30 @@ def _parse_relative_date(text: str) -> str:
     return dt.strftime("%Y-%m-%d")
 
 
+# Map full (lowercase) language names from Google Translate footer to a
+# likely country of origin.  English is intentionally omitted — the caller
+# treats "no original_language" (native English) as "England".
+_LANG_NAME_TO_COUNTRY: dict[str, str] = {
+    "french": "France",
+    "german": "Germany",
+    "portuguese": "Portugal",
+    "spanish": "Spain",
+    "italian": "Italy",
+    "dutch": "Netherlands",
+    "russian": "Russia",
+    "polish": "Poland",
+    "czech": "Czech Republic",
+    "swedish": "Sweden",
+    "danish": "Denmark",
+    "norwegian": "Norway",
+    "finnish": "Finland",
+    "greek": "Greece",
+    "turkish": "Turkey",
+    "romanian": "Romania",
+    "hungarian": "Hungary",
+}
+
+
 def _parse_review_element(text: str, review_id: str = "") -> dict | None:
     """Parse a single review element's inner text into a review dict.
 
@@ -506,6 +530,13 @@ def _parse_review_element(text: str, review_id: str = "") -> dict | None:
         review_text,
     ).strip()
 
+    # Derive country from original language.
+    # No original_language means the review is natively English → "England"
+    if original_language:
+        country = _LANG_NAME_TO_COUNTRY.get(original_language, "Unknown")
+    else:
+        country = "England"
+
     # Use provided review_id or generate a deterministic one
     if not review_id:
         id_seed = f"{author_name}_{published_date}_{review_text[:50]}"
@@ -522,6 +553,7 @@ def _parse_review_element(text: str, review_id: str = "") -> dict | None:
         "trip_type": trip_type or "Unknown",
         "travel_group": travel_group,
         "original_language": original_language,
+        "country": country,
     }
 
 
