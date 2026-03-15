@@ -778,11 +778,12 @@ def main() -> None:
     available_sources = [s for s in SOURCE_ORDER if s in _present]
     if "source_selector" not in st.session_state:
         st.session_state["source_selector"] = available_sources
-    selected_sources = st.multiselect(
+    _selected_raw = st.multiselect(
         "Sources",
         available_sources,
         key="source_selector",
     )
+    selected_sources = [s for s in SOURCE_ORDER if s in _selected_raw]
 
     filtered = history_df[history_df["Source"].isin(selected_sources)].copy()
     if filtered.empty:
