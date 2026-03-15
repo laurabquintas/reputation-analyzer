@@ -1,6 +1,6 @@
 {
   "meta": {
-    "last_updated": "2026-03-11T23:28:37",
+    "last_updated": "2026-03-15T01:28:33",
     "total_reviews": 11
   },
   "reviews": [
@@ -8,15 +8,18 @@
       "id": "1037605287",
       "hotel": "Ananea Castelo Suites Hotel",
       "location_id": "33299137",
+      "source": "tripadvisor",
       "rating": 5,
       "title": "Lovely quiet hotel",
       "text": "We travelled as a family of four with 2 children 9 and 11 and really enjoyed our time at this hotel.\n\nThe hotel is in a quiet area with a few restaurants and bars within walking distance. There are a couple of beaches nearby (Praia do Evaristo and Praia do Castelo) both with restaurants and well worth a visit. I would recommend hiring a car, there is ample free parking available.\n\nWe stayed in a family suite with twin beds in one room and a king in the other. Each had its own door but were accessed by a single door at the front which could be locked and created a bit of additional storage space.\n\nThe rooms were small but perfectly adequate. Ritual toiletries were provided, and the rooms were cleaned and towels changed daily. There is a small fridge but no bottle openers in the rooms.\n\nWe stayed half board and the food and service was beyond our expectations. Everything was freshly cooked, and the restaurant area was spotless. In the evening’s salad, soups, vegetables and fresh meat / fish were offered as well as fruit, cheeses and a variety of desserts. The staff were great, even bringing salt for the poached eggs at breakfast without being asked.\n\nOne slight disappointment was that the main pool isn't heated and was really cold. There is a heated pool on the roof terrace, but you had to be 16+ to access this.\n\nThe hotel seemed to attract couples rather than families however, we had a great time and would definitely return.",
       "published_date": "2025-11-03T11:15:52Z",
+      "author_name": "PippaNel",
+      "country": "England",
       "travel_date": "2025-10-31",
       "trip_type": "Family",
       "subratings": {},
       "helpful_votes": 0,
-      "scraped_date": "2026-03-04",
+      "scraped_date": "2026-03-15",
       "topics": [
         {
           "topic": "employees",
@@ -29,9 +32,9 @@
           "detail": "no bottle openers in rooms"
         },
         {
-          "topic": "commodities",
-          "sentiment": "positive",
-          "detail": "ample free parking"
+          "topic": "comfort",
+          "sentiment": "negative",
+          "detail": "small rooms"
         },
         {
           "topic": "cleaning",
@@ -41,7 +44,22 @@
         {
           "topic": "meals",
           "sentiment": "positive",
-          "detail": "freshly cooked food beyond expectations"
+          "detail": "freshly cooked food, spotless restaurant area"
+        },
+        {
+          "topic": "quality_price",
+          "sentiment": "positive",
+          "detail": "half board value"
+        },
+        {
+          "topic": "commodities",
+          "sentiment": "positive",
+          "detail": "heated pool on roof terrace (16+)"
+        },
+        {
+          "topic": "return",
+          "sentiment": "positive",
+          "detail": "would definitely return"
         }
       ],
       "classified": true
@@ -50,15 +68,18 @@
       "id": "1033353426",
       "hotel": "Ananea Castelo Suites Hotel",
       "location_id": "33299137",
+      "source": "tripadvisor",
       "rating": 5,
       "title": "Fabulous Modern Hotel",
       "text": "Fabulous hotel with a very calming feel. When you walk into the lobby it smells like a Spa. Beautiful modern rooms with high quality toiletries and daily servicing. Breakfast had something for everyone and a vast selection of hot food, pastries and juices to mention a few. Swimming pools were cold but still lovely and pool area is spotless. I highly recommend the Traditional Club Sandwich from the pool side bar..delicious! Staff couldn’t be nicer, and always had a smile for you. Only a few € into the old town via uber too so very well located. 100% would visit again",
       "published_date": "2025-10-04T10:10:17Z",
+      "author_name": "cosshar",
+      "country": "County Meath",
       "travel_date": "2025-10-31",
       "trip_type": "Couples",
       "subratings": {},
       "helpful_votes": 0,
-      "scraped_date": "2026-03-04",
+      "scraped_date": "2026-03-15",
       "topics": [
         {
           "topic": "employees",
@@ -78,7 +99,7 @@
         {
           "topic": "meals",
           "sentiment": "positive",
-          "detail": "vast breakfast selection"
+          "detail": "vast selection of hot food"
         },
         {
           "topic": "quality_price",
@@ -92,15 +113,18 @@
       "id": "1033043012",
       "hotel": "Ananea Castelo Suites Hotel",
       "location_id": "33299137",
+      "source": "tripadvisor",
       "rating": 5,
       "title": "Wonderful week with wonderful staff",
       "text": "We have just checked out after a wonderful week in this hotel. The rooms are lovely, the staff are amazing and friendly. For such a young team of people they have the most excellent customer service skills. The breakfast was lovely too. We would definitely come back to this lovely place. Thank you x",
       "published_date": "2025-10-02T03:03:08Z",
+      "author_name": "125helent",
+      "country": "England",
       "travel_date": "2025-09-30",
       "trip_type": "Couples",
       "subratings": {},
       "helpful_votes": 0,
-      "scraped_date": "2026-03-04",
+      "scraped_date": "2026-03-15",
       "topics": [
         {
           "topic": "employees",
@@ -116,11 +140,6 @@
           "topic": "meals",
           "sentiment": "positive",
           "detail": "lovely breakfast"
-        },
-        {
-          "topic": "return",
-          "sentiment": "positive",
-          "detail": "would come back"
         }
       ],
       "classified": true
@@ -129,10 +148,13 @@
       "id": "1037859495",
       "hotel": "Ananea Castelo Suites Hotel",
       "location_id": "33299137",
+      "source": "tripadvisor",
       "rating": 5,
       "title": "Wunderschöne Luxus Oase zur perfekten Entspannung",
       "text": "Dieses Hotel ist ein wunderschöner Ort, um eine entspannte und erholsame Zeit an der Algarve zu verbringen. Das moderne und sehr exklusive Hotel unter einer sehr herzlichen und aufmerksamen Hotelmanagerin ist wirklich aussergewöhnlich geschmackvoll eingerichtet und bis ins kleinste Detail liebevoll gestaltet, so dass man die Harmonie des Hauses ständig spürt und erlebt! Die Farben und Materialen der Zimmer und des Interieurs greifen die Farben der Algarve perfekt auf und verschmelzen mit der wunderschönen Natur. Die Zimmer sind mit High-Tech und sehr hochwertigen Design-Möbeln ausgestattet, welche einen sofort in einen luxuriösen Urlaubsmodus versetzen. Der Aussenbereich war noch in Arbeit, aber man konnte auch hier schon die außergewöhnlich geschmackvolle und harmonische Bepflanzung erkennen. Auch das Frühstück war so liebevoll und reichhaltig mit lauter gesunden und frischen Köstlichkeiten dargeboten, dass alle Wünsche erfüllt wurden.",
       "published_date": "2025-11-05T12:52:34Z",
+      "author_name": "H7149MAmelanieh",
+      "country": "Germany",
       "travel_date": "2025-10-31",
       "trip_type": "Paare",
       "subratings": {
@@ -174,7 +196,7 @@
         }
       },
       "helpful_votes": 0,
-      "scraped_date": "2026-03-04",
+      "scraped_date": "2026-03-15",
       "topics": [
         {
           "topic": "employees",
@@ -192,9 +214,14 @@
           "detail": "luxurious rooms"
         },
         {
+          "topic": "commodities",
+          "sentiment": "negative",
+          "detail": "outdoor area still under construction"
+        },
+        {
           "topic": "meals",
           "sentiment": "positive",
-          "detail": "rich and healthy breakfast"
+          "detail": "lovely and healthy breakfast"
         }
       ],
       "classified": true
@@ -203,15 +230,18 @@
       "id": "1033204276",
       "hotel": "Ananea Castelo Suites Hotel",
       "location_id": "33299137",
+      "source": "tripadvisor",
       "rating": 4,
       "title": "Joa, es geht auch besser....",
       "text": "Wir waren ende September im Hotel. Bauarbeiten, die aber nicht sonderlich störten. Bis auf die erheblichen Arbeitssicherheitsmängel!!!! So wurde vor dem Haupteingang der Schriftzug des Hotels angebracht, mit einem Hubsteiger. Fangnetz, Fallschutz, Sicherheitsnetz für herabfallende Gegenstände; KEINE!\nDie Zimmer groß, geräumig, leider wenig  Stauraum. TV sehr intelligent untergebracht, fantastisch!!! Dusche + Toilette; EINE Schiebetür für Beides! Wenn einer duscht und der andere hat einen Toilettengang----->  je nachdem, wer die Schiebetür für sich beansprucht....  einer ist \"praktisch\" IM Zimmer. \nAusreichend Steckdosen und Lademöglichkeiten vorhanden.  Beim Verlassen des Zimmers wird ein blickdichter wärmeabweisender Vorhang autom. an der Fensterfront zugezogen, Sehr sehr gut! Spart Energie, die Klima hat weniger zu leisten! Top! Poolbereiche super gepflegt. Es werden Getränke und Snacks am Poolbereich serviert. Sehr ruhiges Hotel, auch der Gäste wegen. Kein Schlagen der Türen, Keine lautstarken Unterhaltungen auf den Fluren, keine deutlich wahrnehmbaren Toilettenspülgeräusche. Wenn die Fenster Nachts verschlossen sind ist Ruhe. Sonst die üblichen Vogelstimmen.  Die Gäste(80%) waren überwiegend ü50 und ohne Kinder.   Ja, die Drehtüren bereiteten immer noch Schwierigkeiten. Es ging nur einer von zwei Aufzügen.  Personal ist sehr freundlich und zuvorkommend. Sprachschwierigkeiten (Englisch,  mein level= B2) Das Personal spricht oft kein gutes englisch. Portugiesisch/Spanisch spreche ich nicht. Beim Personal wird dann sehr oft das Handy gezückt und mit \"goo...-translate\" weitergemacht. Nicht schön. \nAuch wir waren zu früh im Hotel und konnten das Zimmer erst nach 4h beziehen. Nervige Wartezeit. Hier hätten wir uns gewünscht, die Möglichkeit,  Badesachen aus \ndem Koffer nehmen zu können. So liefen wir sinn und planlos die Wartezeit umher.",
       "published_date": "2025-10-03T08:18:48Z",
+      "author_name": "565pe",
+      "country": "Germany",
       "travel_date": "2025-09-30",
       "trip_type": "Paare",
       "subratings": {},
       "helpful_votes": 0,
-      "scraped_date": "2026-03-04",
+      "scraped_date": "2026-03-15",
       "topics": [
         {
           "topic": "employees",
@@ -226,22 +256,32 @@
         {
           "topic": "cleaning",
           "sentiment": "positive",
-          "detail": "well-maintained pool areas"
+          "detail": "superb pool maintenance"
         },
         {
           "topic": "comfort",
           "sentiment": "positive",
-          "detail": "spacious rooms"
+          "detail": "ruhig hotel"
         },
         {
           "topic": "comfort",
           "sentiment": "negative",
-          "detail": "insufficient storage space"
+          "detail": "limited storage space"
+        },
+        {
+          "topic": "meals",
+          "sentiment": "negative",
+          "detail": "difficulty with luggage during wait"
+        },
+        {
+          "topic": "quality_price",
+          "sentiment": "negative",
+          "detail": "nervous waiting time"
         },
         {
           "topic": "employees",
           "sentiment": "negative",
-          "detail": "language barriers"
+          "detail": "language barriers and use of translation apps"
         }
       ],
       "classified": true
