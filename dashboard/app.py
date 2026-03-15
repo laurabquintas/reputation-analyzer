@@ -29,7 +29,7 @@ AUDIT_LOG = DATA_DIR / "audit.csv"
 
 logger = logging.getLogger(__name__)
 
-SOURCE_ORDER = ["Tripadvisor", "Google", "HolidayCheck", "Expedia", "Booking"]
+SOURCE_ORDER = ["Booking", "Tripadvisor", "Google", "HolidayCheck", "Expedia"]
 
 SOURCES = {
     "Booking": DATA_DIR / "booking_scores.csv",
@@ -1004,6 +1004,99 @@ def main() -> None:
                 with insights_col:
                     _render_topic_insights(overall_topic_df, overall_insights)
 
+    # ---- Booking ---- #
+    if "Booking" in selected_sources:
+        st.subheader("Booking.com")
+
+        if not booking_reviews_data:
+            st.info(
+                "No Booking.com review data available yet. Run the reviews scraper to populate "
+                "data/booking_reviews.json."
+            )
+        else:
+            # Year-over-year comparison (previous year vs YTD)
+            bk_qtr_df = _quarter_topic_comparison(booking_reviews_data, ANANEA_HOTEL, year=selected_year)
+            _render_quarter_comparison(bk_qtr_df)
+
+            bk_topic_df, bk_total = _ytd_topic_summary(booking_reviews_data, ANANEA_HOTEL, year=selected_year)
+
+            if bk_topic_df[["Positive", "Negative"]].sum().sum() == 0:
+                st.info(f"No classified Booking.com reviews found for {selected_year}.")
+            else:
+                bk_label = f"YTD {selected_year}" if selected_year == current_year else str(selected_year)
+                bk_insights = _ytd_topic_insights(booking_reviews_data, ANANEA_HOTEL, year=selected_year)
+                chart_col, insights_col = st.columns([3, 2])
+                with chart_col:
+                    fig = go.Figure()
+                    fig.add_trace(go.Bar(
+                        y=bk_topic_df["Topic"],
+                        x=bk_topic_df["Positive"],
+                        name="Positive",
+                        orientation="h",
+                        marker_color="#15803d",
+                        text=[f"{v}%" for v in bk_topic_df["Positive"]],
+                        textposition="auto",
+                    ))
+                    fig.add_trace(go.Bar(
+                        y=bk_topic_df["Topic"],
+                        x=bk_topic_df["Negative"],
+                        name="Negative",
+                        orientation="h",
+                        marker_color="#b91c1c",
+                        text=[f"{v}%" for v in bk_topic_df["Negative"]],
+                        textposition="auto",
+                    ))
+                    fig.update_layout(
+                        barmode="group",
+                        margin={"l": 20, "r": 20, "t": 30, "b": 20},
+                        height=450,
+                        xaxis_title="% of Reviews",
+                        xaxis_range=[0, 100],
+                        yaxis_title="",
+                        title=f"Booking.com Topic Sentiment – {bk_label} ({bk_total} reviews)",
+                    )
+                    st.plotly_chart(fig, use_container_width=True)
+                with insights_col:
+                    _render_topic_insights(bk_topic_df, bk_insights)
+
+            st.markdown("**Latest Reviews**")
+            bk_top_reviews = _latest_top_reviews(booking_reviews_data, ANANEA_HOTEL, n=3)
+
+            if not bk_top_reviews:
+                st.info("No Booking.com reviews found.")
+            else:
+                cols = st.columns(len(bk_top_reviews))
+                for col, review in zip(cols, bk_top_reviews):
+                    with col:
+                        rating = review.get("rating") or 0
+                        try:
+                            rating = float(rating)
+                        except (TypeError, ValueError):
+                            rating = 0
+                        st.markdown(f"**{rating:.1f}/10**")
+                        author = review.get("author_name", "Anonymous")
+                        title = review.get("title", "")
+                        if title:
+                            st.markdown(f"**{title}**")
+                        elif author:
+                            st.markdown(f"**{author}**")
+                        text = review.get("text", "")
+                        display_text = text[:200] + "..." if len(text) > 200 else text
+                        st.caption(display_text)
+
+                        pub_date = review.get("published_date", "")
+                        if pub_date:
+                            st.caption(pub_date)
+
+                        topics = review.get("topics", [])
+                        if topics:
+                            pills = " ".join(
+                                f"{'🟢' if t['sentiment'] == 'positive' else '🔴'} "
+                                f"{t['topic'].replace('_', ' ').title()}"
+                                for t in topics
+                            )
+                            st.caption(pills)
+
     # ---- TripAdvisor ---- #
     if "Tripadvisor" in selected_sources:
         st.subheader("TripAdvisor")
@@ -1367,106 +1460,13 @@ def main() -> None:
                             )
                             st.caption(pills)
 
-    # ---- Booking ---- #
-    if "Booking" in selected_sources:
-        st.subheader("Booking.com")
-
-        if not booking_reviews_data:
-            st.info(
-                "No Booking.com review data available yet. Run the reviews scraper to populate "
-                "data/booking_reviews.json."
-            )
-        else:
-            # Year-over-year comparison (previous year vs YTD)
-            bk_qtr_df = _quarter_topic_comparison(booking_reviews_data, ANANEA_HOTEL, year=selected_year)
-            _render_quarter_comparison(bk_qtr_df)
-
-            bk_topic_df, bk_total = _ytd_topic_summary(booking_reviews_data, ANANEA_HOTEL, year=selected_year)
-
-            if bk_topic_df[["Positive", "Negative"]].sum().sum() == 0:
-                st.info(f"No classified Booking.com reviews found for {selected_year}.")
-            else:
-                bk_label = f"YTD {selected_year}" if selected_year == current_year else str(selected_year)
-                bk_insights = _ytd_topic_insights(booking_reviews_data, ANANEA_HOTEL, year=selected_year)
-                chart_col, insights_col = st.columns([3, 2])
-                with chart_col:
-                    fig = go.Figure()
-                    fig.add_trace(go.Bar(
-                        y=bk_topic_df["Topic"],
-                        x=bk_topic_df["Positive"],
-                        name="Positive",
-                        orientation="h",
-                        marker_color="#15803d",
-                        text=[f"{v}%" for v in bk_topic_df["Positive"]],
-                        textposition="auto",
-                    ))
-                    fig.add_trace(go.Bar(
-                        y=bk_topic_df["Topic"],
-                        x=bk_topic_df["Negative"],
-                        name="Negative",
-                        orientation="h",
-                        marker_color="#b91c1c",
-                        text=[f"{v}%" for v in bk_topic_df["Negative"]],
-                        textposition="auto",
-                    ))
-                    fig.update_layout(
-                        barmode="group",
-                        margin={"l": 20, "r": 20, "t": 30, "b": 20},
-                        height=450,
-                        xaxis_title="% of Reviews",
-                        xaxis_range=[0, 100],
-                        yaxis_title="",
-                        title=f"Booking.com Topic Sentiment – {bk_label} ({bk_total} reviews)",
-                    )
-                    st.plotly_chart(fig, use_container_width=True)
-                with insights_col:
-                    _render_topic_insights(bk_topic_df, bk_insights)
-
-            st.markdown("**Latest Reviews**")
-            bk_top_reviews = _latest_top_reviews(booking_reviews_data, ANANEA_HOTEL, n=3)
-
-            if not bk_top_reviews:
-                st.info("No Booking.com reviews found.")
-            else:
-                cols = st.columns(len(bk_top_reviews))
-                for col, review in zip(cols, bk_top_reviews):
-                    with col:
-                        rating = review.get("rating") or 0
-                        try:
-                            rating = float(rating)
-                        except (TypeError, ValueError):
-                            rating = 0
-                        st.markdown(f"**{rating:.1f}/10**")
-                        author = review.get("author_name", "Anonymous")
-                        title = review.get("title", "")
-                        if title:
-                            st.markdown(f"**{title}**")
-                        elif author:
-                            st.markdown(f"**{author}**")
-                        text = review.get("text", "")
-                        display_text = text[:200] + "..." if len(text) > 200 else text
-                        st.caption(display_text)
-
-                        pub_date = review.get("published_date", "")
-                        if pub_date:
-                            st.caption(pub_date)
-
-                        topics = review.get("topics", [])
-                        if topics:
-                            pills = " ".join(
-                                f"{'🟢' if t['sentiment'] == 'positive' else '🔴'} "
-                                f"{t['topic'].replace('_', ' ').title()}"
-                                for t in topics
-                            )
-                            st.caption(pills)
-
     # ---- Manual Review Input ---- #
     _MANUAL_SOURCE_MAP = {
+        "Booking.com": BOOKING_REVIEWS_JSON_PATH,
         "TripAdvisor": REVIEWS_JSON_PATH,
         "Google": GOOGLE_REVIEWS_JSON_PATH,
         "HolidayCheck": HOLIDAYCHECK_REVIEWS_JSON_PATH,
         "Expedia": EXPEDIA_REVIEWS_JSON_PATH,
-        "Booking.com": BOOKING_REVIEWS_JSON_PATH,
     }
 
     with st.expander("Add Review Manually"):
