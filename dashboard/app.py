@@ -29,6 +29,8 @@ AUDIT_LOG = DATA_DIR / "audit.csv"
 
 logger = logging.getLogger(__name__)
 
+SOURCE_ORDER = ["Booking", "Tripadvisor", "Google", "HolidayCheck", "Expedia"]
+
 SOURCES = {
     "Booking": DATA_DIR / "booking_scores.csv",
     "Tripadvisor": DATA_DIR / "tripadvisor_scores.csv",
@@ -193,18 +195,25 @@ def latest_scorecard_table(history_df: pd.DataFrame, sources: list[str]) -> pd.D
 
         ananea_score = round(float(ananea["Score"].iloc[0]), 2)
 
-        # Compute Ananea delta vs the last value from a previous month.
-        # Walk backwards through dates until we find one whose month differs
-        # from latest_date's month.
+        # Compute Ananea delta vs a year-based reference point:
+        #   1) Last score from the previous year (preferred)
+        #   2) First score from the current year (fallback)
         ananea_delta = None
-        latest_month = (latest_date.year, latest_date.month)
-        for d in reversed(unique_dates[:-1]):
-            if (d.year, d.month) == latest_month:
-                continue
-            prev = src[(src["Date"] == d) & (src["Hotel"] == ANANEA_HOTEL)]
+        latest_year = latest_date.year
+        prev_year_dates = [d for d in unique_dates if d.year == latest_year - 1]
+        curr_year_dates = [d for d in unique_dates if d.year == latest_year]
+
+        if prev_year_dates:
+            ref_date = prev_year_dates[-1]  # last data point of previous year
+        elif len(curr_year_dates) > 1:
+            ref_date = curr_year_dates[0]   # first data point of current year
+        else:
+            ref_date = None  # only one data point, cannot compare
+
+        if ref_date is not None and ref_date != latest_date:
+            prev = src[(src["Date"] == ref_date) & (src["Hotel"] == ANANEA_HOTEL)]
             if not prev.empty:
                 ananea_delta = round(ananea_score - float(prev["Score"].iloc[0]), 2)
-                break
 
         row: dict[str, object] = {
             "Source": source,
@@ -422,68 +431,62 @@ def _load_reviews_json(path: Path) -> list[dict]:
     return data.get("reviews", [])
 
 
-def _quarter_topic_comparison(reviews: list[dict], hotel: str) -> pd.DataFrame | None:
-    """Compare current quarter vs previous quarter topic sentiment percentages."""
+def _quarter_topic_comparison(
+    reviews: list[dict], hotel: str, year: int | None = None,
+) -> pd.DataFrame | None:
+    """Compare a year's topic sentiments against the previous year.
+
+    When *year* equals the current year the label reads "YTD <year>";
+    otherwise it reads "<year>" (full year).  The comparison baseline is
+    always the full previous year (*year* − 1).
+    """
     today = datetime.now()
-    current_q = (today.month - 1) // 3 + 1
-    current_year = today.year
+    target_year = year if year is not None else today.year
+    baseline_year = target_year - 1
 
-    # Current quarter start/end
-    cq_start = f"{current_year}-{(current_q - 1) * 3 + 1:02d}-01"
-    if current_q == 4:
-        cq_end = f"{current_year + 1}-01-01"
-    else:
-        cq_end = f"{current_year}-{current_q * 3 + 1:02d}-01"
+    # Target period
+    target_start = f"{target_year}-01-01"
+    target_end = f"{target_year}-12-31"
 
-    # Previous quarter start/end
-    if current_q == 1:
-        pq = 4
-        py = current_year - 1
-    else:
-        pq = current_q - 1
-        py = current_year
-    pq_start = f"{py}-{(pq - 1) * 3 + 1:02d}-01"
-    if pq == 4:
-        pq_end = f"{py + 1}-01-01"
-    else:
-        pq_end = f"{py}-{pq * 3 + 1:02d}-01"
+    # Baseline: full previous year
+    base_start = f"{baseline_year}-01-01"
+    base_end = f"{baseline_year}-12-31"
 
-    def _filter_quarter(revs: list[dict], start: str, end: str) -> list[dict]:
+    def _filter_period(revs: list[dict], start: str, end: str) -> list[dict]:
         return [
             r for r in revs
             if r.get("hotel") == hotel
             and r.get("classified", False)
-            and start <= r.get("published_date", "")[:10] < end
+            and start <= r.get("published_date", "")[:10] <= end
         ]
 
-    cq_reviews = _filter_quarter(reviews, cq_start, cq_end)
-    pq_reviews = _filter_quarter(reviews, pq_start, pq_end)
+    target_reviews = _filter_period(reviews, target_start, target_end)
+    base_reviews = _filter_period(reviews, base_start, base_end)
 
-    cq_total = len(cq_reviews)
-    pq_total = len(pq_reviews)
+    target_total = len(target_reviews)
+    base_total = len(base_reviews)
 
-    if cq_total == 0 and pq_total == 0:
+    if target_total == 0 and base_total == 0:
         return None
 
-    cq_label = f"Q{current_q} {current_year}"
-    pq_label = f"Q{pq} {py}"
+    target_label = f"YTD {target_year}" if target_year == today.year else str(target_year)
+    base_label = str(baseline_year)
 
     rows = []
     for topic_key, topic_display in _TOPIC_DISPLAY.items():
-        cq_pos = sum(1 for r in cq_reviews for t in r.get("topics", []) if t["topic"] == topic_key and t["sentiment"] == "positive")
-        cq_neg = sum(1 for r in cq_reviews for t in r.get("topics", []) if t["topic"] == topic_key and t["sentiment"] == "negative")
-        pq_pos = sum(1 for r in pq_reviews for t in r.get("topics", []) if t["topic"] == topic_key and t["sentiment"] == "positive")
-        pq_neg = sum(1 for r in pq_reviews for t in r.get("topics", []) if t["topic"] == topic_key and t["sentiment"] == "negative")
+        t_pos = sum(1 for r in target_reviews for t in r.get("topics", []) if t["topic"] == topic_key and t["sentiment"] == "positive")
+        t_neg = sum(1 for r in target_reviews for t in r.get("topics", []) if t["topic"] == topic_key and t["sentiment"] == "negative")
+        b_pos = sum(1 for r in base_reviews for t in r.get("topics", []) if t["topic"] == topic_key and t["sentiment"] == "positive")
+        b_neg = sum(1 for r in base_reviews for t in r.get("topics", []) if t["topic"] == topic_key and t["sentiment"] == "negative")
 
-        cq_pos_pct = round(cq_pos / cq_total * 100, 1) if cq_total else 0
-        cq_neg_pct = round(cq_neg / cq_total * 100, 1) if cq_total else 0
-        pq_pos_pct = round(pq_pos / pq_total * 100, 1) if pq_total else 0
-        pq_neg_pct = round(pq_neg / pq_total * 100, 1) if pq_total else 0
+        t_pos_pct = round(t_pos / target_total * 100, 1) if target_total else 0
+        t_neg_pct = round(t_neg / target_total * 100, 1) if target_total else 0
+        b_pos_pct = round(b_pos / base_total * 100, 1) if base_total else 0
+        b_neg_pct = round(b_neg / base_total * 100, 1) if base_total else 0
 
-        # None means we can't compare (one quarter has 0 reviews)
-        can_compare = cq_total > 0 and pq_total > 0
-        pos_delta = round(cq_pos_pct - pq_pos_pct, 1) if can_compare else None
-        neg_delta = round(cq_neg_pct - pq_neg_pct, 1) if can_compare else None
+        can_compare = target_total > 0 and base_total > 0
+        pos_delta = round(t_pos_pct - b_pos_pct, 1) if can_compare else None
+        neg_delta = round(t_neg_pct - b_neg_pct, 1) if can_compare else None
 
         rows.append({
             "Topic": topic_display,
@@ -492,15 +495,15 @@ def _quarter_topic_comparison(reviews: list[dict], hotel: str) -> pd.DataFrame |
         })
 
     df = pd.DataFrame(rows)
-    df.attrs["cq_label"] = cq_label
-    df.attrs["pq_label"] = pq_label
-    df.attrs["cq_total"] = cq_total
-    df.attrs["pq_total"] = pq_total
+    df.attrs["cq_label"] = target_label
+    df.attrs["pq_label"] = base_label
+    df.attrs["cq_total"] = target_total
+    df.attrs["pq_total"] = base_total
     return df
 
 
 def _render_quarter_comparison(df: pd.DataFrame | None) -> None:
-    """Render quarter-over-quarter scorecards side by side above the bar plot."""
+    """Render year-over-year scorecards side by side above the bar plot."""
     if df is None:
         return
     cq_label = df.attrs.get("cq_label", "")
@@ -509,7 +512,7 @@ def _render_quarter_comparison(df: pd.DataFrame | None) -> None:
     pq_total = df.attrs.get("pq_total", 0)
 
     st.caption(
-        f"Comparison to previous quarter: {pq_label} ({pq_total} reviews) → "
+        f"Year-over-year comparison: {pq_label} ({pq_total} reviews) → "
         f"{cq_label} ({cq_total} reviews)"
     )
 
@@ -573,6 +576,9 @@ def _render_quarter_comparison(df: pd.DataFrame | None) -> None:
         """
         with col:
             st.markdown(card_html, unsafe_allow_html=True)
+
+    # Add spacing between scorecards and the bar plot / insights below
+    st.markdown("<br>", unsafe_allow_html=True)
 
 
 def _ytd_topic_summary(reviews: list[dict], hotel: str, year: int | None = None) -> pd.DataFrame:
@@ -750,6 +756,7 @@ def main() -> None:
     st.title("Hotel Reputation Dashboard")
     st.caption("Biweekly reputation scores over time, pulled from source websites.")
 
+
     source_dfs: dict[str, pd.DataFrame] = {}
     all_history = []
     for source, path in SOURCES.items():
@@ -767,14 +774,16 @@ def main() -> None:
     history_df = pd.concat(all_history, ignore_index=True)
     history_df = history_df.sort_values("Date")
 
-    available_sources = sorted(history_df["Source"].dropna().unique().tolist())
+    _present = set(history_df["Source"].dropna().unique().tolist())
+    available_sources = [s for s in SOURCE_ORDER if s in _present]
     if "source_selector" not in st.session_state:
         st.session_state["source_selector"] = available_sources
-    selected_sources = st.multiselect(
+    _selected_raw = st.multiselect(
         "Sources",
         available_sources,
         key="source_selector",
     )
+    selected_sources = [s for s in SOURCE_ORDER if s in _selected_raw]
 
     filtered = history_df[history_df["Source"].isin(selected_sources)].copy()
     if filtered.empty:
@@ -904,6 +913,25 @@ def main() -> None:
     # Internal Analysis – Reviews
     # ================================================================== #
     st.header("Internal Analysis - Reviews")
+    with st.expander("ℹ️ Topic definitions", expanded=False):
+        st.markdown(
+            """
+<span style="color: grey;">
+
+| Topic | What it covers |
+|-------|---------------|
+| **Employees** | Staff, service, friendliness, helpfulness, reception, concierge, team, waiters, management |
+| **Commodities** | Amenities, facilities, pool, gym, spa, room features, wifi, parking, fridge, toiletries, TV, air conditioning, balcony, shuttle, iron, entertainment, music |
+| **Comfort** | Room comfort, bed quality, noise, quiet, space, temperature, room size, mattress, pillow, decor, ambiance, construction noise, view |
+| **Cleaning** | Cleanliness, hygiene, tidiness, housekeeping, spotless, dirty, stains, towels changed, room serviced |
+| **Quality / Price** | Value for money, pricing, worth, cost, overpriced, good deal, expensive, cheap, affordable, half board value |
+| **Meals** | Food, breakfast, restaurant, dining, bar, drinks, buffet, dinner, lunch, cuisine, menu, chef, kitchen, snacks, repetitive food, variety |
+| **Return** | Whether the guest would return, come back, visit again, recommend, revisit, not return, wouldn't go back |
+
+</span>
+""",
+            unsafe_allow_html=True,
+        )
 
     # Load review sources based on selection
     reviews_data = _load_reviews_json(REVIEWS_JSON_PATH) if "Tripadvisor" in selected_sources else []
@@ -914,65 +942,160 @@ def main() -> None:
 
     # Combine selected review sources for overall summary
     all_reviews_data = reviews_data + google_reviews_data + holidaycheck_reviews_data + expedia_reviews_data + booking_reviews_data
+    selected_year = current_year  # default; overridden by radio button below
 
     # ---- Overall Sources Topic Sentiment ---- #
-    st.subheader("Overall Sources Topic Sentiment")
-    st.caption("Aggregated topic sentiment across selected review sources.")
+    with st.container(border=True):
+        st.subheader("Overall Sources Topic Sentiment")
+        st.caption("Aggregated topic sentiment across selected review sources.")
 
-    if not all_reviews_data:
-        st.info("No review data available yet.")
-    else:
-        review_year_option = st.radio(
-            "Period",
-            [f"YTD {current_year}", f"Full Year {previous_year}"],
-            horizontal=True,
-            key="review_year_toggle",
-        )
-        selected_year = current_year if review_year_option.startswith("YTD") else previous_year
-        # Quarter-over-quarter comparison
-        overall_qtr_df = _quarter_topic_comparison(all_reviews_data, ANANEA_HOTEL)
-        _render_quarter_comparison(overall_qtr_df)
-
-        overall_topic_df, overall_total = _ytd_topic_summary(all_reviews_data, ANANEA_HOTEL, year=selected_year)
-
-        if overall_topic_df[["Positive", "Negative"]].sum().sum() == 0:
-            st.info(f"No classified reviews found for {selected_year}.")
+        if not all_reviews_data:
+            st.info("No review data available yet.")
         else:
-            overall_label = f"YTD {selected_year}" if selected_year == current_year else str(selected_year)
-            overall_insights = _ytd_topic_insights(all_reviews_data, ANANEA_HOTEL, year=selected_year)
-            chart_col, insights_col = st.columns([3, 2])
-            with chart_col:
-                fig = go.Figure()
-                fig.add_trace(go.Bar(
-                    y=overall_topic_df["Topic"],
-                    x=overall_topic_df["Positive"],
-                    name="Positive",
-                    orientation="h",
-                    marker_color="#15803d",
-                    text=[f"{v}%" for v in overall_topic_df["Positive"]],
-                    textposition="auto",
-                ))
-                fig.add_trace(go.Bar(
-                    y=overall_topic_df["Topic"],
-                    x=overall_topic_df["Negative"],
-                    name="Negative",
-                    orientation="h",
-                    marker_color="#b91c1c",
-                    text=[f"{v}%" for v in overall_topic_df["Negative"]],
-                    textposition="auto",
-                ))
-                fig.update_layout(
-                    barmode="group",
-                    margin={"l": 20, "r": 20, "t": 30, "b": 20},
-                    height=450,
-                    xaxis_title="% of Reviews",
-                    xaxis_range=[0, 100],
-                    yaxis_title="",
-                    title=f"Overall Topic Sentiment – {overall_label} ({overall_total} reviews)",
-                )
-                st.plotly_chart(fig, use_container_width=True)
-            with insights_col:
-                _render_topic_insights(overall_topic_df, overall_insights)
+            review_year_option = st.radio(
+                "Period",
+                [f"YTD {current_year}", f"Full Year {previous_year}"],
+                horizontal=True,
+                key="review_year_toggle",
+            )
+            selected_year = current_year if review_year_option.startswith("YTD") else previous_year
+            # Year-over-year comparison (previous year vs YTD)
+            overall_qtr_df = _quarter_topic_comparison(all_reviews_data, ANANEA_HOTEL, year=selected_year)
+            _render_quarter_comparison(overall_qtr_df)
+
+            overall_topic_df, overall_total = _ytd_topic_summary(all_reviews_data, ANANEA_HOTEL, year=selected_year)
+
+            if overall_topic_df[["Positive", "Negative"]].sum().sum() == 0:
+                st.info(f"No classified reviews found for {selected_year}.")
+            else:
+                overall_label = f"YTD {selected_year}" if selected_year == current_year else str(selected_year)
+                overall_insights = _ytd_topic_insights(all_reviews_data, ANANEA_HOTEL, year=selected_year)
+                chart_col, insights_col = st.columns([3, 2])
+                with chart_col:
+                    fig = go.Figure()
+                    fig.add_trace(go.Bar(
+                        y=overall_topic_df["Topic"],
+                        x=overall_topic_df["Positive"],
+                        name="Positive",
+                        orientation="h",
+                        marker_color="#15803d",
+                        text=[f"{v}%" for v in overall_topic_df["Positive"]],
+                        textposition="auto",
+                    ))
+                    fig.add_trace(go.Bar(
+                        y=overall_topic_df["Topic"],
+                        x=overall_topic_df["Negative"],
+                        name="Negative",
+                        orientation="h",
+                        marker_color="#b91c1c",
+                        text=[f"{v}%" for v in overall_topic_df["Negative"]],
+                        textposition="auto",
+                    ))
+                    fig.update_layout(
+                        barmode="group",
+                        margin={"l": 20, "r": 20, "t": 30, "b": 20},
+                        height=450,
+                        xaxis_title="% of Reviews",
+                        xaxis_range=[0, 100],
+                        yaxis_title="",
+                        title=f"Overall Topic Sentiment – {overall_label} ({overall_total} reviews)",
+                    )
+                    st.plotly_chart(fig, use_container_width=True)
+                with insights_col:
+                    _render_topic_insights(overall_topic_df, overall_insights)
+
+    # ---- Booking ---- #
+    if "Booking" in selected_sources:
+        st.subheader("Booking.com")
+
+        if not booking_reviews_data:
+            st.info(
+                "No Booking.com review data available yet. Run the reviews scraper to populate "
+                "data/booking_reviews.json."
+            )
+        else:
+            # Year-over-year comparison (previous year vs YTD)
+            bk_qtr_df = _quarter_topic_comparison(booking_reviews_data, ANANEA_HOTEL, year=selected_year)
+            _render_quarter_comparison(bk_qtr_df)
+
+            bk_topic_df, bk_total = _ytd_topic_summary(booking_reviews_data, ANANEA_HOTEL, year=selected_year)
+
+            if bk_topic_df[["Positive", "Negative"]].sum().sum() == 0:
+                st.info(f"No classified Booking.com reviews found for {selected_year}.")
+            else:
+                bk_label = f"YTD {selected_year}" if selected_year == current_year else str(selected_year)
+                bk_insights = _ytd_topic_insights(booking_reviews_data, ANANEA_HOTEL, year=selected_year)
+                chart_col, insights_col = st.columns([3, 2])
+                with chart_col:
+                    fig = go.Figure()
+                    fig.add_trace(go.Bar(
+                        y=bk_topic_df["Topic"],
+                        x=bk_topic_df["Positive"],
+                        name="Positive",
+                        orientation="h",
+                        marker_color="#15803d",
+                        text=[f"{v}%" for v in bk_topic_df["Positive"]],
+                        textposition="auto",
+                    ))
+                    fig.add_trace(go.Bar(
+                        y=bk_topic_df["Topic"],
+                        x=bk_topic_df["Negative"],
+                        name="Negative",
+                        orientation="h",
+                        marker_color="#b91c1c",
+                        text=[f"{v}%" for v in bk_topic_df["Negative"]],
+                        textposition="auto",
+                    ))
+                    fig.update_layout(
+                        barmode="group",
+                        margin={"l": 20, "r": 20, "t": 30, "b": 20},
+                        height=450,
+                        xaxis_title="% of Reviews",
+                        xaxis_range=[0, 100],
+                        yaxis_title="",
+                        title=f"Booking.com Topic Sentiment – {bk_label} ({bk_total} reviews)",
+                    )
+                    st.plotly_chart(fig, use_container_width=True)
+                with insights_col:
+                    _render_topic_insights(bk_topic_df, bk_insights)
+
+            st.markdown("**Latest Reviews**")
+            bk_top_reviews = _latest_top_reviews(booking_reviews_data, ANANEA_HOTEL, n=3)
+
+            if not bk_top_reviews:
+                st.info("No Booking.com reviews found.")
+            else:
+                cols = st.columns(len(bk_top_reviews))
+                for col, review in zip(cols, bk_top_reviews):
+                    with col:
+                        rating = review.get("rating") or 0
+                        try:
+                            rating = float(rating)
+                        except (TypeError, ValueError):
+                            rating = 0
+                        st.markdown(f"**{rating:.1f}/10**")
+                        author = review.get("author_name", "Anonymous")
+                        title = review.get("title", "")
+                        if title:
+                            st.markdown(f"**{title}**")
+                        elif author:
+                            st.markdown(f"**{author}**")
+                        text = review.get("text", "")
+                        display_text = text[:200] + "..." if len(text) > 200 else text
+                        st.caption(display_text)
+
+                        pub_date = review.get("published_date", "")
+                        if pub_date:
+                            st.caption(pub_date)
+
+                        topics = review.get("topics", [])
+                        if topics:
+                            pills = " ".join(
+                                f"{'🟢' if t['sentiment'] == 'positive' else '🔴'} "
+                                f"{t['topic'].replace('_', ' ').title()}"
+                                for t in topics
+                            )
+                            st.caption(pills)
 
     # ---- TripAdvisor ---- #
     if "Tripadvisor" in selected_sources:
@@ -984,8 +1107,8 @@ def main() -> None:
                 "data/tripadvisor_reviews.json."
             )
         else:
-            # Quarter-over-quarter comparison
-            ta_qtr_df = _quarter_topic_comparison(reviews_data, ANANEA_HOTEL)
+            # Year-over-year comparison (previous year vs YTD)
+            ta_qtr_df = _quarter_topic_comparison(reviews_data, ANANEA_HOTEL, year=selected_year)
             _render_quarter_comparison(ta_qtr_df)
 
             ta_topic_df, ta_total = _ytd_topic_summary(reviews_data, ANANEA_HOTEL, year=selected_year)
@@ -1075,8 +1198,8 @@ def main() -> None:
                 "data/google_reviews.json."
             )
         else:
-            # Quarter-over-quarter comparison
-            google_qtr_df = _quarter_topic_comparison(google_reviews_data, ANANEA_HOTEL)
+            # Year-over-year comparison (previous year vs YTD)
+            google_qtr_df = _quarter_topic_comparison(google_reviews_data, ANANEA_HOTEL, year=selected_year)
             _render_quarter_comparison(google_qtr_df)
 
             google_topic_df, google_total = _ytd_topic_summary(google_reviews_data, ANANEA_HOTEL, year=selected_year)
@@ -1161,8 +1284,8 @@ def main() -> None:
                 "data/holidaycheck_reviews.json."
             )
         else:
-            # Quarter-over-quarter comparison
-            hc_qtr_df = _quarter_topic_comparison(holidaycheck_reviews_data, ANANEA_HOTEL)
+            # Year-over-year comparison (previous year vs YTD)
+            hc_qtr_df = _quarter_topic_comparison(holidaycheck_reviews_data, ANANEA_HOTEL, year=selected_year)
             _render_quarter_comparison(hc_qtr_df)
 
             hc_topic_df, hc_total = _ytd_topic_summary(holidaycheck_reviews_data, ANANEA_HOTEL, year=selected_year)
@@ -1254,8 +1377,8 @@ def main() -> None:
                 "data/expedia_reviews.json."
             )
         else:
-            # Quarter-over-quarter comparison
-            exp_qtr_df = _quarter_topic_comparison(expedia_reviews_data, ANANEA_HOTEL)
+            # Year-over-year comparison (previous year vs YTD)
+            exp_qtr_df = _quarter_topic_comparison(expedia_reviews_data, ANANEA_HOTEL, year=selected_year)
             _render_quarter_comparison(exp_qtr_df)
 
             exp_topic_df, exp_total = _ytd_topic_summary(expedia_reviews_data, ANANEA_HOTEL, year=selected_year)
@@ -1337,113 +1460,52 @@ def main() -> None:
                             )
                             st.caption(pills)
 
-    # ---- Booking ---- #
-    if "Booking" in selected_sources:
-        st.subheader("Booking.com")
-
-        if not booking_reviews_data:
-            st.info(
-                "No Booking.com review data available yet. Run the reviews scraper to populate "
-                "data/booking_reviews.json."
-            )
-        else:
-            # Quarter-over-quarter comparison
-            bk_qtr_df = _quarter_topic_comparison(booking_reviews_data, ANANEA_HOTEL)
-            _render_quarter_comparison(bk_qtr_df)
-
-            bk_topic_df, bk_total = _ytd_topic_summary(booking_reviews_data, ANANEA_HOTEL, year=selected_year)
-
-            if bk_topic_df[["Positive", "Negative"]].sum().sum() == 0:
-                st.info(f"No classified Booking.com reviews found for {selected_year}.")
-            else:
-                bk_label = f"YTD {selected_year}" if selected_year == current_year else str(selected_year)
-                bk_insights = _ytd_topic_insights(booking_reviews_data, ANANEA_HOTEL, year=selected_year)
-                chart_col, insights_col = st.columns([3, 2])
-                with chart_col:
-                    fig = go.Figure()
-                    fig.add_trace(go.Bar(
-                        y=bk_topic_df["Topic"],
-                        x=bk_topic_df["Positive"],
-                        name="Positive",
-                        orientation="h",
-                        marker_color="#15803d",
-                        text=[f"{v}%" for v in bk_topic_df["Positive"]],
-                        textposition="auto",
-                    ))
-                    fig.add_trace(go.Bar(
-                        y=bk_topic_df["Topic"],
-                        x=bk_topic_df["Negative"],
-                        name="Negative",
-                        orientation="h",
-                        marker_color="#b91c1c",
-                        text=[f"{v}%" for v in bk_topic_df["Negative"]],
-                        textposition="auto",
-                    ))
-                    fig.update_layout(
-                        barmode="group",
-                        margin={"l": 20, "r": 20, "t": 30, "b": 20},
-                        height=450,
-                        xaxis_title="% of Reviews",
-                        xaxis_range=[0, 100],
-                        yaxis_title="",
-                        title=f"Booking.com Topic Sentiment – {bk_label} ({bk_total} reviews)",
-                    )
-                    st.plotly_chart(fig, use_container_width=True)
-                with insights_col:
-                    _render_topic_insights(bk_topic_df, bk_insights)
-
-            st.markdown("**Latest Reviews**")
-            bk_top_reviews = _latest_top_reviews(booking_reviews_data, ANANEA_HOTEL, n=3)
-
-            if not bk_top_reviews:
-                st.info("No Booking.com reviews found.")
-            else:
-                cols = st.columns(len(bk_top_reviews))
-                for col, review in zip(cols, bk_top_reviews):
-                    with col:
-                        rating = review.get("rating") or 0
-                        try:
-                            rating = float(rating)
-                        except (TypeError, ValueError):
-                            rating = 0
-                        st.markdown(f"**{rating:.1f}/10**")
-                        author = review.get("author_name", "Anonymous")
-                        title = review.get("title", "")
-                        if title:
-                            st.markdown(f"**{title}**")
-                        elif author:
-                            st.markdown(f"**{author}**")
-                        text = review.get("text", "")
-                        display_text = text[:200] + "..." if len(text) > 200 else text
-                        st.caption(display_text)
-
-                        pub_date = review.get("published_date", "")
-                        if pub_date:
-                            st.caption(pub_date)
-
-                        topics = review.get("topics", [])
-                        if topics:
-                            pills = " ".join(
-                                f"{'🟢' if t['sentiment'] == 'positive' else '🔴'} "
-                                f"{t['topic'].replace('_', ' ').title()}"
-                                for t in topics
-                            )
-                            st.caption(pills)
-
     # ---- Manual Review Input ---- #
+    _MANUAL_SOURCE_MAP = {
+        "Booking.com": BOOKING_REVIEWS_JSON_PATH,
+        "TripAdvisor": REVIEWS_JSON_PATH,
+        "Google": GOOGLE_REVIEWS_JSON_PATH,
+        "HolidayCheck": HOLIDAYCHECK_REVIEWS_JSON_PATH,
+        "Expedia": EXPEDIA_REVIEWS_JSON_PATH,
+    }
+
     with st.expander("Add Review Manually"):
         st.caption(
             "Review APIs return a limited number of reviews. "
             "Use this form to add reviews you found on the website that the API missed."
         )
 
-        with st.form("manual_review_form", clear_on_submit=True):
-            mr_source = st.selectbox(
-                "Source",
-                ["TripAdvisor"],
-                index=0,
-                key="mr_source",
+        mr_source = st.selectbox(
+            "Source",
+            list(_MANUAL_SOURCE_MAP.keys()),
+            index=0,
+            key="mr_source",
+        )
+
+        # Show last review info for the selected source
+        _mr_json_path = _MANUAL_SOURCE_MAP[mr_source]
+        _mr_reviews = _load_reviews_json(_mr_json_path)
+        if _mr_reviews:
+            # Find the most recent review by published_date
+            _mr_sorted = sorted(
+                _mr_reviews,
+                key=lambda r: r.get("published_date", "")[:10],
+                reverse=True,
             )
+            _last = _mr_sorted[0]
+            _last_date = _last.get("published_date", "")[:10]
+            _last_author = _last.get("author_name", "") or "Anonymous"
+            _last_title = _last.get("title", "—") or "—"
+            _last_rating = _last.get("rating", "—")
+            st.info(
+                f"**Last {mr_source} review:** {_last_date} · "
+                f"{_last_author} · Rating {_last_rating} · \"{_last_title}\" "
+                f"({len(_mr_reviews)} reviews total)"
+            )
+        else:
+            st.info(f"No {mr_source} reviews yet.")
+
+        with st.form("manual_review_form", clear_on_submit=True):
             mr_cols = st.columns([2, 1])
             with mr_cols[0]:
                 mr_reviewer = st.text_input("Reviewer name", placeholder="e.g. John D.")
@@ -1465,7 +1527,8 @@ def main() -> None:
             else:
                 pub_date_str = mr_date.strftime("%Y-%m-%d")
                 review_id = _generate_manual_id(mr_reviewer, pub_date_str, mr_title)
-                current_reviews = _load_reviews_json(REVIEWS_JSON_PATH)
+                target_path = _MANUAL_SOURCE_MAP[mr_source]
+                current_reviews = _load_reviews_json(target_path)
                 existing_ids = {r["id"] for r in current_reviews}
 
                 if review_id in existing_ids:
@@ -1504,8 +1567,8 @@ def main() -> None:
                         "review_source": mr_source,
                     }
                     current_reviews.append(new_review)
-                    _save_reviews_json(current_reviews, REVIEWS_JSON_PATH)
-                    st.success(f"Review added (ID: {review_id}).{ollama_msg}")
+                    _save_reviews_json(current_reviews, target_path)
+                    st.success(f"Review added to {mr_source} (ID: {review_id}).{ollama_msg}")
                     st.rerun()
 
 
