@@ -51,6 +51,7 @@ from playwright.sync_api import sync_playwright
 from src.classification import (
     classify_holidaycheck_review,
     is_ollama_available,
+    warm_up_model,
 )
 
 logger = logging.getLogger(__name__)
@@ -1111,6 +1112,9 @@ def main() -> int:
             "Ollama not available at %s. Reviews will be stored without classification.",
             args.ollama_url,
         )
+    if ollama_ok:
+        logger.info("Warming up Ollama model...")
+        warm_up_model(args.ollama_url)
 
     # --- Reclassify mode ---
     if args.reclassify:

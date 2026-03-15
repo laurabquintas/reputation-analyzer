@@ -22,6 +22,27 @@ def is_ollama_available(ollama_url: str = "http://localhost:11434") -> bool:
         return False
 
 
+def warm_up_model(ollama_url: str = "http://localhost:11434") -> bool:
+    """Pre-load the model into memory with a tiny prompt.
+
+    Call this once before classification to avoid cold-start timeouts.
+    """
+    try:
+        resp = requests.post(
+            f"{ollama_url}/api/generate",
+            json={
+                "model": "mistral:7b",
+                "prompt": "hi",
+                "stream": False,
+                "options": {"num_predict": 1, "num_ctx": 2048},
+            },
+            timeout=120,
+        )
+        return resp.status_code == 200
+    except Exception:
+        return False
+
+
 def classify_review(text: str, ollama_url: str = "http://localhost:11434") -> list[dict]:
     """Classify a review into topics with sentiment using Ollama."""
     prompt = f"""You are a hotel review analyst. Read the review below carefully and identify ALL topics mentioned, even briefly. Pay special attention to complaints, cons, criticisms, and suggestions for improvement – these are NEGATIVE.

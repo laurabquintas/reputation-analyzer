@@ -48,6 +48,7 @@ from playwright.async_api import async_playwright
 from src.classification import (
     classify_review,
     is_ollama_available,
+    warm_up_model,
 )
 from src.sites.expedia import (
     USER_AGENTS,
@@ -509,6 +510,9 @@ def main() -> int:
             "Ollama not available at %s. Reviews will be stored without classification.",
             args.ollama_url,
         )
+    if ollama_ok:
+        logger.info("Warming up Ollama model...")
+        warm_up_model(args.ollama_url)
 
     # --- Reclassify mode ---
     if args.reclassify:

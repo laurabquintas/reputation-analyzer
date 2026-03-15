@@ -47,6 +47,7 @@ import yaml
 from src.classification import (
     classify_review,
     is_ollama_available,
+    warm_up_model,
 )
 
 logger = logging.getLogger(__name__)
@@ -242,6 +243,9 @@ def main() -> int:
     ollama_ok = False if args.skip_classification else is_ollama_available(args.ollama_url)
     if not ollama_ok and not args.skip_classification:
         logger.warning("Ollama not available at %s. Reviews will be stored without classification.", args.ollama_url)
+    if ollama_ok:
+        logger.info("Warming up Ollama model...")
+        warm_up_model(args.ollama_url)
 
     # --- Reclassify mode ---
     if args.reclassify:

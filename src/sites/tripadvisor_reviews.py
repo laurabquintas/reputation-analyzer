@@ -52,6 +52,7 @@ from src.classification import (
     VALID_SENTIMENTS,
     classify_review,
     is_ollama_available,
+    warm_up_model,
     _parse_classification,
 )
 
@@ -279,6 +280,9 @@ def main() -> int:
     ollama_ok = False if args.skip_classification else is_ollama_available(args.ollama_url)
     if not ollama_ok and not args.skip_classification:
         logger.warning("Ollama not available at %s. Reviews will be stored without classification.", args.ollama_url)
+    if ollama_ok:
+        logger.info("Warming up Ollama model...")
+        warm_up_model(args.ollama_url)
 
     # --- Reclassify mode ---
     if args.reclassify:
