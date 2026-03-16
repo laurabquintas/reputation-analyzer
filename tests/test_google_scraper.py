@@ -191,7 +191,7 @@ Everything was perfect: the cleanliness, the setting, the attentive staff, and t
 
 
 def test_parse_review_element_no_metadata_empty_fields() -> None:
-    """Reviews without metadata should have empty trip/language fields."""
+    """Reviews without metadata should default to 'Unknown' or empty."""
     text = """Guest
 4/5
 1 month ago on
@@ -200,9 +200,10 @@ Nice place to stay."""
 
     review = _parse_review_element(text, review_id="no_meta_test")
     assert review is not None
-    assert review["trip_type"] == ""
+    assert review["trip_type"] == "Unknown"
     assert review["travel_group"] == ""
     assert review["original_language"] == ""
+    assert review["country"] == "England/USA"
 
 
 def test_parse_review_element_german_translation() -> None:
