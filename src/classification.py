@@ -214,10 +214,11 @@ TOPICS (use these exact keys):
 RULES:
 1. Topics mentioned in the POSITIVE section MUST be classified as "positive".
 2. Topics mentioned in the NEGATIVE section MUST be classified as "negative".
-3. The review text may be in any language — identify topics regardless of language.
-4. Even brief or indirect mentions count.
-5. For each entry include a "detail" field: a short phrase (2-4 words) in English describing the specific aspect mentioned. Use lowercase.
-6. Output ONLY a JSON array. No explanation, no markdown.
+3. IMPORTANT: If the NEGATIVE section says the guest had NO complaints (e.g. "Nothing", "N/A", "Nada", "Nichts", "Rien", "there was nothing I didn't like", "everything was great", "no complaints"), do NOT extract any negative topic from it — simply IGNORE that section.
+4. The review text may be in any language — identify topics regardless of language.
+5. Even brief or indirect mentions count.
+6. For each entry include a "detail" field: a short phrase (2-4 words) in English describing the specific aspect mentioned. Use lowercase.
+7. Output ONLY a JSON array. No explanation, no markdown.
 
 EXAMPLE:
 POSITIVE (the guest LIKED this):
