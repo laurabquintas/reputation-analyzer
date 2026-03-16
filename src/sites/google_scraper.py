@@ -535,7 +535,7 @@ def _parse_review_element(text: str, review_id: str = "") -> dict | None:
     if original_language:
         country = _LANG_NAME_TO_COUNTRY.get(original_language, "Unknown")
     else:
-        country = "England"
+        country = "England/USA"
 
     # Use provided review_id or generate a deterministic one
     if not review_id:

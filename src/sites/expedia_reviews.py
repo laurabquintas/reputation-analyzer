@@ -57,6 +57,46 @@ from src.sites.expedia import (
 
 logger = logging.getLogger(__name__)
 
+# ---------------------- Language / country detection ---------------------- #
+
+_EXPEDIA_TRIP_TYPE_MAP: dict[str, str] = {
+    "couple": "Couple",
+    "family": "Family",
+    "group": "Friends",
+    "solo": "Solo",
+    "business": "Business",
+}
+
+_LANG_MARKERS: dict[str, tuple[str, ...]] = {
+    "French": ("très", "avec", "nous", "était", "pour", "hôtel"),
+    "German": ("sehr", "wir", "nicht", "auch", "waren", "aber"),
+    "Portuguese": ("muito", "estava", "para", "uma", "mais", "foi"),
+    "Spanish": ("muy", "pero", "para", "una", "estaba", "todo"),
+    "Italian": ("molto", "anche", "erano", "una", "sono", "stato"),
+    "Dutch": ("heel", "maar", "waren", "voor", "niet", "onze"),
+    "Swedish": ("mycket", "hotell", "inte", "var", "men", "från"),
+}
+
+_LANG_TO_COUNTRY: dict[str, str] = {
+    "French": "France",
+    "German": "Germany",
+    "Portuguese": "Portugal",
+    "Spanish": "Spain",
+    "Italian": "Italy",
+    "Dutch": "Netherlands",
+    "Swedish": "Sweden",
+}
+
+
+def _detect_country(text: str) -> str:
+    """Infer reviewer country from review text language using keyword markers."""
+    lower = text.lower()
+    for lang, markers in _LANG_MARKERS.items():
+        if sum(1 for m in markers if m in lower) >= 2:
+            return _LANG_TO_COUNTRY.get(lang, "Unknown")
+    return "England/USA"
+
+
 # ---------------------- Configuration ---------------------- #
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -320,16 +360,22 @@ def _parse_expedia_review_item(item: Tag) -> dict:
 
     # Date and travel type from uitk-type-300 divs
     travel_date = ""
+    trip_type = ""
     type_300_divs = item.find_all("div", class_="uitk-type-300")
     date_pattern = re.compile(
         r"\d{1,2}\s+(?:Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Sept|Oct|Nov|Dec)\w*\s+\d{4}",
         re.I,
     )
     for div in type_300_divs:
-        text = div.get_text(strip=True)
-        if date_pattern.search(text):
-            travel_date = _parse_date(text)
-            break
+        div_text = div.get_text(strip=True)
+        if date_pattern.search(div_text):
+            travel_date = _parse_date(div_text)
+        elif not trip_type:
+            lower = div_text.lower()
+            for key, value in _EXPEDIA_TRIP_TYPE_MAP.items():
+                if key in lower:
+                    trip_type = value
+                    break
 
     # Review text from uitk-expando-peek
     text = ""
@@ -350,6 +396,8 @@ def _parse_expedia_review_item(item: Tag) -> dict:
         if m:
             title = m.group(1).strip()
 
+    country = _detect_country(text) if text else "Unknown"
+
     return {
         "id": review_id,
         "rating": rating,
@@ -357,6 +405,8 @@ def _parse_expedia_review_item(item: Tag) -> dict:
         "text": text,
         "travel_date": travel_date,
         "author_name": author_name,
+        "trip_type": trip_type or "Unknown",
+        "country": country,
     }
 
 
@@ -500,6 +550,13 @@ def main() -> int:
 
     existing_reviews = load_reviews(args.json)
 
+    # Backfill missing fields for old reviews
+    for r in existing_reviews:
+        if "trip_type" not in r:
+            r["trip_type"] = "Unknown"
+        if "country" not in r:
+            r["country"] = "Unknown"
+
     # Check Ollama
     ollama_ok = (
         False if args.skip_classification
@@ -594,6 +651,8 @@ def main() -> int:
             "text": text,
             "published_date": raw.get("travel_date", ""),
             "author_name": raw.get("author_name", ""),
+            "country": raw.get("country", "") or "Unknown",
+            "trip_type": raw.get("trip_type", "") or "Unknown",
             "scraped_date": args.date,
             "topics": topics,
             "classified": classified,
