@@ -4,7 +4,7 @@
 google_reviews.py
 
 Fetch Google reviews for Ananea Castelo Suites Hotel via the Google Places
-API (New) and classify each review by topic using Ollama (mistral:7b).
+API (New) and classify each review by topic using Ollama (qwen2.5:7b).
 
 Reviews are stored in a JSON file and deduplicated by review ID across runs.
 Each review is classified into zero or more topics with positive/negative

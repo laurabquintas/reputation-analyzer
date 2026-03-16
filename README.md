@@ -69,7 +69,7 @@ pytest -q
 
 ## Review Classification
 
-Reviews are classified into topics (e.g. cleanliness, staff, location) with positive/negative sentiment using Ollama with the `mistral:7b` model.
+Reviews are classified into topics (e.g. cleanliness, staff, location) with positive/negative sentiment using Ollama with the `qwen2.5:7b` model.
 
 ```bash
 # Classify reviews (requires Ollama running locally)

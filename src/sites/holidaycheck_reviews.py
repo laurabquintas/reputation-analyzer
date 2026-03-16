@@ -4,7 +4,7 @@
 holidaycheck_reviews.py
 
 Scrape HolidayCheck review text for Ananea Castelo Suites Hotel and classify
-each review by topic using Ollama (mistral:7b).
+each review by topic using Ollama (qwen2.5:7b).
 
 Reviews are stored in a JSON file and deduplicated by review ID across runs.
 Each review is classified into zero or more topics with positive/negative

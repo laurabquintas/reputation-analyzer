@@ -5,7 +5,7 @@ tripadvisor_reviews.py
 
 Fetch TripAdvisor review text for Ananea Castelo Suites Hotel via the
 TripAdvisor Content API and classify each review by topic using Ollama
-(mistral:7b).
+(qwen2.5:7b).
 
 TripAdvisor blocks direct web scraping (DataDome CAPTCHA) and Google Maps
 only shows truncated snippets of TripAdvisor reviews, so the Content API

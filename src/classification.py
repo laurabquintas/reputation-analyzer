@@ -31,7 +31,7 @@ def warm_up_model(ollama_url: str = "http://localhost:11434") -> bool:
         resp = requests.post(
             f"{ollama_url}/api/generate",
             json={
-                "model": "mistral:7b",
+                "model": "qwen2.5:7b",
                 "prompt": "hi",
                 "stream": False,
                 "options": {"num_predict": 1, "num_ctx": 2048},
@@ -74,7 +74,7 @@ Now analyze this review:
 JSON array:"""
 
     payload = {
-        "model": "mistral:7b",
+        "model": "qwen2.5:7b",
         "prompt": prompt,
         "stream": False,
         "options": {
@@ -158,7 +158,7 @@ Now analyze this review:
 JSON array:"""
 
     payload = {
-        "model": "mistral:7b",
+        "model": "qwen2.5:7b",
         "prompt": prompt,
         "stream": False,
         "options": {
@@ -236,7 +236,7 @@ Now analyze this review:
 JSON array:"""
 
     payload = {
-        "model": "mistral:7b",
+        "model": "qwen2.5:7b",
         "prompt": prompt,
         "stream": False,
         "options": {
