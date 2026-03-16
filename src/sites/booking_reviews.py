@@ -391,9 +391,10 @@ def _parse_review_card(card: Tag) -> dict:
     review_date = _text("review-date")
     stay_date = _text("review-stay-date")
     room_name = _text("review-room-name")
-    traveler_type = _text("review-traveler-type")
+    trip_type = _text("review-traveler-type")
     num_nights = _text("review-num-nights")
-    avatar_text = _text("review-avatar")
+    avatar_el = card.find(attrs={"data-testid": "review-avatar"})
+    avatar_text = avatar_el.get_text("\n", strip=True) if avatar_el else ""
 
     rating = _parse_score(score_text)
     published_date = _parse_date(review_date)
@@ -421,7 +422,7 @@ def _parse_review_card(card: Tag) -> dict:
         "published_date": published_date,
         "stay_date": stay_date,
         "room_name": room_name,
-        "traveler_type": traveler_type or "Unknown",
+        "trip_type": trip_type or "Unknown",
         "num_nights": num_nights,
         "author_name": author_name,
         "country": country or "Unknown",
@@ -571,6 +572,15 @@ def main() -> int:
 
     existing_reviews = load_reviews(args.json)
 
+    # Backfill: rename traveler_type → trip_type and fill missing country
+    for r in existing_reviews:
+        if "traveler_type" in r:
+            r["trip_type"] = r.pop("traveler_type")
+        if "trip_type" not in r:
+            r["trip_type"] = "Unknown"
+        if not r.get("country"):
+            r["country"] = "Unknown"
+
     # Check Ollama
     ollama_ok = (
         False if args.skip_classification
@@ -678,7 +688,7 @@ def main() -> int:
             "published_date": raw.get("published_date", ""),
             "stay_date": raw.get("stay_date", ""),
             "room_name": raw.get("room_name", ""),
-            "traveler_type": raw.get("traveler_type", "") or "Unknown",
+            "trip_type": raw.get("trip_type", "") or "Unknown",
             "author_name": raw.get("author_name", ""),
             "country": raw.get("country", "") or "Unknown",
             "scraped_date": args.date,
