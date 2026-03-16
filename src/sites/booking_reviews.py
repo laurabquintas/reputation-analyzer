@@ -115,6 +115,77 @@ async def _async_dismiss_cookie_banner(page) -> None:
         pass
 
 
+def _sort_reviews_newest(page) -> None:
+    """Click the sort dropdown in the reviews dialog and select 'Newest first'."""
+    try:
+        # Booking.com uses a <select> element inside the reviews overlay
+        sort_select = page.locator('select[data-testid="sorter"]')
+        if sort_select.count():
+            sort_select.select_option(label="Newest first")
+            time.sleep(2)
+            logger.info("  Sorted reviews by newest first (select)")
+            return
+
+        # Fallback: try any <select> near the sort area
+        sort_select = page.locator('select#review_sort')
+        if sort_select.count():
+            sort_select.select_option(label="Newest first")
+            time.sleep(2)
+            logger.info("  Sorted reviews by newest first (select#review_sort)")
+            return
+
+        # Fallback: try a custom dropdown button
+        sort_btn = page.locator('button:has-text("Sort"), [data-testid="sorter-button"]')
+        if sort_btn.count():
+            sort_btn.first.click()
+            time.sleep(0.5)
+            newest_opt = page.locator('text="Newest first"')
+            if newest_opt.count():
+                newest_opt.first.click()
+                time.sleep(2)
+                logger.info("  Sorted reviews by newest first (dropdown)")
+                return
+
+        logger.info("  Sort dropdown not found — using default order")
+    except Exception as e:
+        logger.info("  Could not sort by newest: %s — using default order", e)
+
+
+async def _async_sort_reviews_newest(page) -> None:
+    """Async: click the sort dropdown and select 'Newest first'."""
+    import asyncio
+
+    try:
+        sort_select = page.locator('select[data-testid="sorter"]')
+        if await sort_select.count():
+            await sort_select.select_option(label="Newest first")
+            await asyncio.sleep(2)
+            logger.info("  Sorted reviews by newest first (select)")
+            return
+
+        sort_select = page.locator('select#review_sort')
+        if await sort_select.count():
+            await sort_select.select_option(label="Newest first")
+            await asyncio.sleep(2)
+            logger.info("  Sorted reviews by newest first (select#review_sort)")
+            return
+
+        sort_btn = page.locator('button:has-text("Sort"), [data-testid="sorter-button"]')
+        if await sort_btn.count():
+            await sort_btn.first.click()
+            await asyncio.sleep(0.5)
+            newest_opt = page.locator('text="Newest first"')
+            if await newest_opt.count():
+                await newest_opt.first.click()
+                await asyncio.sleep(2)
+                logger.info("  Sorted reviews by newest first (dropdown)")
+                return
+
+        logger.info("  Sort dropdown not found — using default order")
+    except Exception as e:
+        logger.info("  Could not sort by newest: %s — using default order", e)
+
+
 def _sync_fetch_reviews(
     url: str,
     max_pages: int = 10,
@@ -146,6 +217,10 @@ def _sync_fetch_reviews(
                 read_all_btn.click()
                 page.wait_for_selector('[data-testid="review-card"]', timeout=15000)
                 time.sleep(1)
+
+                # Sort by newest first
+                _sort_reviews_newest(page)
+                page.wait_for_selector('[data-testid="review-card"]', timeout=15000)
 
                 # Page 1
                 pages_html.append(page.content())
@@ -208,6 +283,10 @@ async def _async_fetch_reviews(
                 await read_all_btn.click()
                 await page.wait_for_selector('[data-testid="review-card"]', timeout=15000)
                 await asyncio.sleep(1)
+
+                # Sort by newest first
+                await _async_sort_reviews_newest(page)
+                await page.wait_for_selector('[data-testid="review-card"]', timeout=15000)
 
                 pages_html.append(await page.content())
                 logger.info("  Page 1: fetched")
