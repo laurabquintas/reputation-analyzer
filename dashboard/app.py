@@ -921,7 +921,7 @@ def main() -> None:
 | Topic | What it covers |
 |-------|---------------|
 | **Employees** | Staff, service, friendliness, helpfulness, reception, concierge, team, waiters, management |
-| **Commodities** | Amenities, facilities, pool, gym, spa, room features, wifi, parking, fridge, toiletries, TV, air conditioning, balcony, shuttle, iron, entertainment, music |
+| **Commodities** | Amenities, facilities, pool, gym, spa, room features, wifi, parking, fridge, toiletries, TV, air conditioning, balcony, shuttle, iron, entertainment, music, new/modern hotel, renovated |
 | **Comfort** | Room comfort, bed quality, noise, quiet, space, temperature, room size, mattress, pillow, decor, ambiance, construction noise, view |
 | **Cleaning** | Cleanliness, hygiene, tidiness, housekeeping, spotless, dirty, stains, towels changed, room serviced |
 | **Quality / Price** | Value for money, pricing, worth, cost, overpriced, good deal, expensive, cheap, affordable, half board value |
