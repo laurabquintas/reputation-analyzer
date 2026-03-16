@@ -667,8 +667,8 @@ def _scrape_full_review_from_html(html: str) -> dict:
         review["text"] = all_sections_text
 
     # Extract reviewer country and trip type from the detail page
-    review["country"] = _extract_reviewer_country(soup)
-    review["trip_type"] = _extract_trip_type(soup)
+    review["country"] = _extract_reviewer_country(soup) or "Unknown"
+    review["trip_type"] = _extract_trip_type(soup) or "Unknown"
 
     return review
 
@@ -1101,6 +1101,13 @@ def main() -> int:
         return 1
 
     existing_reviews = load_reviews(args.json)
+
+    # Backfill missing country / trip_type for older reviews
+    for r in existing_reviews:
+        if not r.get("country"):
+            r["country"] = "Unknown"
+        if not r.get("trip_type"):
+            r["trip_type"] = "Unknown"
 
     # Check Ollama
     ollama_ok = (
