@@ -116,53 +116,37 @@ async def _async_dismiss_cookie_banner(page) -> None:
 
 
 def _sort_reviews_newest(page) -> None:
-    """Click the 'Most relevant' dropdown and select 'Newest first'."""
+    """Select 'Newest first' from the reviews sorter <select>."""
     try:
-        # The dropdown button displays "Most relevant" by default
-        dropdown = page.get_by_role("button", name="Most relevant")
-        if not dropdown.count():
-            dropdown = page.locator("button", has_text="Most relevant")
-        if not dropdown.count():
-            logger.info("  Sort dropdown not found — using default order")
+        sorter = page.locator('select#reviewListSorters')
+        if not sorter.count():
+            sorter = page.locator('select[data-testid="reviews-sorter-component"]')
+        if not sorter.count():
+            logger.info("  Sort <select> not found — using default order")
             return
 
-        dropdown.first.click()
-        time.sleep(1)
-
-        # Select "Newest first" from the opened menu
-        newest = page.get_by_text("Newest first")
-        if newest.count():
-            newest.first.click()
-            time.sleep(2)
-            logger.info("  Sorted reviews by newest first")
-        else:
-            logger.info("  'Newest first' option not found — using default order")
+        sorter.select_option(value="NEWEST_FIRST")
+        time.sleep(2)
+        logger.info("  Sorted reviews by newest first")
     except Exception as e:
         logger.info("  Could not sort by newest: %s — using default order", e)
 
 
 async def _async_sort_reviews_newest(page) -> None:
-    """Async: click the 'Most relevant' dropdown and select 'Newest first'."""
+    """Async: select 'Newest first' from the reviews sorter <select>."""
     import asyncio
 
     try:
-        dropdown = page.get_by_role("button", name="Most relevant")
-        if not await dropdown.count():
-            dropdown = page.locator("button", has_text="Most relevant")
-        if not await dropdown.count():
-            logger.info("  Sort dropdown not found — using default order")
+        sorter = page.locator('select#reviewListSorters')
+        if not await sorter.count():
+            sorter = page.locator('select[data-testid="reviews-sorter-component"]')
+        if not await sorter.count():
+            logger.info("  Sort <select> not found — using default order")
             return
 
-        await dropdown.first.click()
-        await asyncio.sleep(1)
-
-        newest = page.get_by_text("Newest first")
-        if await newest.count():
-            await newest.first.click()
-            await asyncio.sleep(2)
-            logger.info("  Sorted reviews by newest first")
-        else:
-            logger.info("  'Newest first' option not found — using default order")
+        await sorter.select_option(value="NEWEST_FIRST")
+        await asyncio.sleep(2)
+        logger.info("  Sorted reviews by newest first")
     except Exception as e:
         logger.info("  Could not sort by newest: %s — using default order", e)
 
