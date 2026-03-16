@@ -116,13 +116,12 @@ async def _async_dismiss_cookie_banner(page) -> None:
 
 
 def _sort_reviews_newest(page) -> None:
-    """Click the 'Sort reviews by:' dropdown and select 'Newest first'."""
+    """Click the 'Most relevant' dropdown and select 'Newest first'."""
     try:
-        # Find the dropdown trigger next to "Sort reviews by:" label
-        dropdown = page.get_by_role("button", name="Sort reviews by:")
+        # The dropdown button displays "Most relevant" by default
+        dropdown = page.get_by_role("button", name="Most relevant")
         if not dropdown.count():
-            # Broader fallback: any trigger near the label text
-            dropdown = page.locator("button", has_text="Sort reviews by")
+            dropdown = page.locator("button", has_text="Most relevant")
         if not dropdown.count():
             logger.info("  Sort dropdown not found — using default order")
             return
@@ -143,13 +142,13 @@ def _sort_reviews_newest(page) -> None:
 
 
 async def _async_sort_reviews_newest(page) -> None:
-    """Async: click the 'Sort reviews by:' dropdown and select 'Newest first'."""
+    """Async: click the 'Most relevant' dropdown and select 'Newest first'."""
     import asyncio
 
     try:
-        dropdown = page.get_by_role("button", name="Sort reviews by:")
+        dropdown = page.get_by_role("button", name="Most relevant")
         if not await dropdown.count():
-            dropdown = page.locator("button", has_text="Sort reviews by")
+            dropdown = page.locator("button", has_text="Most relevant")
         if not await dropdown.count():
             logger.info("  Sort dropdown not found — using default order")
             return
