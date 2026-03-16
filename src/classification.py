@@ -49,7 +49,7 @@ def classify_review(text: str, ollama_url: str = "http://localhost:11434") -> li
 
 TOPICS (use these exact keys):
 - employees: any mention of staff, service, friendliness, helpfulness, reception, concierge, team, waiters, management
-- commodities: amenities, facilities, pool, gym, spa, room features, wifi, parking, fridge, toiletries, TV, air conditioning, balcony, shuttle, iron, entertainment, music
+- commodities: amenities, facilities, pool, gym, spa, room features, wifi, parking, fridge, toiletries, TV, air conditioning, balcony, shuttle, iron, entertainment, music, new hotel, modern, renovated, refurbished
 - comfort: room comfort, bed quality, noise, quiet, space, temperature, room size, mattress, pillow, decor, ambiance, construction noise, view
 - cleaning: cleanliness, hygiene, tidiness, housekeeping, spotless, dirty, stains, towels changed, room serviced
 - quality_price: value for money, pricing, worth, cost, overpriced, good deal, expensive, cheap, affordable, half board value
@@ -126,7 +126,7 @@ SECTION LABEL → TOPIC MAPPING (use this to assign topics accurately):
 
 TOPICS (use these exact keys):
 - employees: staff, service, friendliness, helpfulness, reception, concierge, team, waiters, management
-- commodities: amenities, facilities, pool, gym, spa, room features, wifi, parking, fridge, toiletries, TV, air conditioning, balcony, shuttle, iron, entertainment, music, location, beach
+- commodities: amenities, facilities, pool, gym, spa, room features, wifi, parking, fridge, toiletries, TV, air conditioning, balcony, shuttle, iron, entertainment, music, location, beach, new hotel, modern, renovated, refurbished
 - comfort: room comfort, bed quality, noise, quiet, space, temperature, room size, mattress, pillow, decor, ambiance, construction noise, view
 - cleaning: cleanliness, hygiene, tidiness, housekeeping, spotless, dirty, stains, towels changed, room serviced
 - quality_price: value for money, pricing, worth, cost, overpriced, good deal, expensive, cheap, affordable, half board value
@@ -204,7 +204,7 @@ def classify_booking_review(
 
 TOPICS (use these exact keys):
 - employees: any mention of staff, service, friendliness, helpfulness, reception, concierge, team, waiters, management
-- commodities: amenities, facilities, pool, gym, spa, room features, wifi, parking, fridge, toiletries, TV, air conditioning, balcony, shuttle, iron, entertainment, music
+- commodities: amenities, facilities, pool, gym, spa, room features, wifi, parking, fridge, toiletries, TV, air conditioning, balcony, shuttle, iron, entertainment, music, new hotel, modern, renovated, refurbished
 - comfort: room comfort, bed quality, noise, quiet, space, temperature, room size, mattress, pillow, decor, ambiance, construction noise, view
 - cleaning: cleanliness, hygiene, tidiness, housekeeping, spotless, dirty, stains, towels changed, room serviced
 - quality_price: value for money, pricing, worth, cost, overpriced, good deal, expensive, cheap, affordable, half board value
