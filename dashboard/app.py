@@ -1529,10 +1529,14 @@ def main() -> None:
                 review_id = _generate_manual_id(mr_reviewer, pub_date_str, mr_title)
                 target_path = _MANUAL_SOURCE_MAP[mr_source]
                 current_reviews = _load_reviews_json(target_path)
-                existing_ids = {r["id"] for r in current_reviews}
+                def _dup_key(r):
+                    return (r.get("author_name", "").lower().strip(), r.get("text", "")[:10].lower().strip())
 
-                if review_id in existing_ids:
-                    st.warning("This review already exists (same name + date + title).")
+                existing_keys = {_dup_key(r) for r in current_reviews}
+                new_key = (mr_reviewer.lower().strip(), mr_text[:10].lower().strip())
+
+                if new_key in existing_keys:
+                    st.warning("This review already exists (same name + text).")
                 else:
                     # Try to classify automatically via Ollama
                     topics: list[dict] = []
