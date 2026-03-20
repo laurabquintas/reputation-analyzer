@@ -34,9 +34,9 @@ def warm_up_model(ollama_url: str = "http://localhost:11434") -> bool:
                 "model": "qwen2.5:7b",
                 "prompt": "hi",
                 "stream": False,
-                "options": {"num_predict": 1, "num_ctx": 2048},
+                "options": {"num_predict": 1, "num_ctx": 4096},
             },
-            timeout=120,
+            timeout=300,
         )
         return resp.status_code == 200
     except Exception:
@@ -80,14 +80,14 @@ JSON array:"""
         "options": {
             "temperature": 0.1,
             "num_predict": 768,
-            "num_ctx": 2048,
+            "num_ctx": 4096,
         },
     }
 
     resp = requests.post(
         f"{ollama_url}/api/generate",
         json=payload,
-        timeout=180,
+        timeout=300,
     )
     resp.raise_for_status()
     raw_response = resp.json().get("response", "")
@@ -164,14 +164,14 @@ JSON array:"""
         "options": {
             "temperature": 0.1,
             "num_predict": 768,
-            "num_ctx": 2048,
+            "num_ctx": 4096,
         },
     }
 
     resp = requests.post(
         f"{ollama_url}/api/generate",
         json=payload,
-        timeout=180,
+        timeout=300,
     )
     resp.raise_for_status()
     raw_response = resp.json().get("response", "")
@@ -242,14 +242,14 @@ JSON array:"""
         "options": {
             "temperature": 0.1,
             "num_predict": 768,
-            "num_ctx": 2048,
+            "num_ctx": 4096,
         },
     }
 
     resp = requests.post(
         f"{ollama_url}/api/generate",
         json=payload,
-        timeout=180,
+        timeout=300,
     )
     resp.raise_for_status()
     raw_response = resp.json().get("response", "")
@@ -315,5 +315,8 @@ def _parse_classification(raw: str) -> list[dict]:
                 entry["detail"] = detail
             result.append(entry)
             seen_pairs.add(pair)
+
+    if not result and items:
+        logger.warning("Parsed %d items but none had valid topics: %s", len(items), raw[:200])
 
     return result
