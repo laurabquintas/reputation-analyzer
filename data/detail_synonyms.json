@@ -1,0 +1,40 @@
+{
+  "employees": {
+    "positive": {},
+    "negative": {
+      "unprofessional staff": "rude staff"
+    }
+  },
+  "commodities": {
+    "positive": {
+      "nice pool": "great pool"
+    },
+    "negative": {}
+  },
+  "comfort": {
+    "positive": {},
+    "negative": {
+      "rooms were small": "small room"
+    }
+  },
+  "cleaning": {
+    "positive": {},
+    "negative": {}
+  },
+  "quality_price": {
+    "positive": {},
+    "negative": {
+      "expensive_parking": "expensive"
+    }
+  },
+  "meals": {
+    "positive": {
+      "freshly cooked food": "delicious food"
+    },
+    "negative": {}
+  },
+  "return": {
+    "positive": {},
+    "negative": {}
+  }
+}

@@ -1,0 +1,126 @@
+{
+  "models": [
+    "qwen2.5:7b",
+    "mistral:7b"
+  ],
+  "stats": {
+    "qwen2.5:7b": {
+      "total_topics": 6,
+      "vocab_hits": 6,
+      "empty": 0,
+      "time": 119.62371683120728
+    },
+    "mistral:7b": {
+      "total_topics": 10,
+      "vocab_hits": 7,
+      "empty": 0,
+      "time": 137.62909817695618
+    }
+  },
+  "reviews": [
+    {
+      "name": "Melanie (DE)",
+      "text_preview": "Wunderschöne Luxus Oase zur perfekten Entspannung. Das Hotel ist wunderschön, se",
+      "qwen2.5:7b": [
+        {
+          "topic": "commodities",
+          "sentiment": "positive",
+          "detail": "modern hotel"
+        },
+        {
+          "topic": "comfort",
+          "sentiment": "positive",
+          "detail": "nice room"
+        },
+        {
+          "topic": "meals",
+          "sentiment": "positive",
+          "detail": "good breakfast"
+        }
+      ],
+      "mistral:7b": [
+        {
+          "topic": "commodities",
+          "sentiment": "positive",
+          "detail": "modern hotel"
+        },
+        {
+          "topic": "comfort",
+          "sentiment": "positive",
+          "detail": "nice room"
+        },
+        {
+          "topic": "meals",
+          "sentiment": "positive",
+          "detail": "good breakfast"
+        }
+      ]
+    },
+    {
+      "name": "Sonia (EN)",
+      "text_preview": "It is a great place to unwind and relax. It is walking distance to the marina an",
+      "qwen2.5:7b": [
+        {
+          "topic": "meals",
+          "sentiment": "positive",
+          "detail": "good breakfast"
+        }
+      ],
+      "mistral:7b": [
+        {
+          "topic": "employees",
+          "sentiment": "positive",
+          "detail": "friendly staff"
+        },
+        {
+          "topic": "commodities",
+          "sentiment": "positive",
+          "detail": "great pool"
+        },
+        {
+          "topic": "meals",
+          "sentiment": "positive",
+          "detail": "excellent breakfast"
+        }
+      ]
+    },
+    {
+      "name": "Rita (DE, mixed)",
+      "text_preview": "Das Hotel ist ein Traum! Wir hatten ein tolles Zimmer mit Blick auf den Pool. Da",
+      "qwen2.5:7b": [
+        {
+          "topic": "commodities",
+          "sentiment": "negative",
+          "detail": "no wifi"
+        },
+        {
+          "topic": "meals",
+          "sentiment": "positive",
+          "detail": "good breakfast"
+        }
+      ],
+      "mistral:7b": [
+        {
+          "topic": "employees",
+          "sentiment": "positive",
+          "detail": "friendly staff"
+        },
+        {
+          "topic": "commodities",
+          "sentiment": "negative",
+          "detail": "unreliable wifi"
+        },
+        {
+          "topic": "commodities",
+          "sentiment": "positive",
+          "detail": "nice room with pool view"
+        },
+        {
+          "topic": "meals",
+          "sentiment": "positive",
+          "detail": "varied breakfast"
+        }
+      ]
+    }
+  ]
+}

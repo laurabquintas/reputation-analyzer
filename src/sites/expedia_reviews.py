@@ -46,6 +46,8 @@ from playwright.sync_api import sync_playwright
 from playwright.async_api import async_playwright
 
 from src.classification import (
+    DEFAULT_MODEL,
+    batch_normalize_details,
     classify_review,
     is_ollama_available,
     warm_up_model,
@@ -506,12 +508,20 @@ def parse_args() -> argparse.Namespace:
         help="Ollama API base URL (default: http://localhost:11434)",
     )
     p.add_argument(
+        "--model", default=DEFAULT_MODEL,
+        help=f"Ollama model to use (default: {DEFAULT_MODEL})",
+    )
+    p.add_argument(
         "--skip-classification", action="store_true",
         help="Skip Ollama classification, store reviews without topics.",
     )
     p.add_argument(
         "--reclassify", action="store_true",
         help="Reclassify reviews that have classified=false.",
+    )
+    p.add_argument(
+        "--normalize-details", action="store_true",
+        help="Batch-normalize detail phrases using the LLM synonym mapper.",
     )
     p.add_argument(
         "--max-pages", type=int, default=5,
@@ -569,7 +579,17 @@ def main() -> int:
         )
     if ollama_ok:
         logger.info("Warming up Ollama model...")
-        warm_up_model(args.ollama_url)
+        warm_up_model(args.ollama_url, args.model)
+
+    # --- Normalize details mode ---
+    if args.normalize_details:
+        if not ollama_ok:
+            logger.error("Cannot normalize details: Ollama is not available.")
+            return 1
+        changed, _ = batch_normalize_details(existing_reviews, args.ollama_url, args.model)
+        save_reviews(existing_reviews, args.json)
+        logger.info("Normalized %d detail entries.", changed)
+        return 0
 
     # --- Reclassify mode ---
     if args.reclassify:
@@ -580,7 +600,7 @@ def main() -> int:
         for review in existing_reviews:
             if not review.get("classified", False) and review.get("text"):
                 try:
-                    topics = classify_review(review["text"], args.ollama_url)
+                    topics = classify_review(review["text"], args.ollama_url, args.model)
                     review["topics"] = topics
                     review["classified"] = True
                     reclassified += 1
@@ -630,7 +650,7 @@ def main() -> int:
 
         if ollama_ok and text:
             try:
-                topics = classify_review(text, args.ollama_url)
+                topics = classify_review(text, args.ollama_url, args.model)
                 classified = True
                 logger.info(
                     "  Review %s: %d topics classified",

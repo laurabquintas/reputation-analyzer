@@ -20,6 +20,7 @@ import streamlit as st
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 from src.classification import classify_review, is_ollama_available
+from dashboard.pdf_export import generate_dashboard_pdf
 
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -944,6 +945,19 @@ def main() -> None:
     all_reviews_data = reviews_data + google_reviews_data + holidaycheck_reviews_data + expedia_reviews_data + booking_reviews_data
     selected_year = current_year  # default; overridden by radio button below
 
+    # Map source names to their review data for the PDF export
+    _reviews_by_source = {}
+    if "Booking" in selected_sources:
+        _reviews_by_source["Booking"] = booking_reviews_data
+    if "Tripadvisor" in selected_sources:
+        _reviews_by_source["Tripadvisor"] = reviews_data
+    if "Google" in selected_sources:
+        _reviews_by_source["Google"] = google_reviews_data
+    if "HolidayCheck" in selected_sources:
+        _reviews_by_source["HolidayCheck"] = holidaycheck_reviews_data
+    if "Expedia" in selected_sources:
+        _reviews_by_source["Expedia"] = expedia_reviews_data
+
     # ---- Overall Sources Topic Sentiment ---- #
     with st.container(border=True):
         st.subheader("Overall Sources Topic Sentiment")
@@ -1575,6 +1589,34 @@ def main() -> None:
                     st.success(f"Review added to {mr_source} (ID: {review_id}).{ollama_msg}")
                     st.rerun()
 
+    # ================================================================== #
+    # PDF Export
+    # ================================================================== #
+    st.divider()
+    if st.button("Download Dashboard as PDF", type="primary"):
+        with st.spinner("Generating PDF..."):
+            try:
+                pdf_bytes = generate_dashboard_pdf(
+                    history_df=history_df,
+                    selected_sources=selected_sources,
+                    source_dfs=source_dfs,
+                    year=selected_year,
+                    hotel=ANANEA_HOTEL,
+                    scorecard_df=scorecard,
+                    kpi=kpi,
+                    source_year_figure_fn=source_year_figure,
+                    ytd_topic_summary_fn=_ytd_topic_summary,
+                    ytd_topic_insights_fn=_ytd_topic_insights,
+                    reviews_by_source=_reviews_by_source,
+                )
+                st.download_button(
+                    label="Click to download PDF",
+                    data=pdf_bytes,
+                    file_name=f"dashboard_report_{selected_year}.pdf",
+                    mime="application/pdf",
+                )
+            except Exception as e:
+                st.error(f"Failed to generate PDF: {e}")
 
 
 if __name__ == "__main__":

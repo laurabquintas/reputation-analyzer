@@ -5,6 +5,7 @@ from __future__ import annotations
 import json
 import logging
 import re
+from pathlib import Path
 
 import requests
 
@@ -12,6 +13,193 @@ logger = logging.getLogger(__name__)
 
 VALID_TOPICS = {"employees", "commodities", "comfort", "cleaning", "quality_price", "meals", "return"}
 VALID_SENTIMENTS = {"positive", "negative"}
+DEFAULT_MODEL = "qwen2.5:7b"
+SUPPORTED_MODELS = {"qwen2.5:7b", "mistral:7b"}
+
+# Preferred detail phrases for constrained vocabulary in prompts
+PREFERRED_DETAILS = """\
+PREFERRED DETAILS (use these exact phrases when they fit, otherwise write a short custom phrase):
+- employees: friendly staff, helpful staff, professional service, attentive staff, rude staff, slow service, unfriendly staff
+- commodities: modern hotel, new hotel, great pool, no pool, good wifi, no wifi, good parking, expensive parking, nice facilities, no fitness area, good spa, nice balcony
+- comfort: nice room, comfortable bed, spacious room, small room, nice view, quiet location, noisy room, good temperature, poor temperature
+- cleaning: very clean, spotless, dirty room, poor hygiene
+- quality_price: good value for money, affordable, expensive, overpriced
+- meals: good breakfast, varied breakfast, limited breakfast, good dinner, delicious food, repetitive food, expensive food
+- return: would return, highly recommend, would not return"""
+
+_SYNONYMS_PATH = Path(__file__).resolve().parent.parent / "data" / "detail_synonyms.json"
+_synonyms_cache: dict | None = None
+
+
+def _load_synonyms() -> dict:
+    """Load synonym dict from JSON, cached after first load."""
+    global _synonyms_cache
+    if _synonyms_cache is None:
+        try:
+            with open(_SYNONYMS_PATH) as f:
+                _synonyms_cache = json.load(f)
+        except (FileNotFoundError, json.JSONDecodeError):
+            _synonyms_cache = {}
+    return _synonyms_cache
+
+
+def _save_synonyms(data: dict) -> None:
+    """Write updated synonym dict back to JSON."""
+    global _synonyms_cache
+    _synonyms_cache = data
+    with open(_SYNONYMS_PATH, "w") as f:
+        json.dump(data, f, indent=2, ensure_ascii=False)
+
+
+def normalize_detail(detail: str, topic: str, sentiment: str) -> str:
+    """Normalize a detail phrase via static synonym lookup."""
+    detail = detail.strip().lower()
+    if not detail:
+        return detail
+    synonyms = _load_synonyms()
+    return synonyms.get(topic, {}).get(sentiment, {}).get(detail, detail)
+
+
+def batch_normalize_details(
+    reviews: list[dict],
+    ollama_url: str = "http://localhost:11434",
+    model: str = DEFAULT_MODEL,
+) -> tuple[int, dict]:
+    """Batch-normalize detail phrases using the LLM to find synonym mappings.
+
+    Collects all unique details per topic/sentiment, filters out those already
+    in the preferred vocabulary or synonym dict, then asks the LLM to map
+    remaining phrases to the closest vocabulary match.
+
+    Returns (num_changed, updated_synonyms_dict).
+    """
+    # Build the set of preferred (canonical) details per topic, split by sentiment.
+    # Positive phrases come before any obviously negative ones in the vocabulary.
+    _NEGATIVE_PHRASES = {
+        "employees": {"rude staff", "slow service", "unfriendly staff"},
+        "commodities": {"no pool", "no wifi", "expensive parking", "no fitness area"},
+        "comfort": {"noisy room", "small room", "poor temperature"},
+        "cleaning": {"dirty room", "poor hygiene"},
+        "quality_price": {"expensive", "overpriced"},
+        "meals": {"limited breakfast", "repetitive food", "expensive food"},
+        "return": {"would not return"},
+    }
+    vocab: dict[str, set[str]] = {}
+    vocab_by_sentiment: dict[str, dict[str, set[str]]] = {}
+    for line in PREFERRED_DETAILS.splitlines():
+        if not line.startswith("- "):
+            continue
+        topic_key, phrases = line[2:].split(":", 1)
+        topic_key = topic_key.strip()
+        all_phrases = {p.strip().lower() for p in phrases.split(",")}
+        vocab[topic_key] = all_phrases
+        neg = _NEGATIVE_PHRASES.get(topic_key, set())
+        vocab_by_sentiment[topic_key] = {
+            "positive": all_phrases - neg,
+            "negative": neg,
+        }
+
+    synonyms = _load_synonyms()
+
+    # Collect unmapped details per (topic, sentiment)
+    unmapped: dict[tuple[str, str], set[str]] = {}
+    for review in reviews:
+        for t in review.get("topics", []):
+            topic = t.get("topic", "")
+            sentiment = t.get("sentiment", "")
+            detail = t.get("detail", "").strip().lower()
+            if not detail or topic not in VALID_TOPICS or sentiment not in VALID_SENTIMENTS:
+                continue
+            # Skip if already in vocabulary or synonym dict
+            if detail in vocab.get(topic, set()):
+                continue
+            if detail in synonyms.get(topic, {}).get(sentiment, {}):
+                continue
+            unmapped.setdefault((topic, sentiment), set()).add(detail)
+
+    if not unmapped:
+        logger.info("All details already normalized — nothing to do.")
+        return 0, synonyms
+
+    # Ask LLM to map each group
+    new_mappings: dict[str, dict[str, dict[str, str]]] = {}
+    for (topic, sentiment), details in sorted(unmapped.items()):
+        # Only offer vocabulary phrases matching the sentiment being normalized
+        allowed = sorted(vocab_by_sentiment.get(topic, {}).get(sentiment, set()))
+        if not allowed:
+            continue
+        phrases = sorted(details)
+        prompt = (
+            f"These are {sentiment} hotel review detail phrases for the topic '{topic}'.\n"
+            f"Map each phrase to its CLOSEST SPECIFIC match from ALLOWED.\n"
+            f"Only map if the phrase means the SAME specific thing. "
+            f"Write KEEP if no ALLOWED phrase captures the same specific meaning.\n"
+            f"Do NOT map to a generic phrase — keep the specific detail.\n\n"
+            f"ALLOWED: {', '.join(allowed)}\n"
+            f"PHRASES: {json.dumps(phrases)}\n\n"
+            f"Output ONLY a JSON object mapping each phrase to its match or KEEP. "
+            f"No explanation.\n\nJSON:"
+        )
+        try:
+            resp = requests.post(
+                f"{ollama_url}/api/generate",
+                json={
+                    "model": model,
+                    "prompt": prompt,
+                    "stream": False,
+                    "options": {"temperature": 0.1, "num_predict": 512, "num_ctx": 4096},
+                },
+                timeout=300,
+            )
+            resp.raise_for_status()
+            raw = resp.json().get("response", "").strip()
+            # Parse JSON from response
+            if raw.startswith("```"):
+                raw = raw.split("\n", 1)[1] if "\n" in raw else raw[3:]
+                if raw.endswith("```"):
+                    raw = raw[:-3]
+                raw = raw.strip()
+            match = re.search(r"\{.*\}", raw, re.DOTALL)
+            if match:
+                mapping = json.loads(match.group())
+            else:
+                mapping = json.loads(raw)
+        except Exception as e:
+            logger.warning("Failed to normalize %s/%s: %s", topic, sentiment, e)
+            continue
+
+        for phrase, target in mapping.items():
+            phrase = phrase.strip().lower()
+            target = target.strip().lower()
+            if target == "keep" or not target:
+                continue
+            if target in vocab_by_sentiment.get(topic, {}).get(sentiment, set()):
+                new_mappings.setdefault(topic, {}).setdefault(sentiment, {})[phrase] = target
+
+    # Merge new mappings into synonyms dict
+    for topic, sentiments in new_mappings.items():
+        if topic not in synonyms:
+            synonyms[topic] = {}
+        for sentiment, mappings in sentiments.items():
+            if sentiment not in synonyms[topic]:
+                synonyms[topic][sentiment] = {}
+            synonyms[topic][sentiment].update(mappings)
+
+    _save_synonyms(synonyms)
+
+    # Apply mappings to reviews
+    changed = 0
+    for review in reviews:
+        for t in review.get("topics", []):
+            old = t.get("detail", "").strip().lower()
+            if not old:
+                continue
+            new = synonyms.get(t.get("topic", ""), {}).get(t.get("sentiment", ""), {}).get(old)
+            if new and new != old:
+                t["detail"] = new
+                changed += 1
+
+    return changed, synonyms
 
 
 def is_ollama_available(ollama_url: str = "http://localhost:11434") -> bool:
@@ -22,7 +210,7 @@ def is_ollama_available(ollama_url: str = "http://localhost:11434") -> bool:
         return False
 
 
-def warm_up_model(ollama_url: str = "http://localhost:11434") -> bool:
+def warm_up_model(ollama_url: str = "http://localhost:11434", model: str = DEFAULT_MODEL) -> bool:
     """Pre-load the model into memory with a tiny prompt.
 
     Call this once before classification to avoid cold-start timeouts.
@@ -31,7 +219,7 @@ def warm_up_model(ollama_url: str = "http://localhost:11434") -> bool:
         resp = requests.post(
             f"{ollama_url}/api/generate",
             json={
-                "model": "qwen2.5:7b",
+                "model": model,
                 "prompt": "hi",
                 "stream": False,
                 "options": {"num_predict": 1, "num_ctx": 4096},
@@ -43,38 +231,37 @@ def warm_up_model(ollama_url: str = "http://localhost:11434") -> bool:
         return False
 
 
-def classify_review(text: str, ollama_url: str = "http://localhost:11434") -> list[dict]:
+def classify_review(text: str, ollama_url: str = "http://localhost:11434", model: str = DEFAULT_MODEL) -> list[dict]:
     """Classify a review into topics with sentiment using Ollama."""
-    prompt = f"""You are a hotel review analyst. Read the review below carefully and identify ALL topics mentioned, even briefly. Pay special attention to complaints, cons, criticisms, and suggestions for improvement – these are NEGATIVE.
+    prompt = f"""You are a hotel review analyst. Identify ALL topics in this review. The review may be in any language but ALL your output MUST be in English.
 
 TOPICS (use these exact keys):
-- employees: any mention of staff, service, friendliness, helpfulness, reception, concierge, team, waiters, management
-- commodities: amenities, facilities, pool, gym, spa, room features, wifi, parking, fridge, toiletries, TV, air conditioning, balcony, shuttle, iron, entertainment, music, new hotel, modern, renovated, refurbished
-- comfort: room comfort, bed quality, noise, quiet, space, temperature, room size, mattress, pillow, decor, ambiance, construction noise, view
-- cleaning: cleanliness, hygiene, tidiness, housekeeping, spotless, dirty, stains, towels changed, room serviced
-- quality_price: value for money, pricing, worth, cost, overpriced, good deal, expensive, cheap, affordable, half board value
-- meals: food, breakfast, restaurant, dining, bar, drinks, buffet, dinner, lunch, cuisine, menu, chef, kitchen, snacks, repetitive food, variety
-- return: whether the guest would return, come back, visit again, recommend, revisit, not return, wouldn't go back
+- employees: staff, service, friendliness, helpfulness, reception, management
+- commodities: amenities, facilities, pool, gym, spa, wifi, parking, TV, air conditioning, balcony, shuttle, iron, toiletries, fridge, entertainment, new hotel, modern, renovated
+- comfort: room comfort, bed quality, noise, space, temperature, room size, decor, ambiance, view
+- cleaning: cleanliness, hygiene, tidiness, housekeeping
+- quality_price: value for money, pricing, cost, expensive, affordable
+- meals: food, breakfast, restaurant, dining, bar, drinks, buffet, dinner
+- return: would return, recommend, come back, revisit
+
+NOTE: wifi, TV, air conditioning, parking = commodities (NOT cleaning or comfort).
+
+{PREFERRED_DETAILS}
 
 RULES:
-1. You MUST check each topic one by one. Go through the review sentence by sentence.
-2. A single review CAN and OFTEN DOES have both positive AND negative for the SAME topic. For example breakfast can be praised (positive) but also called repetitive (negative).
-3. Even brief or indirect mentions count (e.g. "rooms were cleaned daily" = cleaning positive).
-4. If a topic is described positively, mark it positive. If negatively, mark it negative.
-5. Complaints, cons, "could be better", "didn't work well", "wish they had", suggestions for improvement = NEGATIVE. Do NOT skip these.
-6. For each entry include a "detail" field: a short phrase (2-4 words) describing the specific aspect mentioned. Use lowercase.
-7. Output ONLY a JSON array. No explanation, no markdown.
+1. A review CAN have both positive AND negative for the SAME topic.
+2. Complaints, "could be better", suggestions for improvement = NEGATIVE.
+3. "detail" MUST be a SINGLE phrase in English (translate if needed), 2-4 words, lowercase. Pick ONE phrase from PREFERRED DETAILS when possible. NEVER combine multiple phrases with commas.
+4. Output ONLY a JSON array. No explanation, no markdown.
 
-EXAMPLE INPUT: "Staff were amazing. Breakfast was varied but got repetitive after a few days. Pool was cold and could do with music but rooms were spotless and spacious. The air con struggled to keep the room cool. Would definitely come back!"
-EXAMPLE OUTPUT: [{{"topic":"employees","sentiment":"positive","detail":"amazing staff"}},{{"topic":"meals","sentiment":"positive","detail":"varied breakfast"}},{{"topic":"meals","sentiment":"negative","detail":"repetitive breakfast"}},{{"topic":"commodities","sentiment":"negative","detail":"cold pool"}},{{"topic":"cleaning","sentiment":"positive","detail":"spotless rooms"}},{{"topic":"comfort","sentiment":"positive","detail":"spacious rooms"}},{{"topic":"comfort","sentiment":"negative","detail":"poor air conditioning"}},{{"topic":"return","sentiment":"positive","detail":"would come back"}}]
+Example: [{{"topic":"employees","sentiment":"positive","detail":"friendly staff"}},{{"topic":"commodities","sentiment":"negative","detail":"no wifi"}}]
 
-Now analyze this review:
-\"\"\"{text}\"\"\"
+Review: \"\"\"{text}\"\"\"
 
 JSON array:"""
 
     payload = {
-        "model": "qwen2.5:7b",
+        "model": model,
         "prompt": prompt,
         "stream": False,
         "options": {
@@ -94,7 +281,7 @@ JSON array:"""
     return _parse_classification(raw_response)
 
 
-def classify_holidaycheck_review(text: str, ollama_url: str = "http://localhost:11434") -> list[dict]:
+def classify_holidaycheck_review(text: str, ollama_url: str = "http://localhost:11434", model: str = DEFAULT_MODEL) -> list[dict]:
     """Classify a HolidayCheck review using its section labels for better accuracy.
 
     HolidayCheck reviews contain section labels like ``[Zimmer]``, ``[Service]``,
@@ -107,58 +294,39 @@ def classify_holidaycheck_review(text: str, ollama_url: str = "http://localhost:
     """
     # If no section labels, fall back to generic classification
     if "[" not in text:
-        return classify_review(text, ollama_url)
+        return classify_review(text, ollama_url, model)
 
-    prompt = f"""You are a hotel review analyst. The review below is from HolidayCheck (a German hotel review site). It is structured into SECTIONS marked with labels in square brackets like [Zimmer], [Service], etc.
+    prompt = f"""You are a hotel review analyst. This German HolidayCheck review has SECTIONS in square brackets. Use them to assign topics. ALL your output MUST be in English.
 
-SECTION LABEL → TOPIC MAPPING (use this to assign topics accurately):
-- [Allgemein] (General) → may contain ANY topic — read carefully
-- [Zimmer] (Room) → comfort, commodities (room features, space, bed, furniture, AC, view)
-- [Service] → employees (staff, friendliness, helpfulness, reception, management)
-- [Lage & Umgebung] or [Lage] (Location) → commodities (location, surroundings, transport, beach access)
-- [Gastronomie] or [Restaurant & Bars] → meals (food, breakfast, restaurant, drinks, buffet, bar)
-- [Sport & Unterhaltung] (Sports & Entertainment) → commodities (pool, gym, spa, entertainment, activities)
-- [Hotel] → commodities, comfort (general hotel facilities, ambiance, decor, lobby)
-- [Pool] → commodities (pool facilities, pool temperature, pool area)
-- [Strand] (Beach) → commodities (beach quality, beach access, beach facilities)
-- [Preis-Leistung] (Value for money) → quality_price
-- [Verkehrsanbindung] (Transport connections) → commodities (transport, shuttle, taxi, airport)
+SECTION → TOPIC: [Zimmer] → comfort/commodities, [Service] → employees, [Gastronomie]/[Restaurant & Bars] → meals, [Lage]/[Lage & Umgebung] → commodities, [Sport & Unterhaltung] → commodities, [Hotel] → commodities/comfort, [Pool]/[Strand] → commodities, [Preis-Leistung] → quality_price, [Allgemein] → any topic.
 
 TOPICS (use these exact keys):
-- employees: staff, service, friendliness, helpfulness, reception, concierge, team, waiters, management
-- commodities: amenities, facilities, pool, gym, spa, room features, wifi, parking, fridge, toiletries, TV, air conditioning, balcony, shuttle, iron, entertainment, music, location, beach, new hotel, modern, renovated, refurbished
-- comfort: room comfort, bed quality, noise, quiet, space, temperature, room size, mattress, pillow, decor, ambiance, construction noise, view
-- cleaning: cleanliness, hygiene, tidiness, housekeeping, spotless, dirty, stains, towels changed, room serviced
-- quality_price: value for money, pricing, worth, cost, overpriced, good deal, expensive, cheap, affordable, half board value
-- meals: food, breakfast, restaurant, dining, bar, drinks, buffet, dinner, lunch, cuisine, menu, chef, kitchen, snacks, repetitive food, variety
-- return: whether the guest would return, come back, visit again, recommend, revisit, not return, wouldn't go back
+- employees: staff, service, friendliness, helpfulness, reception, management
+- commodities: amenities, facilities, pool, gym, spa, wifi, parking, TV, air conditioning, balcony, shuttle, toiletries, entertainment, location, beach, new hotel, modern, renovated
+- comfort: room comfort, bed quality, noise, space, temperature, room size, decor, ambiance, view
+- cleaning: cleanliness, hygiene, tidiness, housekeeping
+- quality_price: value for money, pricing, cost, expensive, affordable
+- meals: food, breakfast, restaurant, dining, bar, drinks, buffet, dinner
+- return: would return, recommend, come back, revisit
+
+NOTE: wifi, TV, air conditioning, parking = commodities (NOT cleaning or comfort).
+
+{PREFERRED_DETAILS}
 
 RULES:
-1. Use the section labels to guide topic assignment. Text under [Gastronomie] is almost certainly about meals; text under [Service] is about employees; etc.
-2. The [Allgemein] section is a general summary — it may touch on ANY topic. Analyze it sentence by sentence.
-3. A single section CAN contain both positive AND negative sentiments. For example [Zimmer] might praise the bed but complain about noise.
-4. Even brief or indirect mentions count.
-5. Complaints, cons, "could be better", "didn't work well", suggestions for improvement = NEGATIVE.
-6. The review text is in German — identify topics regardless of language.
-7. For each entry include a "detail" field: a short phrase (2-4 words) in English describing the specific aspect mentioned. Use lowercase.
-8. Output ONLY a JSON array. No explanation, no markdown.
+1. A section CAN have both positive AND negative sentiments.
+2. Complaints, suggestions for improvement = NEGATIVE.
+3. "detail" MUST be a SINGLE phrase in English (translate if needed), 2-4 words, lowercase. Pick ONE phrase from PREFERRED DETAILS when possible. NEVER combine multiple phrases with commas.
+4. Output ONLY a JSON array. No explanation, no markdown.
 
-EXAMPLE INPUT:
-\"\"\"[Allgemein] Das Hotel ist modern und das Personal freundlich. Wir kommen gerne wieder.
+Example: [{{"topic":"commodities","sentiment":"positive","detail":"modern hotel"}},{{"topic":"commodities","sentiment":"negative","detail":"no wifi"}}]
 
-[Zimmer] Geräumig und sauber, aber die Klimaanlage war laut.
-
-[Gastronomie] Frühstück war abwechslungsreich.\"\"\"
-
-EXAMPLE OUTPUT: [{{"topic":"commodities","sentiment":"positive","detail":"modern hotel"}},{{"topic":"employees","sentiment":"positive","detail":"friendly staff"}},{{"topic":"return","sentiment":"positive","detail":"would return"}},{{"topic":"comfort","sentiment":"positive","detail":"spacious room"}},{{"topic":"cleaning","sentiment":"positive","detail":"clean room"}},{{"topic":"comfort","sentiment":"negative","detail":"loud air conditioning"}},{{"topic":"meals","sentiment":"positive","detail":"varied breakfast"}}]
-
-Now analyze this review:
-\"\"\"{text}\"\"\"
+Review: \"\"\"{text}\"\"\"
 
 JSON array:"""
 
     payload = {
-        "model": "qwen2.5:7b",
+        "model": model,
         "prompt": prompt,
         "stream": False,
         "options": {
@@ -175,13 +343,22 @@ JSON array:"""
     )
     resp.raise_for_status()
     raw_response = resp.json().get("response", "")
-    return _parse_classification(raw_response)
+    result = _parse_classification(raw_response)
+
+    # Fallback: if the section-aware prompt returned empty, retry with the
+    # simpler generic prompt.
+    if not result and text.strip():
+        logger.info("HolidayCheck prompt returned empty — falling back to generic classify_review.")
+        result = classify_review(text, ollama_url, model)
+
+    return result
 
 
 def classify_booking_review(
     positive_text: str,
     negative_text: str,
     ollama_url: str = "http://localhost:11434",
+    model: str = DEFAULT_MODEL,
 ) -> list[dict]:
     """Classify a Booking.com review using its pre-separated positive/negative text.
 
@@ -200,43 +377,35 @@ def classify_booking_review(
 
     review_block = "\n\n".join(sections)
 
-    prompt = f"""You are a hotel review analyst. The review below is from Booking.com and is ALREADY separated into what the guest liked (positive) and disliked (negative). Use that separation to assign the correct sentiment — do NOT guess.
+    prompt = f"""You are a hotel review analyst. This Booking.com review is ALREADY separated into POSITIVE (liked) and NEGATIVE (disliked). Use that separation for sentiment. ALL your output MUST be in English.
 
 TOPICS (use these exact keys):
-- employees: any mention of staff, service, friendliness, helpfulness, reception, concierge, team, waiters, management
-- commodities: amenities, facilities, pool, gym, spa, room features, wifi, parking, fridge, toiletries, TV, air conditioning, balcony, shuttle, iron, entertainment, music, new hotel, modern, renovated, refurbished
-- comfort: room comfort, bed quality, noise, quiet, space, temperature, room size, mattress, pillow, decor, ambiance, construction noise, view
-- cleaning: cleanliness, hygiene, tidiness, housekeeping, spotless, dirty, stains, towels changed, room serviced
-- quality_price: value for money, pricing, worth, cost, overpriced, good deal, expensive, cheap, affordable, half board value
-- meals: food, breakfast, restaurant, dining, bar, drinks, buffet, dinner, lunch, cuisine, menu, chef, kitchen, snacks, repetitive food, variety
-- return: whether the guest would return, come back, visit again, recommend, revisit, not return, wouldn't go back
+- employees: staff, service, friendliness, helpfulness, reception, management
+- commodities: amenities, facilities, pool, gym, spa, wifi, parking, TV, air conditioning, balcony, shuttle, toiletries, entertainment, new hotel, modern, renovated
+- comfort: room comfort, bed quality, noise, space, temperature, room size, decor, ambiance, view
+- cleaning: cleanliness, hygiene, tidiness, housekeeping
+- quality_price: value for money, pricing, cost, expensive, affordable
+- meals: food, breakfast, restaurant, dining, bar, drinks, buffet, dinner
+- return: would return, recommend, come back, revisit
+
+NOTE: wifi, TV, air conditioning, parking = commodities (NOT cleaning or comfort).
+
+{PREFERRED_DETAILS}
 
 RULES:
-1. Topics mentioned in the POSITIVE section MUST be classified as "positive".
-2. Topics mentioned in the NEGATIVE section MUST be classified as "negative".
-3. IMPORTANT: If the NEGATIVE section says the guest had NO complaints (e.g. "Nothing", "N/A", "Nada", "Nichts", "Rien", "there was nothing I didn't like", "everything was great", "no complaints"), do NOT extract any negative topic from it — simply IGNORE that section.
-4. The review text may be in any language — identify topics regardless of language.
-5. Even brief or indirect mentions count.
-6. For each entry include a "detail" field: a short phrase (2-4 words) in English describing the specific aspect mentioned. Use lowercase.
-7. Output ONLY a JSON array. No explanation, no markdown.
+1. POSITIVE section → sentiment "positive". NEGATIVE section → sentiment "negative".
+2. If NEGATIVE section says NO complaints ("Nothing", "N/A", "Nada", "Nichts", "no complaints"), IGNORE it entirely.
+3. "detail" MUST be a SINGLE phrase in English (translate if needed), 2-4 words, lowercase. Pick ONE phrase from PREFERRED DETAILS when possible. NEVER combine multiple phrases with commas.
+4. The review may be in any language. Output ONLY a JSON array.
 
-EXAMPLE:
-POSITIVE (the guest LIKED this):
-\"\"\"the room, breakfast and the friendliness of the staff\"\"\"
-
-NEGATIVE (the guest DISLIKED this):
-\"\"\"parking was expensive\"\"\"
-
-OUTPUT: [{{"topic":"comfort","sentiment":"positive","detail":"nice room"}},{{"topic":"meals","sentiment":"positive","detail":"good breakfast"}},{{"topic":"employees","sentiment":"positive","detail":"friendly staff"}},{{"topic":"quality_price","sentiment":"negative","detail":"expensive parking"}}]
-
-Now analyze this review:
+Example: [{{"topic":"meals","sentiment":"positive","detail":"good breakfast"}},{{"topic":"quality_price","sentiment":"negative","detail":"expensive"}}]
 
 {review_block}
 
 JSON array:"""
 
     payload = {
-        "model": "qwen2.5:7b",
+        "model": model,
         "prompt": prompt,
         "stream": False,
         "options": {
@@ -253,7 +422,18 @@ JSON array:"""
     )
     resp.raise_for_status()
     raw_response = resp.json().get("response", "")
-    return _parse_classification(raw_response)
+    result = _parse_classification(raw_response)
+
+    # Fallback: if the booking-specific prompt returned empty, retry with the
+    # simpler generic prompt using the combined text.  This handles short
+    # reviews where the structured prompt is too heavy for the model.
+    if not result:
+        combined = " ".join(filter(None, [positive_text, negative_text])).strip()
+        if combined:
+            logger.info("Booking prompt returned empty — falling back to generic classify_review.")
+            result = classify_review(combined, ollama_url, model)
+
+    return result
 
 
 def _parse_classification(raw: str) -> list[dict]:
@@ -308,11 +488,15 @@ def _parse_classification(raw: str) -> list[dict]:
         topic = str(item.get("topic", "")).lower().strip()
         sentiment = str(item.get("sentiment", "")).lower().strip()
         detail = str(item.get("detail", "")).strip()
+        # Safety net: if LLM crammed multiple phrases into one detail,
+        # keep only the first one.
+        if "," in detail:
+            detail = detail.split(",")[0].strip()
         pair = (topic, sentiment)
         if topic in VALID_TOPICS and sentiment in VALID_SENTIMENTS and pair not in seen_pairs:
             entry = {"topic": topic, "sentiment": sentiment}
             if detail:
-                entry["detail"] = detail
+                entry["detail"] = normalize_detail(detail, topic, sentiment)
             result.append(entry)
             seen_pairs.add(pair)
 

@@ -1,11 +1,281 @@
 {
   "meta": {
-    "last_updated": "2026-03-12T22:06:26",
+    "last_updated": "2026-03-19T11:48:01",
     "total_reviews": 60
   },
   "reviews": [
     {
-      "id": "4f6358eef9c41bc1",
+      "id": "c17e58794650c9cf",
+      "hotel": "Ananea Castelo Suites Hotel",
+      "source": "booking",
+      "rating": 10.0,
+      "title": "Excelente estadia",
+      "text": "Muito confortável , hotel novo.\nSinceramente não houve nada que não gostasse.",
+      "positive_text": "Muito confortável , hotel novo.",
+      "negative_text": "Sinceramente não houve nada que não gostasse.",
+      "published_date": "2026-01-02",
+      "stay_date": "January 2026",
+      "room_name": "Double or Twin Room",
+      "trip_type": "Couple",
+      "author_name": "Lia",
+      "country": "Portugal",
+      "scraped_date": "2026-03-19",
+      "topics": [
+        {
+          "topic": "comfort",
+          "sentiment": "positive",
+          "detail": "very comfortable"
+        },
+        {
+          "topic": "commodities",
+          "sentiment": "positive",
+          "detail": "new hotel"
+        }
+      ],
+      "classified": true
+    },
+    {
+      "id": "d1205ce09cd32bd1",
+      "hotel": "Ananea Castelo Suites Hotel",
+      "source": "booking",
+      "rating": 10.0,
+      "title": "TUDO 5 ESTRELAS, E BEM MERECIDAS !",
+      "text": "Tudo maravilhoso. Desde a receção onde foram 5 estrelas, ao quarto que mais parecia um luxo, a equipa de housekeeping foi maravilhosa e sempre muito prestáveis, ao restaurante onde o pequeno-almoço foi divinal, ao rooftop onde pude apreciar variadissimos fogos de artifício em toda a sua extensão. Tudo foi Espectacular.  Foi um final de ano memorável. Obrigado a toda a equipa. Os meus parabéns.\nN/A",
+      "positive_text": "Tudo maravilhoso. Desde a receção onde foram 5 estrelas, ao quarto que mais parecia um luxo, a equipa de housekeeping foi maravilhosa e sempre muito prestáveis, ao restaurante onde o pequeno-almoço foi divinal, ao rooftop onde pude apreciar variadissimos fogos de artifício em toda a sua extensão. Tudo foi Espectacular.  Foi um final de ano memorável. Obrigado a toda a equipa. Os meus parabéns.",
+      "negative_text": "N/A",
+      "published_date": "2026-01-01",
+      "stay_date": "January 2026",
+      "room_name": "Double or Twin Room",
+      "trip_type": "Couple",
+      "author_name": "J",
+      "country": "Jorge",
+      "scraped_date": "2026-03-19",
+      "topics": [
+        {
+          "topic": "comfort",
+          "sentiment": "positive",
+          "detail": "luxury room"
+        },
+        {
+          "topic": "cleaning",
+          "sentiment": "positive",
+          "detail": "excellent housekeeping"
+        },
+        {
+          "topic": "meals",
+          "sentiment": "positive",
+          "detail": "delicious breakfast"
+        },
+        {
+          "topic": "employees",
+          "sentiment": "positive",
+          "detail": "friendly reception"
+        },
+        {
+          "topic": "return",
+          "sentiment": "positive",
+          "detail": "memorable stay"
+        }
+      ],
+      "classified": true
+    },
+    {
+      "id": "367e7e49e49c2145",
+      "hotel": "Ananea Castelo Suites Hotel",
+      "source": "booking",
+      "rating": 10.0,
+      "title": "Foi uma noite especial",
+      "text": "o quarto o pequeno almoço e a simpatia dos funcionários",
+      "positive_text": "o quarto o pequeno almoço e a simpatia dos funcionários",
+      "negative_text": "",
+      "published_date": "2026-01-01",
+      "stay_date": "January 2026",
+      "room_name": "Double or Twin Room",
+      "trip_type": "Couple",
+      "author_name": "T",
+      "country": "Tiago",
+      "scraped_date": "2026-03-19",
+      "topics": [
+        {
+          "topic": "comfort",
+          "sentiment": "positive",
+          "detail": "nice room"
+        },
+        {
+          "topic": "meals",
+          "sentiment": "positive",
+          "detail": "good breakfast"
+        },
+        {
+          "topic": "employees",
+          "sentiment": "positive",
+          "detail": "friendly staff"
+        }
+      ],
+      "classified": true
+    },
+    {
+      "id": "5f4840cd13bf8f73",
+      "hotel": "Ananea Castelo Suites Hotel",
+      "source": "booking",
+      "rating": 10.0,
+      "title": "Exceptional",
+      "text": "Staff prestável. Quartos limpinhos e super confortáveis\nNada de mal a apontar.",
+      "positive_text": "Staff prestável. Quartos limpinhos e super confortáveis",
+      "negative_text": "Nada de mal a apontar.",
+      "published_date": "2026-01-01",
+      "stay_date": "January 2026",
+      "room_name": "Double or Twin Room",
+      "trip_type": "Couple",
+      "author_name": "Leonor",
+      "country": "Portugal",
+      "scraped_date": "2026-03-19",
+      "topics": [
+        {
+          "topic": "employees",
+          "sentiment": "positive",
+          "detail": "prestável staff"
+        },
+        {
+          "topic": "cleaning",
+          "sentiment": "positive",
+          "detail": "limpinhos quartos"
+        },
+        {
+          "topic": "comfort",
+          "sentiment": "positive",
+          "detail": "super confortáveis"
+        }
+      ],
+      "classified": true
+    },
+    {
+      "id": "de847f4a4654dccc",
+      "hotel": "Ananea Castelo Suites Hotel",
+      "source": "booking",
+      "rating": 10.0,
+      "title": "Exceptional",
+      "text": "Das schöne, moderne Hotel - in seiner Ausstattung ist top!\nAber das freundliche, hilfsbereite und sympathische Personal ist einfach unschlagbar!",
+      "positive_text": "Das schöne, moderne Hotel - in seiner Ausstattung ist top!\nAber das freundliche, hilfsbereite und sympathische Personal ist einfach unschlagbar!",
+      "negative_text": "",
+      "published_date": "2025-12-08",
+      "stay_date": "December 2025",
+      "room_name": "Double or Twin Room",
+      "trip_type": "Group",
+      "author_name": "Laura",
+      "country": "Liechtenstein",
+      "scraped_date": "2026-03-19",
+      "topics": [
+        {
+          "topic": "commodities",
+          "sentiment": "positive",
+          "detail": "modern hotel"
+        },
+        {
+          "topic": "employees",
+          "sentiment": "positive",
+          "detail": "friendly staff"
+        }
+      ],
+      "classified": true
+    },
+    {
+      "id": "589d5bd130999eff",
+      "hotel": "Ananea Castelo Suites Hotel",
+      "source": "booking",
+      "rating": 10.0,
+      "title": "Wspomnienia z pobytu zostana na zawsze i mam nadzieje na powrot 🙂",
+      "text": "Absolutnie najlepszy hotel 🤍🤍🤍Pyszne śniadania, jakościowe składniki, empatyczna obsługa.\nWykończenie pokoi, widok , kosmetyki.",
+      "positive_text": "Absolutnie najlepszy hotel 🤍🤍🤍Pyszne śniadania, jakościowe składniki, empatyczna obsługa.",
+      "negative_text": "Wykończenie pokoi, widok , kosmetyki.",
+      "published_date": "2025-11-20",
+      "stay_date": "November 2025",
+      "room_name": "Double or Twin Room",
+      "trip_type": "Couple",
+      "author_name": "Aleksandra",
+      "country": "Poland",
+      "scraped_date": "2026-03-19",
+      "topics": [
+        {
+          "topic": "meals",
+          "sentiment": "positive",
+          "detail": "good breakfast"
+        },
+        {
+          "topic": "employees",
+          "sentiment": "positive",
+          "detail": "empathetic service"
+        },
+        {
+          "topic": "commodities",
+          "sentiment": "negative",
+          "detail": "room finish"
+        },
+        {
+          "topic": "comfort",
+          "sentiment": "negative",
+          "detail": "view quality"
+        },
+        {
+          "topic": "cleaning",
+          "sentiment": "negative",
+          "detail": "toiletries"
+        }
+      ],
+      "classified": true
+    },
+    {
+      "id": "328bcbc8797dc2dd",
+      "hotel": "Ananea Castelo Suites Hotel",
+      "source": "booking",
+      "rating": 9.0,
+      "title": "Perfekter Aufenthalt: tolles Zimmer, traumhafte Pools, top Personal, sehr empfehlenswert!",
+      "text": "Es hat einfach alles perfekt gepasst – vom schönen Zimmer über das leckere Frühstück bis hin zur gesamten Hotelanlage. Das Personal war durchweg sehr freundlich und zuvorkommend. Die Poolanlage ist traumhaft, besonders der Rooftop-Pool ist ein echtes Highlight! Von den oberen Zimmern hat man sogar einen wunderbaren Meerblick – einfach herrlich. Auch das Dinner war ausgezeichnet, und das Personal hat aufmerksam auf Allergene Rücksicht genommen. Rundum ein absolut empfehlenswertes Hotel!\n-",
+      "positive_text": "Es hat einfach alles perfekt gepasst – vom schönen Zimmer über das leckere Frühstück bis hin zur gesamten Hotelanlage. Das Personal war durchweg sehr freundlich und zuvorkommend. Die Poolanlage ist traumhaft, besonders der Rooftop-Pool ist ein echtes Highlight! Von den oberen Zimmern hat man sogar einen wunderbaren Meerblick – einfach herrlich. Auch das Dinner war ausgezeichnet, und das Personal hat aufmerksam auf Allergene Rücksicht genommen. Rundum ein absolut empfehlenswertes Hotel!",
+      "negative_text": "-",
+      "published_date": "2025-11-11",
+      "stay_date": "November 2025",
+      "room_name": "Double or Twin Room",
+      "trip_type": "Couple",
+      "author_name": "Anna-lena",
+      "country": "Austria",
+      "scraped_date": "2026-03-19",
+      "topics": [
+        {
+          "topic": "comfort",
+          "sentiment": "positive",
+          "detail": "nice room"
+        },
+        {
+          "topic": "meals",
+          "sentiment": "positive",
+          "detail": "delicious breakfast"
+        },
+        {
+          "topic": "employees",
+          "sentiment": "positive",
+          "detail": "friendly staff"
+        },
+        {
+          "topic": "commodities",
+          "sentiment": "positive",
+          "detail": "amazing pool"
+        },
+        {
+          "topic": "quality_price",
+          "sentiment": "positive",
+          "detail": "worth the price"
+        },
+        {
+          "topic": "return",
+          "sentiment": "positive",
+          "detail": "highly recommend"
+        }
+      ],
+      "classified": true
+    },
+    {
+      "id": "3ba61b65f56ff2ba",
       "hotel": "Ananea Castelo Suites Hotel",
       "source": "booking",
       "rating": 10.0,
@@ -16,31 +286,55 @@
       "published_date": "2025-11-09",
       "stay_date": "October 2025",
       "room_name": "One-Bedroom Suite",
-      "traveler_type": "Couple",
-      "author_name": "Geoffrey Australia",
-      "country": "",
-      "scraped_date": "2026-03-12",
+      "trip_type": "Couple",
+      "author_name": "Geoffrey",
+      "country": "Australia",
+      "scraped_date": "2026-03-19",
+      "topics": [],
+      "classified": true
+    },
+    {
+      "id": "a340890ee8111c79",
+      "hotel": "Ananea Castelo Suites Hotel",
+      "source": "booking",
+      "rating": 10.0,
+      "title": "Exceptional",
+      "text": "Czyściutko, przepyszne śniadania, bardzo miła i pomocna obsługa! Miejsce warte powrotu :)",
+      "positive_text": "Czyściutko, przepyszne śniadania, bardzo miła i pomocna obsługa! Miejsce warte powrotu :)",
+      "negative_text": "",
+      "published_date": "2025-11-03",
+      "stay_date": "October 2025",
+      "room_name": "Double or Twin Room",
+      "trip_type": "Couple",
+      "author_name": "M",
+      "country": "Marta",
+      "scraped_date": "2026-03-19",
       "topics": [
+        {
+          "topic": "cleaning",
+          "sentiment": "positive",
+          "detail": "spotless"
+        },
+        {
+          "topic": "meals",
+          "sentiment": "positive",
+          "detail": "excellent breakfast"
+        },
         {
           "topic": "employees",
           "sentiment": "positive",
-          "detail": "friendly staff"
+          "detail": "friendly and helpful staff"
         },
         {
-          "topic": "commodities",
+          "topic": "quality_price",
           "sentiment": "positive",
-          "detail": "large rooms"
-        },
-        {
-          "topic": "comfort",
-          "sentiment": "positive",
-          "detail": "comfortable rooms"
+          "detail": "worth returning"
         }
       ],
       "classified": true
     },
     {
-      "id": "005c09b1a578479a",
+      "id": "15b5b463f0981d0c",
       "hotel": "Ananea Castelo Suites Hotel",
       "source": "booking",
       "rating": 9.0,
@@ -51,36 +345,41 @@
       "published_date": "2025-11-02",
       "stay_date": "October 2025",
       "room_name": "Double or Twin Room",
-      "traveler_type": "Couple",
-      "author_name": "Catherine Ireland",
-      "country": "",
-      "scraped_date": "2026-03-12",
+      "trip_type": "Couple",
+      "author_name": "Catherine",
+      "country": "Ireland",
+      "scraped_date": "2026-03-19",
       "topics": [
         {
           "topic": "commodities",
-          "sentiment": "negative",
-          "detail": "no leisure facilities"
+          "sentiment": "positive",
+          "detail": "new hotel"
         },
         {
-          "topic": "meals",
-          "sentiment": "negative",
-          "detail": "cold breakfast"
+          "topic": "cleaning",
+          "sentiment": "positive",
+          "detail": "spotless rooms"
         },
         {
           "topic": "employees",
           "sentiment": "positive",
-          "detail": "friendly and helpful staff"
+          "detail": "friendly staff"
         },
         {
           "topic": "comfort",
           "sentiment": "positive",
           "detail": "comfortable rooms"
+        },
+        {
+          "topic": "meals",
+          "sentiment": "negative",
+          "detail": "cold breakfast"
         }
       ],
       "classified": true
     },
     {
-      "id": "d5d4e72d748645ee",
+      "id": "48fd93e86578de2c",
       "hotel": "Ananea Castelo Suites Hotel",
       "source": "booking",
       "rating": 10.0,
@@ -91,31 +390,31 @@
       "published_date": "2025-10-30",
       "stay_date": "October 2025",
       "room_name": "Double or Twin Room",
-      "traveler_type": "Couple",
-      "author_name": "Lynn United Kingdom",
-      "country": "",
-      "scraped_date": "2026-03-12",
+      "trip_type": "Couple",
+      "author_name": "Lynn",
+      "country": "United Kingdom",
+      "scraped_date": "2026-03-19",
       "topics": [
         {
           "topic": "commodities",
           "sentiment": "positive",
-          "detail": "modern facilities"
+          "detail": "modern"
         },
         {
           "topic": "meals",
           "sentiment": "negative",
-          "detail": "poor breakfast buffet"
+          "detail": "breakfast buffet"
         },
         {
           "topic": "employees",
           "sentiment": "negative",
-          "detail": "inexperienced staff"
+          "detail": "new and in training staff"
         }
       ],
       "classified": true
     },
     {
-      "id": "641011773c08d4e0",
+      "id": "748de9d857f95c56",
       "hotel": "Ananea Castelo Suites Hotel",
       "source": "booking",
       "rating": 10.0,
@@ -126,15 +425,15 @@
       "published_date": "2025-10-27",
       "stay_date": "October 2025",
       "room_name": "Double or Twin Room",
-      "traveler_type": "Couple",
-      "author_name": "Yusuf United Kingdom",
-      "country": "",
-      "scraped_date": "2026-03-12",
+      "trip_type": "Couple",
+      "author_name": "Yusuf",
+      "country": "United Kingdom",
+      "scraped_date": "2026-03-19",
       "topics": [
         {
           "topic": "cleaning",
           "sentiment": "positive",
-          "detail": "clean hotel"
+          "detail": "clean and quiet"
         },
         {
           "topic": "commodities",
@@ -149,13 +448,13 @@
         {
           "topic": "meals",
           "sentiment": "negative",
-          "detail": "not much options for breakfast"
+          "detail": "limited breakfast options"
         }
       ],
       "classified": true
     },
     {
-      "id": "ab0e3aaf13563e73",
+      "id": "f230004b94785614",
       "hotel": "Ananea Castelo Suites Hotel",
       "source": "booking",
       "rating": 10.0,
@@ -166,28 +465,28 @@
       "published_date": "2025-10-25",
       "stay_date": "October 2025",
       "room_name": "Double or Twin Room",
-      "traveler_type": "Solo traveller",
-      "author_name": "I Iqbal United Kingdom",
-      "country": "",
-      "scraped_date": "2026-03-12",
+      "trip_type": "Solo traveller",
+      "author_name": "I",
+      "country": "Iqbal",
+      "scraped_date": "2026-03-19",
       "topics": [
         {
           "topic": "employees",
           "sentiment": "positive",
-          "detail": "friendly staff & personalised welcome"
+          "detail": "friendly staff"
         },
         {
           "topic": "meals",
           "sentiment": "positive",
-          "detail": "variety of options for breakfast"
+          "detail": "variety of breakfast options"
         },
         {
           "topic": "comfort",
           "sentiment": "positive",
-          "detail": "impressed overall"
+          "detail": "nice overall impression"
         },
         {
-          "topic": "commodities",
+          "topic": "cleaning",
           "sentiment": "negative",
           "detail": "underpowered air con"
         }
@@ -195,7 +494,7 @@
       "classified": true
     },
     {
-      "id": "180517ded13c650f",
+      "id": "6def45fa72791ba9",
       "hotel": "Ananea Castelo Suites Hotel",
       "source": "booking",
       "rating": 9.0,
@@ -206,15 +505,15 @@
       "published_date": "2025-10-23",
       "stay_date": "October 2025",
       "room_name": "Double or Twin Room",
-      "traveler_type": "Solo traveller",
-      "author_name": "H Harris United Kingdom",
-      "country": "",
-      "scraped_date": "2026-03-12",
+      "trip_type": "Solo traveller",
+      "author_name": "H",
+      "country": "Harris",
+      "scraped_date": "2026-03-19",
       "topics": [
         {
           "topic": "commodities",
           "sentiment": "positive",
-          "detail": "beautiful pool areas"
+          "detail": "new hotel"
         },
         {
           "topic": "meals",
@@ -229,13 +528,13 @@
         {
           "topic": "commodities",
           "sentiment": "negative",
-          "detail": "some facilities not open"
+          "detail": "facilities not open"
         }
       ],
       "classified": true
     },
     {
-      "id": "26da3e3d2a568d96",
+      "id": "47c1df2587f48710",
       "hotel": "Ananea Castelo Suites Hotel",
       "source": "booking",
       "rating": 10.0,
@@ -246,21 +545,200 @@
       "published_date": "2025-10-22",
       "stay_date": "October 2025",
       "room_name": "Double or Twin Room",
-      "traveler_type": "Couple",
-      "author_name": "Trudie United Kingdom",
-      "country": "",
-      "scraped_date": "2026-03-12",
+      "trip_type": "Couple",
+      "author_name": "Trudie",
+      "country": "United Kingdom",
+      "scraped_date": "2026-03-19",
+      "topics": [],
+      "classified": true
+    },
+    {
+      "id": "30674dca9bbead7e",
+      "hotel": "Ananea Castelo Suites Hotel",
+      "source": "booking",
+      "rating": 9.0,
+      "title": "Excellent séjour en algarve dans un hôtel neuf",
+      "text": "Suite magnifique avec grande terrasse \nCalme \nPropreté de la chambre,  peignoirs changes tous jours \nPetit déjeuner très complet et bon \nPersonnel très agréable\nBon emplacement pour visiter l’Algarve et proche de l’animation d’albufeira\nRien de bien important mais un miroir de courtoisie dans la salle de bain serait appréciable pour les personnes comme nous qui ne voyons plus très bien",
+      "positive_text": "Suite magnifique avec grande terrasse \nCalme \nPropreté de la chambre,  peignoirs changes tous jours \nPetit déjeuner très complet et bon \nPersonnel très agréable\nBon emplacement pour visiter l’Algarve et proche de l’animation d’albufeira",
+      "negative_text": "Rien de bien important mais un miroir de courtoisie dans la salle de bain serait appréciable pour les personnes comme nous qui ne voyons plus très bien",
+      "published_date": "2025-10-22",
+      "stay_date": "October 2025",
+      "room_name": "Premium Suite",
+      "trip_type": "Couple",
+      "author_name": "F",
+      "country": "Fabienne",
+      "scraped_date": "2026-03-19",
       "topics": [
+        {
+          "topic": "commodities",
+          "sentiment": "positive",
+          "detail": "magnificent suite"
+        },
+        {
+          "topic": "comfort",
+          "sentiment": "positive",
+          "detail": "quiet room"
+        },
+        {
+          "topic": "cleaning",
+          "sentiment": "positive",
+          "detail": "room cleanliness"
+        },
+        {
+          "topic": "meals",
+          "sentiment": "positive",
+          "detail": "good breakfast"
+        },
         {
           "topic": "employees",
           "sentiment": "positive",
-          "detail": "helpful staff"
+          "detail": "friendly staff"
+        },
+        {
+          "topic": "return",
+          "sentiment": "positive",
+          "detail": "good location"
+        },
+        {
+          "topic": "commodities",
+          "sentiment": "negative",
+          "detail": "lack of vanity mirror"
         }
       ],
       "classified": true
     },
     {
-      "id": "89a7b741eeab1fe6",
+      "id": "5b67a4004c61b53b",
+      "hotel": "Ananea Castelo Suites Hotel",
+      "source": "booking",
+      "rating": 5.0,
+      "title": "Muito bom pequeno almoço e vistas incríveis",
+      "text": "Tem muito potencial, boa localização, muito bom pequeno almoço, os valores são dentro da zona. , razoáveis , o atendimento da recepção impecável!\nFicamos em 2 quartos e nenhum dos dois funcionava o ar condicionado, disseram que alguém de manutenção iria no período da noite e nunca foram , foi disponibilizado a opção de trocar de quarto, mas visto que era só uma noite não compensava. No quarto só tinha água e na casa de banho o básico, gel de banho gel de mãos, champú, para hotel 4 estrelas esperava mais , pelo menos um par de chinelos ! A televisão dos dois quartos , as duas em alemão, tentei mudar e não consegui",
+      "positive_text": "Tem muito potencial, boa localização, muito bom pequeno almoço, os valores são dentro da zona. , razoáveis , o atendimento da recepção impecável!",
+      "negative_text": "Ficamos em 2 quartos e nenhum dos dois funcionava o ar condicionado, disseram que alguém de manutenção iria no período da noite e nunca foram , foi disponibilizado a opção de trocar de quarto, mas visto que era só uma noite não compensava. No quarto só tinha água e na casa de banho o básico, gel de banho gel de mãos, champú, para hotel 4 estrelas esperava mais , pelo menos um par de chinelos ! A televisão dos dois quartos , as duas em alemão, tentei mudar e não consegui",
+      "published_date": "2025-10-21",
+      "stay_date": "October 2025",
+      "room_name": "Double or Twin Room",
+      "trip_type": "Family",
+      "author_name": "L",
+      "country": "Lauren",
+      "scraped_date": "2026-03-19",
+      "topics": [
+        {
+          "topic": "commodities",
+          "sentiment": "positive",
+          "detail": "good breakfast"
+        },
+        {
+          "topic": "comfort",
+          "sentiment": "positive",
+          "detail": "nice location"
+        },
+        {
+          "topic": "quality_price",
+          "sentiment": "positive",
+          "detail": "reasonable prices"
+        },
+        {
+          "topic": "employees",
+          "sentiment": "positive",
+          "detail": "impeccable reception"
+        },
+        {
+          "topic": "cleaning",
+          "sentiment": "negative",
+          "detail": "no air conditioning"
+        },
+        {
+          "topic": "commodities",
+          "sentiment": "negative",
+          "detail": "lack of slippers"
+        }
+      ],
+      "classified": true
+    },
+    {
+      "id": "122d83c11b58e09e",
+      "hotel": "Ananea Castelo Suites Hotel",
+      "source": "booking",
+      "rating": 10.0,
+      "title": "Super séjour",
+      "text": "Très grande chambre, excellent petit déjeuner, places de parc à disposition, service impeccable et de très bons conseils pour des activités, visites, restaurants, etc.\nIl manque d'étagères et zones de rangements pour les vêtements",
+      "positive_text": "Très grande chambre, excellent petit déjeuner, places de parc à disposition, service impeccable et de très bons conseils pour des activités, visites, restaurants, etc.",
+      "negative_text": "Il manque d'étagères et zones de rangements pour les vêtements",
+      "published_date": "2025-10-20",
+      "stay_date": "October 2025",
+      "room_name": "Double or Twin Room",
+      "trip_type": "Solo traveller",
+      "author_name": "Cassandra",
+      "country": "Switzerland",
+      "scraped_date": "2026-03-19",
+      "topics": [
+        {
+          "topic": "comfort",
+          "sentiment": "positive",
+          "detail": "large room"
+        },
+        {
+          "topic": "meals",
+          "sentiment": "positive",
+          "detail": "excellent breakfast"
+        },
+        {
+          "topic": "employees",
+          "sentiment": "positive",
+          "detail": "impeccable service"
+        },
+        {
+          "topic": "commodities",
+          "sentiment": "positive",
+          "detail": "parking available"
+        },
+        {
+          "topic": "commodities",
+          "sentiment": "negative",
+          "detail": "lacks storage"
+        }
+      ],
+      "classified": true
+    },
+    {
+      "id": "2d154185bb27ebfc",
+      "hotel": "Ananea Castelo Suites Hotel",
+      "source": "booking",
+      "rating": 10.0,
+      "title": "Sehr erholsam",
+      "text": "Es war einfach alles perfekt.\nSchönes neues Hotel mit einer sehr guten Ausstattung .\nDas Personal ist sehr freundlich. \nDie Lage des Hotels ist auch sehr gut. Wenn man ein Auto hat kommt man sehr schnell überall hin.\nNichts auszusetzen",
+      "positive_text": "Es war einfach alles perfekt.\nSchönes neues Hotel mit einer sehr guten Ausstattung .\nDas Personal ist sehr freundlich. \nDie Lage des Hotels ist auch sehr gut. Wenn man ein Auto hat kommt man sehr schnell überall hin.",
+      "negative_text": "Nichts auszusetzen",
+      "published_date": "2025-10-18",
+      "stay_date": "September 2025",
+      "room_name": "Double or Twin Room",
+      "trip_type": "Couple",
+      "author_name": "Adrian",
+      "country": "Germany",
+      "scraped_date": "2026-03-19",
+      "topics": [
+        {
+          "topic": "commodities",
+          "sentiment": "positive",
+          "detail": "new hotel"
+        },
+        {
+          "topic": "employees",
+          "sentiment": "positive",
+          "detail": "friendly staff"
+        },
+        {
+          "topic": "comfort",
+          "sentiment": "positive",
+          "detail": "nice location"
+        }
+      ],
+      "classified": true
+    },
+    {
+      "id": "da9c8b4845654e11",
       "hotel": "Ananea Castelo Suites Hotel",
       "source": "booking",
       "rating": 8.0,
@@ -271,20 +749,20 @@
       "published_date": "2025-10-17",
       "stay_date": "October 2025",
       "room_name": "Double or Twin Room",
-      "traveler_type": "Couple",
-      "author_name": "Brendan Ireland",
-      "country": "",
-      "scraped_date": "2026-03-12",
+      "trip_type": "Couple",
+      "author_name": "Brendan",
+      "country": "Ireland",
+      "scraped_date": "2026-03-19",
       "topics": [
+        {
+          "topic": "comfort",
+          "sentiment": "positive",
+          "detail": "clean hotel"
+        },
         {
           "topic": "employees",
           "sentiment": "positive",
           "detail": "excellent staff"
-        },
-        {
-          "topic": "cleaning",
-          "sentiment": "positive",
-          "detail": "so clean"
         },
         {
           "topic": "meals",
@@ -294,13 +772,43 @@
         {
           "topic": "quality_price",
           "sentiment": "positive",
-          "detail": "good quality food and much choice"
+          "detail": "good quality"
         }
       ],
       "classified": true
     },
     {
-      "id": "88dd32e75913e0cf",
+      "id": "20b4fdad8ac2692b",
+      "hotel": "Ananea Castelo Suites Hotel",
+      "source": "booking",
+      "rating": 6.0,
+      "title": "Pleasant",
+      "text": "Fint hotell med vänlig personal!\nVäldigt kalla pooler & läget var väldigt off, långt ifrån stranden & väldigt få restauranger i närheten.",
+      "positive_text": "Fint hotell med vänlig personal!",
+      "negative_text": "Väldigt kalla pooler & läget var väldigt off, långt ifrån stranden & väldigt få restauranger i närheten.",
+      "published_date": "2025-10-15",
+      "stay_date": "September 2025",
+      "room_name": "Double or Twin Room",
+      "trip_type": "Couple",
+      "author_name": "D",
+      "country": "Dennis",
+      "scraped_date": "2026-03-19",
+      "topics": [
+        {
+          "topic": "employees",
+          "sentiment": "positive",
+          "detail": "friendly personal"
+        },
+        {
+          "topic": "commodities",
+          "sentiment": "negative",
+          "detail": "cold pool"
+        }
+      ],
+      "classified": true
+    },
+    {
+      "id": "5428cddc5fbf4f4f",
       "hotel": "Ananea Castelo Suites Hotel",
       "source": "booking",
       "rating": 10.0,
@@ -311,10 +819,10 @@
       "published_date": "2025-10-10",
       "stay_date": "October 2025",
       "room_name": "Double or Twin Room",
-      "traveler_type": "Couple",
-      "author_name": "H Hernandez United States",
-      "country": "",
-      "scraped_date": "2026-03-12",
+      "trip_type": "Couple",
+      "author_name": "H",
+      "country": "Hernandez",
+      "scraped_date": "2026-03-19",
       "topics": [
         {
           "topic": "meals",
@@ -327,15 +835,245 @@
           "detail": "helpful staff"
         },
         {
-          "topic": "commodities",
-          "sentiment": "negative",
-          "detail": "parking availability"
+          "topic": "comfort",
+          "sentiment": "positive",
+          "detail": "amazing location"
         }
       ],
       "classified": true
     },
     {
-      "id": "2a3a144f31c3a132",
+      "id": "7583ee0866bf978e",
+      "hotel": "Ananea Castelo Suites Hotel",
+      "source": "booking",
+      "rating": 9.0,
+      "title": "Superb",
+      "text": "Neues stylisches Hotel, sehr gutes Frühstück und Abendbuffet. Nicht weit von zwei sehr schönen Stränden,  3 Minuten mit dem Mietwagen. Absolute Ruhe zur Poolseite. Wir haben es genossen. Dachpool mit Aussicht aufs Meer.  Man kann den Sonnenuntergang sehen. Für uns zwei wunderschöne Tage, danke dafür.\nDas Personal ist noch etwas unsicher und hat leichte Verständigungsprobleme, aber trotzdem sehr um jeden Gast bemüht.\nWirklich schade war, dass man die Bar am dachpool zum Sonnenuntergang nicht nutzt. Etwas Loungemusik und schöne Getränke würden die Dachebene zu einem beliebten Treffpunkt der Gäste machen und den Umsatz ankurbeln. Aber das soll keine Kritik sein , nur ein Vorschlag.",
+      "positive_text": "Neues stylisches Hotel, sehr gutes Frühstück und Abendbuffet. Nicht weit von zwei sehr schönen Stränden,  3 Minuten mit dem Mietwagen. Absolute Ruhe zur Poolseite. Wir haben es genossen. Dachpool mit Aussicht aufs Meer.  Man kann den Sonnenuntergang sehen. Für uns zwei wunderschöne Tage, danke dafür.",
+      "negative_text": "Das Personal ist noch etwas unsicher und hat leichte Verständigungsprobleme, aber trotzdem sehr um jeden Gast bemüht.\nWirklich schade war, dass man die Bar am dachpool zum Sonnenuntergang nicht nutzt. Etwas Loungemusik und schöne Getränke würden die Dachebene zu einem beliebten Treffpunkt der Gäste machen und den Umsatz ankurbeln. Aber das soll keine Kritik sein , nur ein Vorschlag.",
+      "published_date": "2025-10-10",
+      "stay_date": "October 2025",
+      "room_name": "Double or Twin Room",
+      "trip_type": "Couple",
+      "author_name": "Astrid",
+      "country": "Germany",
+      "scraped_date": "2026-03-19",
+      "topics": [
+        {
+          "topic": "commodities",
+          "sentiment": "positive",
+          "detail": "new hotel"
+        },
+        {
+          "topic": "meals",
+          "sentiment": "positive",
+          "detail": "good breakfast"
+        },
+        {
+          "topic": "comfort",
+          "sentiment": "positive",
+          "detail": "quiet poolside"
+        },
+        {
+          "topic": "employees",
+          "sentiment": "negative",
+          "detail": "insecure staff"
+        },
+        {
+          "topic": "meals",
+          "sentiment": "negative",
+          "detail": "no rooftop bar at sunset"
+        }
+      ],
+      "classified": true
+    },
+    {
+      "id": "b7d78a02c24924c0",
+      "hotel": "Ananea Castelo Suites Hotel",
+      "source": "booking",
+      "rating": 9.0,
+      "title": "Superb",
+      "text": "Struttura nuova con camere molto accoglienti\nAcqua delle piscina troppo fredda",
+      "positive_text": "Struttura nuova con camere molto accoglienti",
+      "negative_text": "Acqua delle piscina troppo fredda",
+      "published_date": "2025-10-08",
+      "stay_date": "October 2025",
+      "room_name": "One-Bedroom Suite",
+      "trip_type": "Couple",
+      "author_name": "Riccardo",
+      "country": "Italy",
+      "scraped_date": "2026-03-19",
+      "topics": [
+        {
+          "topic": "commodities",
+          "sentiment": "positive",
+          "detail": "new structure"
+        },
+        {
+          "topic": "comfort",
+          "sentiment": "positive",
+          "detail": "cozy rooms"
+        },
+        {
+          "topic": "commodities",
+          "sentiment": "negative",
+          "detail": "cold pool water"
+        }
+      ],
+      "classified": true
+    },
+    {
+      "id": "b458a3bd9bd9715d",
+      "hotel": "Ananea Castelo Suites Hotel",
+      "source": "booking",
+      "rating": 9.0,
+      "title": "Traumhaftes Hotel, wir kommen auf jeden Fall wieder!",
+      "text": "Ganz neues, sehr gepflegtes & sauberes Hotel. Tolle Dachterasse zum sonnen mit Infinity Pool, junges sehr freundliches und zuvorkommendes Personal, wunderschöne Zimmer mit Rituals-Pflegeprodukten & gemütlichem Bett :)\nLeider kein deutsches Fernsehen oder streamen möglich (was ich mir von einem Hotel dieser Art auf jeden Fall erwarte).Frühstück könnte abwechslungsreicher gestaltet werden & mehrere Tische draußen zum Essen wären wünschenswert. Da das Hotel noch nicht ganz fertig ist, waren noch kleine Bauarbeiten. Ein Auto ist empfehlenswert.",
+      "positive_text": "Ganz neues, sehr gepflegtes & sauberes Hotel. Tolle Dachterasse zum sonnen mit Infinity Pool, junges sehr freundliches und zuvorkommendes Personal, wunderschöne Zimmer mit Rituals-Pflegeprodukten & gemütlichem Bett :)",
+      "negative_text": "Leider kein deutsches Fernsehen oder streamen möglich (was ich mir von einem Hotel dieser Art auf jeden Fall erwarte).Frühstück könnte abwechslungsreicher gestaltet werden & mehrere Tische draußen zum Essen wären wünschenswert. Da das Hotel noch nicht ganz fertig ist, waren noch kleine Bauarbeiten. Ein Auto ist empfehlenswert.",
+      "published_date": "2025-10-06",
+      "stay_date": "October 2025",
+      "room_name": "Double or Twin Room",
+      "trip_type": "Couple",
+      "author_name": "Mirjam",
+      "country": "Germany",
+      "scraped_date": "2026-03-19",
+      "topics": [
+        {
+          "topic": "commodities",
+          "sentiment": "positive",
+          "detail": "new hotel"
+        },
+        {
+          "topic": "cleaning",
+          "sentiment": "positive",
+          "detail": "clean & tidy"
+        },
+        {
+          "topic": "comfort",
+          "sentiment": "positive",
+          "detail": "nice rooms"
+        },
+        {
+          "topic": "employees",
+          "sentiment": "positive",
+          "detail": "friendly staff"
+        },
+        {
+          "topic": "meals",
+          "sentiment": "negative",
+          "detail": "limited breakfast variety"
+        },
+        {
+          "topic": "commodities",
+          "sentiment": "negative",
+          "detail": "no german tv"
+        },
+        {
+          "topic": "quality_price",
+          "sentiment": "negative",
+          "detail": "expensive parking"
+        },
+        {
+          "topic": "comfort",
+          "sentiment": "negative",
+          "detail": "construction noise"
+        }
+      ],
+      "classified": true
+    },
+    {
+      "id": "c147160e0ef1be2a",
+      "hotel": "Ananea Castelo Suites Hotel",
+      "source": "booking",
+      "rating": 10.0,
+      "title": "Exceptional",
+      "text": "Lokalizacja obiektu świetna, na uboczu, blisko plaży. Cisza i spokój.\nTrudno wymienić rzeczy które nam nie odpowiadały. Jedyne co czego się można przyczepić to monotonne śniadania, aczkolwiek wszystko co nizbedne było podczas śniadań zapewnione.",
+      "positive_text": "Lokalizacja obiektu świetna, na uboczu, blisko plaży. Cisza i spokój.",
+      "negative_text": "Trudno wymienić rzeczy które nam nie odpowiadały. Jedyne co czego się można przyczepić to monotonne śniadania, aczkolwiek wszystko co nizbedne było podczas śniadań zapewnione.",
+      "published_date": "2025-10-05",
+      "stay_date": "October 2025",
+      "room_name": "Double or Twin Room",
+      "trip_type": "Couple",
+      "author_name": "Marlena",
+      "country": "Poland",
+      "scraped_date": "2026-03-19",
+      "topics": [
+        {
+          "topic": "commodities",
+          "sentiment": "positive",
+          "detail": "nice location"
+        },
+        {
+          "topic": "meals",
+          "sentiment": "negative",
+          "detail": "monotonous breakfast"
+        },
+        {
+          "topic": "cleaning",
+          "sentiment": "negative",
+          "detail": "negligible complaints"
+        }
+      ],
+      "classified": true
+    },
+    {
+      "id": "6eafa2d999f13b37",
+      "hotel": "Ananea Castelo Suites Hotel",
+      "source": "booking",
+      "rating": 8.0,
+      "title": "Reposant",
+      "text": "La suite sublime, les chaises longues à la piscine super confortables, l’emplacement au calme, les repas très bons et le personnel\nLe fait de devoir payer l’eau du robinet filtrée à 4€ alors qu’on a les mêmes bouteilles incluses au petit dej, le bar du rooftop était fermé, l’eau de la piscine très froide",
+      "positive_text": "La suite sublime, les chaises longues à la piscine super confortables, l’emplacement au calme, les repas très bons et le personnel",
+      "negative_text": "Le fait de devoir payer l’eau du robinet filtrée à 4€ alors qu’on a les mêmes bouteilles incluses au petit dej, le bar du rooftop était fermé, l’eau de la piscine très froide",
+      "published_date": "2025-10-04",
+      "stay_date": "October 2025",
+      "room_name": "Double or Twin Room",
+      "trip_type": "Solo traveller",
+      "author_name": "A",
+      "country": "Aurélie",
+      "scraped_date": "2026-03-19",
+      "topics": [
+        {
+          "topic": "commodities",
+          "sentiment": "positive",
+          "detail": "sublime suite"
+        },
+        {
+          "topic": "comfort",
+          "sentiment": "positive",
+          "detail": "confortable chaises longues"
+        },
+        {
+          "topic": "meals",
+          "sentiment": "positive",
+          "detail": "good meals"
+        },
+        {
+          "topic": "employees",
+          "sentiment": "positive",
+          "detail": "friendly personnel"
+        },
+        {
+          "topic": "quality_price",
+          "sentiment": "negative",
+          "detail": "expensive filtered water"
+        },
+        {
+          "topic": "commodities",
+          "sentiment": "negative",
+          "detail": "closed rooftop bar"
+        },
+        {
+          "topic": "comfort",
+          "sentiment": "negative",
+          "detail": "cold pool water"
+        }
+      ],
+      "classified": true
+    },
+    {
+      "id": "660f67dae3ed50d2",
       "hotel": "Ananea Castelo Suites Hotel",
       "source": "booking",
       "rating": 10.0,
@@ -346,10 +1084,10 @@
       "published_date": "2025-10-02",
       "stay_date": "October 2025",
       "room_name": "Double or Twin Room",
-      "traveler_type": "Couple",
-      "author_name": "Chris United Kingdom",
-      "country": "",
-      "scraped_date": "2026-03-12",
+      "trip_type": "Couple",
+      "author_name": "Chris",
+      "country": "United Kingdom",
+      "scraped_date": "2026-03-19",
       "topics": [
         {
           "topic": "employees",
@@ -365,7 +1103,7 @@
       "classified": true
     },
     {
-      "id": "bdd9f3a67d7b9b95",
+      "id": "8e8723aad8274c81",
       "hotel": "Ananea Castelo Suites Hotel",
       "source": "booking",
       "rating": 10.0,
@@ -376,31 +1114,76 @@
       "published_date": "2025-09-29",
       "stay_date": "September 2025",
       "room_name": "Double or Twin Room",
-      "traveler_type": "Family",
-      "author_name": "F Fernanda United States",
-      "country": "",
-      "scraped_date": "2026-03-12",
+      "trip_type": "Family",
+      "author_name": "F",
+      "country": "Fernanda",
+      "scraped_date": "2026-03-19",
       "topics": [
         {
           "topic": "commodities",
           "sentiment": "positive",
-          "detail": "amazing swimming pool"
+          "detail": "new construction"
         },
         {
           "topic": "employees",
           "sentiment": "positive",
-          "detail": "top trained personnel"
+          "detail": "friendly reception"
         },
         {
           "topic": "comfort",
           "sentiment": "positive",
-          "detail": "nicely furnished rooms"
+          "detail": "nice rooms"
+        },
+        {
+          "topic": "cleaning",
+          "sentiment": "positive",
+          "detail": "rooms serviced"
         }
       ],
       "classified": true
     },
     {
-      "id": "b5e4f6e67883242a",
+      "id": "bc7eac7ff71596db",
+      "hotel": "Ananea Castelo Suites Hotel",
+      "source": "booking",
+      "rating": 10.0,
+      "title": "Je recommande sans hésitation !",
+      "text": "Situation zone résidentielle calme. Proximité belles petites plages.\nSuperbe hôtel moderne très récent. Bel espace piscine et roof.\nAccueil et service très professionnels.\nChambres tres confortables et bien équipées.\nRestauration de qualité.\nRas",
+      "positive_text": "Situation zone résidentielle calme. Proximité belles petites plages.\nSuperbe hôtel moderne très récent. Bel espace piscine et roof.\nAccueil et service très professionnels.\nChambres tres confortables et bien équipées.\nRestauration de qualité.",
+      "negative_text": "Ras",
+      "published_date": "2025-09-29",
+      "stay_date": "September 2025",
+      "room_name": "Double or Twin Room",
+      "trip_type": "Couple",
+      "author_name": "Eric",
+      "country": "France",
+      "scraped_date": "2026-03-19",
+      "topics": [
+        {
+          "topic": "comfort",
+          "sentiment": "positive",
+          "detail": "nice rooms"
+        },
+        {
+          "topic": "commodities",
+          "sentiment": "positive",
+          "detail": "great pool area"
+        },
+        {
+          "topic": "employees",
+          "sentiment": "positive",
+          "detail": "professional service"
+        },
+        {
+          "topic": "quality_price",
+          "sentiment": "positive",
+          "detail": "good quality"
+        }
+      ],
+      "classified": true
+    },
+    {
+      "id": "e752fd7cb4749309",
       "hotel": "Ananea Castelo Suites Hotel",
       "source": "booking",
       "rating": 10.0,
@@ -411,26 +1194,26 @@
       "published_date": "2025-09-25",
       "stay_date": "September 2025",
       "room_name": "Double or Twin Room",
-      "traveler_type": "Couple",
-      "author_name": "Marcelina Luxembourg",
-      "country": "",
-      "scraped_date": "2026-03-12",
+      "trip_type": "Couple",
+      "author_name": "Marcelina",
+      "country": "Luxembourg",
+      "scraped_date": "2026-03-19",
       "topics": [
         {
           "topic": "employees",
           "sentiment": "positive",
-          "detail": "fantastic service & nicest people"
+          "detail": "fantastic service"
         },
         {
-          "topic": "return",
+          "topic": "quality_price",
           "sentiment": "positive",
-          "detail": "recommended"
+          "detail": "absolutely recommended"
         }
       ],
       "classified": true
     },
     {
-      "id": "5c3fcc096ebcd8ef",
+      "id": "aaca0c2aa723e7a3",
       "hotel": "Ananea Castelo Suites Hotel",
       "source": "booking",
       "rating": 8.0,
@@ -441,25 +1224,25 @@
       "published_date": "2025-09-23",
       "stay_date": "September 2025",
       "room_name": "One-Bedroom Suite",
-      "traveler_type": "Couple",
-      "author_name": "J John United Kingdom",
-      "country": "",
-      "scraped_date": "2026-03-12",
+      "trip_type": "Couple",
+      "author_name": "J",
+      "country": "John",
+      "scraped_date": "2026-03-19",
       "topics": [
+        {
+          "topic": "commodities",
+          "sentiment": "positive",
+          "detail": "new hotel"
+        },
         {
           "topic": "employees",
           "sentiment": "positive",
           "detail": "friendly staff"
         },
         {
-          "topic": "commodities",
-          "sentiment": "positive",
-          "detail": "nice hotel"
-        },
-        {
           "topic": "cleaning",
           "sentiment": "negative",
-          "detail": "room not cleaned properly"
+          "detail": "not cleaned properly"
         },
         {
           "topic": "meals",
@@ -467,15 +1250,180 @@
           "detail": "breakfast facilities need improvement"
         },
         {
-          "topic": "employees",
+          "topic": "quality_price",
           "sentiment": "negative",
-          "detail": "staff training required"
+          "detail": "expensive buffet"
         }
       ],
       "classified": true
     },
     {
-      "id": "7fadf257cb237756",
+      "id": "cc40c9ecc65f2a21",
+      "hotel": "Ananea Castelo Suites Hotel",
+      "source": "booking",
+      "rating": 7.0,
+      "title": "Je conseille cet établissement pour un séjour en Algarve.",
+      "text": "La piscine ainsi que les petits-déjeuners en terrasse étaient sympas. La situation de l'hôtel est bonne car le quartier est calme. On peut facilement trouver quelques petits commerces ainsi qu'une station-service.\nPayer une carafe d'eau 4€ lors des repas alors que cela devrait être gratuit. Seule l'eau minérale doit être facturée pas celle en carafe ! Certains soirs, le choix était limité dans le buffet",
+      "positive_text": "La piscine ainsi que les petits-déjeuners en terrasse étaient sympas. La situation de l'hôtel est bonne car le quartier est calme. On peut facilement trouver quelques petits commerces ainsi qu'une station-service.",
+      "negative_text": "Payer une carafe d'eau 4€ lors des repas alors que cela devrait être gratuit. Seule l'eau minérale doit être facturée pas celle en carafe ! Certains soirs, le choix était limité dans le buffet",
+      "published_date": "2025-09-23",
+      "stay_date": "September 2025",
+      "room_name": "Double or Twin Room",
+      "trip_type": "Couple",
+      "author_name": "Stephane",
+      "country": "France",
+      "scraped_date": "2026-03-19",
+      "topics": [
+        {
+          "topic": "commodities",
+          "sentiment": "positive",
+          "detail": "nice pool"
+        },
+        {
+          "topic": "meals",
+          "sentiment": "positive",
+          "detail": "good breakfast terrace"
+        },
+        {
+          "topic": "comfort",
+          "sentiment": "positive",
+          "detail": "quiet location"
+        },
+        {
+          "topic": "cleaning",
+          "sentiment": "negative",
+          "detail": "charged for water"
+        },
+        {
+          "topic": "quality_price",
+          "sentiment": "negative",
+          "detail": "expensive water"
+        }
+      ],
+      "classified": true
+    },
+    {
+      "id": "c04097cb074dbb28",
+      "hotel": "Ananea Castelo Suites Hotel",
+      "source": "booking",
+      "rating": 8.0,
+      "title": "Buen desayuno, poco espacio",
+      "text": "El desayuno muy bueno. El problema es que la sala del comedor era demasiado pequeña para la capacidad del hotel...\nA parte de la capacidad del comedor, faltaba un gimnasio interior. Hay un streeworkout externo pero no siempre es practicable.\n\nNo se podía conectar la televisión al teléfono. La habitación era muy bonita pero pequeña y le faltaba un armario que se pudiera cerrar. \n\nEl precio de las bebidas del bar del hotel eran demasiado caras. Muy por encima del precio del mercado. Sale más a cuenta salir al bar justo al lado del hotel.",
+      "positive_text": "El desayuno muy bueno. El problema es que la sala del comedor era demasiado pequeña para la capacidad del hotel...",
+      "negative_text": "A parte de la capacidad del comedor, faltaba un gimnasio interior. Hay un streeworkout externo pero no siempre es practicable.\n\nNo se podía conectar la televisión al teléfono. La habitación era muy bonita pero pequeña y le faltaba un armario que se pudiera cerrar. \n\nEl precio de las bebidas del bar del hotel eran demasiado caras. Muy por encima del precio del mercado. Sale más a cuenta salir al bar justo al lado del hotel.",
+      "published_date": "2025-09-22",
+      "stay_date": "September 2025",
+      "room_name": "Double or Twin Room",
+      "trip_type": "Couple",
+      "author_name": "V",
+      "country": "Vasili",
+      "scraped_date": "2026-03-19",
+      "topics": [
+        {
+          "topic": "meals",
+          "sentiment": "positive",
+          "detail": "good breakfast"
+        },
+        {
+          "topic": "commodities",
+          "sentiment": "negative",
+          "detail": "small dining room"
+        },
+        {
+          "topic": "employees",
+          "sentiment": "negative",
+          "detail": "television issues"
+        },
+        {
+          "topic": "comfort",
+          "sentiment": "negative",
+          "detail": "small room"
+        },
+        {
+          "topic": "quality_price",
+          "sentiment": "negative",
+          "detail": "expensive bar drinks"
+        }
+      ],
+      "classified": true
+    },
+    {
+      "id": "f46ff02045a13a47",
+      "hotel": "Ananea Castelo Suites Hotel",
+      "source": "booking",
+      "rating": 8.0,
+      "title": "Hotel muy lindo! Aun muy nuevo con algunas cosas a solucionar",
+      "text": "Muy nueva\nTodavia muchas cosas a organizar",
+      "positive_text": "Muy nueva",
+      "negative_text": "Todavia muchas cosas a organizar",
+      "published_date": "2025-09-22",
+      "stay_date": "September 2025",
+      "room_name": "Premium Suite",
+      "trip_type": "Couple",
+      "author_name": "Paola",
+      "country": "Argentina",
+      "scraped_date": "2026-03-19",
+      "topics": [
+        {
+          "topic": "commodities",
+          "sentiment": "positive",
+          "detail": "new hotel"
+        }
+      ],
+      "classified": true
+    },
+    {
+      "id": "12aebc6fe5165fa9",
+      "hotel": "Ananea Castelo Suites Hotel",
+      "source": "booking",
+      "rating": 8.0,
+      "title": "Very good",
+      "text": "Nous avons séjourné dans ce magnifique hôtel pendant 9j avec un ami et c’était une aventure tout simplement exceptionnel, l’hôtel était splendide la piscine était très belle et le petit déjeuner était copieux pour le coup. Le personnel était très chaleureux et a l’écoute tout particulièrement Mélissa avec qui nous avons beaucoup échanges car elle parlait français. C’était une très belle expérience et nous avons beaucoup apprécié cet hôtel. Je recommande.\nLe spa et la salle de sport étaient fermés.",
+      "positive_text": "Nous avons séjourné dans ce magnifique hôtel pendant 9j avec un ami et c’était une aventure tout simplement exceptionnel, l’hôtel était splendide la piscine était très belle et le petit déjeuner était copieux pour le coup. Le personnel était très chaleureux et a l’écoute tout particulièrement Mélissa avec qui nous avons beaucoup échanges car elle parlait français. C’était une très belle expérience et nous avons beaucoup apprécié cet hôtel. Je recommande.",
+      "negative_text": "Le spa et la salle de sport étaient fermés.",
+      "published_date": "2025-09-22",
+      "stay_date": "September 2025",
+      "room_name": "Double or Twin Room",
+      "trip_type": "Group",
+      "author_name": "Moussa",
+      "country": "France",
+      "scraped_date": "2026-03-19",
+      "topics": [
+        {
+          "topic": "commodities",
+          "sentiment": "positive",
+          "detail": "magnificent hotel"
+        },
+        {
+          "topic": "comfort",
+          "sentiment": "positive",
+          "detail": "beautiful pool"
+        },
+        {
+          "topic": "meals",
+          "sentiment": "positive",
+          "detail": "abundant breakfast"
+        },
+        {
+          "topic": "employees",
+          "sentiment": "positive",
+          "detail": "warm staff"
+        },
+        {
+          "topic": "return",
+          "sentiment": "positive",
+          "detail": "recommend hotel"
+        },
+        {
+          "topic": "commodities",
+          "sentiment": "negative",
+          "detail": "spa closed"
+        }
+      ],
+      "classified": true
+    },
+    {
+      "id": "b730a2bb9df95f20",
       "hotel": "Ananea Castelo Suites Hotel",
       "source": "booking",
       "rating": 8.0,
@@ -486,15 +1434,15 @@
       "published_date": "2025-09-22",
       "stay_date": "September 2025",
       "room_name": "Double or Twin Room",
-      "traveler_type": "Couple",
-      "author_name": "Jean-marie United Kingdom",
-      "country": "",
-      "scraped_date": "2026-03-12",
+      "trip_type": "Couple",
+      "author_name": "Jean-marie",
+      "country": "United Kingdom",
+      "scraped_date": "2026-03-19",
       "topics": [
         {
           "topic": "employees",
           "sentiment": "positive",
-          "detail": "nice and friendly staff"
+          "detail": "nice staff"
         },
         {
           "topic": "meals",
@@ -503,34 +1451,54 @@
         },
         {
           "topic": "commodities",
-          "sentiment": "positive",
-          "detail": "rooftop"
+          "sentiment": "negative",
+          "detail": "cold pools"
         },
         {
           "topic": "quality_price",
           "sentiment": "negative",
-          "detail": "expensive swimming pools"
+          "detail": "expensive food and drinks"
         },
         {
-          "topic": "meals",
+          "topic": "comfort",
           "sentiment": "negative",
-          "detail": "overpriced food and drinks around the pool"
-        },
-        {
-          "topic": "employees",
-          "sentiment": "negative",
-          "detail": "no customers ordering any"
-        },
-        {
-          "topic": "commodities",
-          "sentiment": "negative",
-          "detail": "hearing noise from other bedrooms"
+          "detail": "noise from other bedrooms"
         }
       ],
       "classified": true
     },
     {
-      "id": "a14b387cdeb60344",
+      "id": "3a1d51ae7a71e3f2",
+      "hotel": "Ananea Castelo Suites Hotel",
+      "source": "booking",
+      "rating": 8.0,
+      "title": "Very good",
+      "text": "snidane byly super, pokoje nove moderni\nje to hotel, ktery je jeste trochu ne v top stavu, jak tam stale neco dodelavaji. u nas nefungovali zasuvky pod umyvadlem",
+      "positive_text": "snidane byly super, pokoje nove moderni",
+      "negative_text": "je to hotel, ktery je jeste trochu ne v top stavu, jak tam stale neco dodelavaji. u nas nefungovali zasuvky pod umyvadlem",
+      "published_date": "2025-09-20",
+      "stay_date": "September 2025",
+      "room_name": "Double or Twin Room",
+      "trip_type": "Group",
+      "author_name": "I",
+      "country": "Iveta",
+      "scraped_date": "2026-03-19",
+      "topics": [
+        {
+          "topic": "commodities",
+          "sentiment": "positive",
+          "detail": "new modern rooms"
+        },
+        {
+          "topic": "cleaning",
+          "sentiment": "negative",
+          "detail": "toiletries not working"
+        }
+      ],
+      "classified": true
+    },
+    {
+      "id": "b942d4c6c222f250",
       "hotel": "Ananea Castelo Suites Hotel",
       "source": "booking",
       "rating": 8.0,
@@ -541,10 +1509,10 @@
       "published_date": "2025-09-20",
       "stay_date": "September 2025",
       "room_name": "Double or Twin Room",
-      "traveler_type": "Couple",
-      "author_name": "Christy Ireland",
-      "country": "",
-      "scraped_date": "2026-03-12",
+      "trip_type": "Couple",
+      "author_name": "Christy",
+      "country": "Ireland",
+      "scraped_date": "2026-03-19",
       "topics": [
         {
           "topic": "meals",
@@ -552,25 +1520,60 @@
           "detail": "good breakfast food"
         },
         {
+          "topic": "comfort",
+          "sentiment": "negative",
+          "detail": "small location"
+        },
+        {
           "topic": "commodities",
           "sentiment": "positive",
           "detail": "nice swimming pool"
         },
         {
-          "topic": "employees",
+          "topic": "commodities",
           "sentiment": "negative",
-          "detail": "slow service of young staff"
-        },
-        {
-          "topic": "meals",
-          "sentiment": "negative",
-          "detail": "needed bigger breakfast room"
+          "detail": "slow service for lunch"
         }
       ],
       "classified": true
     },
     {
-      "id": "0d00ada55cef2a1d",
+      "id": "9775f77fbf1c434a",
+      "hotel": "Ananea Castelo Suites Hotel",
+      "source": "booking",
+      "rating": 9.0,
+      "title": "Pause balnéaire après 2 semaines de circuit.",
+      "text": "La chambre vaste et bien équipée, le petit déjeuner très varié.\nLa salle de bain non séparée de la chambre.",
+      "positive_text": "La chambre vaste et bien équipée, le petit déjeuner très varié.",
+      "negative_text": "La salle de bain non séparée de la chambre.",
+      "published_date": "2025-09-18",
+      "stay_date": "September 2025",
+      "room_name": "One-Bedroom Suite",
+      "trip_type": "Couple",
+      "author_name": "Fanny",
+      "country": "France",
+      "scraped_date": "2026-03-19",
+      "topics": [
+        {
+          "topic": "comfort",
+          "sentiment": "positive",
+          "detail": "vast room"
+        },
+        {
+          "topic": "meals",
+          "sentiment": "positive",
+          "detail": "varied breakfast"
+        },
+        {
+          "topic": "cleaning",
+          "sentiment": "negative",
+          "detail": "non-separate bathroom"
+        }
+      ],
+      "classified": true
+    },
+    {
+      "id": "90d080fc0476fccf",
       "hotel": "Ananea Castelo Suites Hotel",
       "source": "booking",
       "rating": 9.0,
@@ -581,10 +1584,10 @@
       "published_date": "2025-09-14",
       "stay_date": "September 2025",
       "room_name": "Double or Twin Room",
-      "traveler_type": "Couple",
-      "author_name": "B Bartosz Poland",
-      "country": "",
-      "scraped_date": "2026-03-12",
+      "trip_type": "Couple",
+      "author_name": "B",
+      "country": "Bartosz",
+      "scraped_date": "2026-03-19",
       "topics": [
         {
           "topic": "commodities",
@@ -604,1553 +1607,18 @@
         {
           "topic": "employees",
           "sentiment": "negative",
-          "detail": "learning to manage"
-        },
-        {
-          "topic": "commodities",
-          "sentiment": "negative",
-          "detail": "some things not finished"
-        }
-      ],
-      "classified": true
-    },
-    {
-      "id": "93d39359a244ac75",
-      "hotel": "Ananea Castelo Suites Hotel",
-      "source": "booking",
-      "rating": 10.0,
-      "title": "Beautiful new hotel",
-      "text": "Everything!\nBeautiful new hotel lovely rooms and decor fantastic staff\nNothing to dislike about this hotel",
-      "positive_text": "Everything!\nBeautiful new hotel lovely rooms and decor fantastic staff",
-      "negative_text": "Nothing to dislike about this hotel",
-      "published_date": "2025-09-14",
-      "stay_date": "September 2025",
-      "room_name": "Double or Twin Room",
-      "traveler_type": "Couple",
-      "author_name": "M Marie United Kingdom",
-      "country": "",
-      "scraped_date": "2026-03-12",
-      "topics": [
-        {
-          "topic": "employees",
-          "sentiment": "positive",
-          "detail": "fantastic staff"
-        },
-        {
-          "topic": "commodities",
-          "sentiment": "positive",
-          "detail": "lovely rooms and decor"
-        }
-      ],
-      "classified": true
-    },
-    {
-      "id": "698529b88245d9fe",
-      "hotel": "Ananea Castelo Suites Hotel",
-      "source": "booking",
-      "rating": 10.0,
-      "title": "A lovely, relaxing atmosphere provided by the excellent hardworking staff.",
-      "text": "The excellent staff and overall ambience was exceptional. The beds were extremely comfortable and the rooms were kept in tip top condition. There was always plenty of thickly padded sunbeds available with lots of options for sun or shade. Would definitely stay here again.\nVery expensive gin and tonics!",
-      "positive_text": "The excellent staff and overall ambience was exceptional. The beds were extremely comfortable and the rooms were kept in tip top condition. There was always plenty of thickly padded sunbeds available with lots of options for sun or shade. Would definitely stay here again.",
-      "negative_text": "Very expensive gin and tonics!",
-      "published_date": "2025-09-11",
-      "stay_date": "September 2025",
-      "room_name": "One-Bedroom Suite",
-      "traveler_type": "Couple",
-      "author_name": "J Jennifer United Kingdom",
-      "country": "",
-      "scraped_date": "2026-03-12",
-      "topics": [
-        {
-          "topic": "employees",
-          "sentiment": "positive",
-          "detail": "excellent staff"
-        },
-        {
-          "topic": "comfort",
-          "sentiment": "positive",
-          "detail": "extremely comfortable beds"
-        },
-        {
-          "topic": "cleaning",
-          "sentiment": "positive",
-          "detail": "rooms kept in tip top condition"
-        },
-        {
-          "topic": "commodities",
-          "sentiment": "positive",
-          "detail": "plenty of sunbeds"
-        },
-        {
-          "topic": "return",
-          "sentiment": "positive",
-          "detail": "would stay again"
-        },
-        {
-          "topic": "meals",
-          "sentiment": "negative",
-          "detail": "very expensive gin and tonics"
-        }
-      ],
-      "classified": true
-    },
-    {
-      "id": "f63ffc6d572d956d",
-      "hotel": "Ananea Castelo Suites Hotel",
-      "source": "booking",
-      "rating": 8.0,
-      "title": "Great stay and relaxing",
-      "text": "Very nice pool area and breakfast was really varied and good quality. Bedroom are really nice and confortable\nThere is no fitness gym yet it is still under construction and one evening we did not get hot water for the shower",
-      "positive_text": "Very nice pool area and breakfast was really varied and good quality. Bedroom are really nice and confortable",
-      "negative_text": "There is no fitness gym yet it is still under construction and one evening we did not get hot water for the shower",
-      "published_date": "2025-09-07",
-      "stay_date": "September 2025",
-      "room_name": "Family Suite",
-      "traveler_type": "Group",
-      "author_name": "Magali France",
-      "country": "",
-      "scraped_date": "2026-03-12",
-      "topics": [
-        {
-          "topic": "commodities",
-          "sentiment": "positive",
-          "detail": "nice pool area"
-        },
-        {
-          "topic": "meals",
-          "sentiment": "positive",
-          "detail": "varied and good quality breakfast"
-        },
-        {
-          "topic": "comfort",
-          "sentiment": "positive",
-          "detail": "nice and comfortable bedrooms"
-        },
-        {
-          "topic": "commodities",
-          "sentiment": "negative",
-          "detail": "no fitness gym (under construction)"
-        }
-      ],
-      "classified": true
-    },
-    {
-      "id": "06989bed984982bd",
-      "hotel": "Ananea Castelo Suites Hotel",
-      "source": "booking",
-      "rating": 7.0,
-      "title": "We still do not know the hotel",
-      "text": "We did not get to know the place because it was not finish so we were sent to another hotel.\nWe did not get to know the place because it was not finish so we were sent to another hotel.",
-      "positive_text": "We did not get to know the place because it was not finish so we were sent to another hotel.",
-      "negative_text": "We did not get to know the place because it was not finish so we were sent to another hotel.",
-      "published_date": "2025-08-15",
-      "stay_date": "July 2025",
-      "room_name": "Double or Twin Room",
-      "traveler_type": "Group",
-      "author_name": "Camilo Colombia",
-      "country": "",
-      "scraped_date": "2026-03-12",
-      "topics": [
-        {
-          "topic": "commodities",
-          "sentiment": "negative",
-          "detail": "unfinished hotel"
-        }
-      ],
-      "classified": true
-    },
-    {
-      "id": "ede21a3fdd046dae",
-      "hotel": "Ananea Castelo Suites Hotel",
-      "source": "booking",
-      "rating": 7.0,
-      "title": "Still do not know the hotel",
-      "text": "We did not get to know the place because it was not finish so we were sent to another hotel.\nWe did not get to know the place because it was not finish so we were sent to another hotel.",
-      "positive_text": "We did not get to know the place because it was not finish so we were sent to another hotel.",
-      "negative_text": "We did not get to know the place because it was not finish so we were sent to another hotel.",
-      "published_date": "2025-08-15",
-      "stay_date": "July 2025",
-      "room_name": "Double or Twin Room",
-      "traveler_type": "Group",
-      "author_name": "Camilo Colombia",
-      "country": "",
-      "scraped_date": "2026-03-12",
-      "topics": [
-        {
-          "topic": "commodities",
-          "sentiment": "negative",
-          "detail": "unfinished hotel"
-        }
-      ],
-      "classified": true
-    },
-    {
-      "id": "04a6a80a3186ba3f",
-      "hotel": "Ananea Castelo Suites Hotel",
-      "source": "booking",
-      "rating": 10.0,
-      "title": "Excelente estadia",
-      "text": "Muito confortável , hotel novo.\nSinceramente não houve nada que não gostasse.",
-      "positive_text": "Muito confortável , hotel novo.",
-      "negative_text": "Sinceramente não houve nada que não gostasse.",
-      "published_date": "2026-01-02",
-      "stay_date": "January 2026",
-      "room_name": "Double or Twin Room",
-      "traveler_type": "Couple",
-      "author_name": "Lia Portugal",
-      "country": "",
-      "scraped_date": "2026-03-12",
-      "topics": [
-        {
-          "topic": "comfort",
-          "sentiment": "positive",
-          "detail": "very comfortable"
-        }
-      ],
-      "classified": true
-    },
-    {
-      "id": "767ce9b967203f51",
-      "hotel": "Ananea Castelo Suites Hotel",
-      "source": "booking",
-      "rating": 10.0,
-      "title": "TUDO 5 ESTRELAS, E BEM MERECIDAS !",
-      "text": "Tudo maravilhoso. Desde a receção onde foram 5 estrelas, ao quarto que mais parecia um luxo, a equipa de housekeeping foi maravilhosa e sempre muito prestáveis, ao restaurante onde o pequeno-almoço foi divinal, ao rooftop onde pude apreciar variadissimos fogos de artifício em toda a sua extensão. Tudo foi Espectacular.  Foi um final de ano memorável. Obrigado a toda a equipa. Os meus parabéns.\nN/A",
-      "positive_text": "Tudo maravilhoso. Desde a receção onde foram 5 estrelas, ao quarto que mais parecia um luxo, a equipa de housekeeping foi maravilhosa e sempre muito prestáveis, ao restaurante onde o pequeno-almoço foi divinal, ao rooftop onde pude apreciar variadissimos fogos de artifício em toda a sua extensão. Tudo foi Espectacular.  Foi um final de ano memorável. Obrigado a toda a equipa. Os meus parabéns.",
-      "negative_text": "N/A",
-      "published_date": "2026-01-01",
-      "stay_date": "January 2026",
-      "room_name": "Double or Twin Room",
-      "traveler_type": "Couple",
-      "author_name": "J Jorge Portugal",
-      "country": "",
-      "scraped_date": "2026-03-12",
-      "topics": [
-        {
-          "topic": "employees",
-          "sentiment": "positive",
-          "detail": "excellent reception"
-        },
-        {
-          "topic": "comfort",
-          "sentiment": "positive",
-          "detail": "luxurious room"
-        },
-        {
-          "topic": "cleaning",
-          "sentiment": "positive",
-          "detail": "marvelous housekeeping"
-        },
-        {
-          "topic": "meals",
-          "sentiment": "positive",
-          "detail": "divine breakfast"
-        },
-        {
-          "topic": "return",
-          "sentiment": "positive",
-          "detail": "memorable end of year"
-        }
-      ],
-      "classified": true
-    },
-    {
-      "id": "db4f7536dc494af5",
-      "hotel": "Ananea Castelo Suites Hotel",
-      "source": "booking",
-      "rating": 10.0,
-      "title": "Foi uma noite especial",
-      "text": "o quarto o pequeno almoço e a simpatia dos funcionários",
-      "positive_text": "o quarto o pequeno almoço e a simpatia dos funcionários",
-      "negative_text": "",
-      "published_date": "2026-01-01",
-      "stay_date": "January 2026",
-      "room_name": "Double or Twin Room",
-      "traveler_type": "Couple",
-      "author_name": "T Tiago Portugal",
-      "country": "",
-      "scraped_date": "2026-03-12",
-      "topics": [
-        {
-          "topic": "commodities",
-          "sentiment": "positive",
-          "detail": "small breakfast"
-        },
-        {
-          "topic": "employees",
-          "sentiment": "positive",
-          "detail": "friendly staff"
-        },
-        {
-          "topic": "comfort",
-          "sentiment": "positive",
-          "detail": "nice room"
-        }
-      ],
-      "classified": true
-    },
-    {
-      "id": "29b2a4906aca49ba",
-      "hotel": "Ananea Castelo Suites Hotel",
-      "source": "booking",
-      "rating": 10.0,
-      "title": "Exceptional",
-      "text": "Staff prestável. Quartos limpinhos e super confortáveis\nNada de mal a apontar.",
-      "positive_text": "Staff prestável. Quartos limpinhos e super confortáveis",
-      "negative_text": "Nada de mal a apontar.",
-      "published_date": "2026-01-01",
-      "stay_date": "January 2026",
-      "room_name": "Double or Twin Room",
-      "traveler_type": "Couple",
-      "author_name": "Leonor Portugal",
-      "country": "",
-      "scraped_date": "2026-03-12",
-      "topics": [
-        {
-          "topic": "employees",
-          "sentiment": "positive",
-          "detail": "prestavel staff"
-        },
-        {
-          "topic": "cleaning",
-          "sentiment": "positive",
-          "detail": "limpinhos rooms"
-        },
-        {
-          "topic": "comfort",
-          "sentiment": "positive",
-          "detail": "super confortáveis rooms"
-        }
-      ],
-      "classified": true
-    },
-    {
-      "id": "dc0cd8540a462f77",
-      "hotel": "Ananea Castelo Suites Hotel",
-      "source": "booking",
-      "rating": 10.0,
-      "title": "Exceptional",
-      "text": "Das schöne, moderne Hotel - in seiner Ausstattung ist top!\nAber das freundliche, hilfsbereite und sympathische Personal ist einfach unschlagbar!",
-      "positive_text": "Das schöne, moderne Hotel - in seiner Ausstattung ist top!\nAber das freundliche, hilfsbereite und sympathische Personal ist einfach unschlagbar!",
-      "negative_text": "",
-      "published_date": "2025-12-08",
-      "stay_date": "December 2025",
-      "room_name": "Double or Twin Room",
-      "traveler_type": "Group",
-      "author_name": "Laura Liechtenstein",
-      "country": "",
-      "scraped_date": "2026-03-12",
-      "topics": [
-        {
-          "topic": "commodities",
-          "sentiment": "positive",
-          "detail": "well-equipped hotel"
-        },
-        {
-          "topic": "employees",
-          "sentiment": "positive",
-          "detail": "friendly, helpful and charming staff"
-        }
-      ],
-      "classified": true
-    },
-    {
-      "id": "5ceee212067ad1ff",
-      "hotel": "Ananea Castelo Suites Hotel",
-      "source": "booking",
-      "rating": 10.0,
-      "title": "Wspomnienia z pobytu zostana na zawsze i mam nadzieje na powrot 🙂",
-      "text": "Absolutnie najlepszy hotel 🤍🤍🤍Pyszne śniadania, jakościowe składniki, empatyczna obsługa.\nWykończenie pokoi, widok , kosmetyki.",
-      "positive_text": "Absolutnie najlepszy hotel 🤍🤍🤍Pyszne śniadania, jakościowe składniki, empatyczna obsługa.",
-      "negative_text": "Wykończenie pokoi, widok , kosmetyki.",
-      "published_date": "2025-11-20",
-      "stay_date": "November 2025",
-      "room_name": "Double or Twin Room",
-      "traveler_type": "Couple",
-      "author_name": "Aleksandra Poland",
-      "country": "",
-      "scraped_date": "2026-03-12",
-      "topics": [
-        {
-          "topic": "employees",
-          "sentiment": "positive",
-          "detail": "empathetic service"
-        },
-        {
-          "topic": "meals",
-          "sentiment": "positive",
-          "detail": "nice breakfast"
-        },
-        {
-          "topic": "commodities",
-          "sentiment": "positive",
-          "detail": "quality ingredients"
-        },
-        {
-          "topic": "comfort",
-          "sentiment": "negative",
-          "detail": "room finishing"
-        },
-        {
-          "topic": "cleaning",
-          "sentiment": "negative",
-          "detail": "cosmetics"
-        }
-      ],
-      "classified": true
-    },
-    {
-      "id": "0866a3293468efaa",
-      "hotel": "Ananea Castelo Suites Hotel",
-      "source": "booking",
-      "rating": 9.0,
-      "title": "Perfekter Aufenthalt: tolles Zimmer, traumhafte Pools, top Personal, sehr empfehlenswert!",
-      "text": "Es hat einfach alles perfekt gepasst – vom schönen Zimmer über das leckere Frühstück bis hin zur gesamten Hotelanlage. Das Personal war durchweg sehr freundlich und zuvorkommend. Die Poolanlage ist traumhaft, besonders der Rooftop-Pool ist ein echtes Highlight! Von den oberen Zimmern hat man sogar einen wunderbaren Meerblick – einfach herrlich. Auch das Dinner war ausgezeichnet, und das Personal hat aufmerksam auf Allergene Rücksicht genommen. Rundum ein absolut empfehlenswertes Hotel!\n-",
-      "positive_text": "Es hat einfach alles perfekt gepasst – vom schönen Zimmer über das leckere Frühstück bis hin zur gesamten Hotelanlage. Das Personal war durchweg sehr freundlich und zuvorkommend. Die Poolanlage ist traumhaft, besonders der Rooftop-Pool ist ein echtes Highlight! Von den oberen Zimmern hat man sogar einen wunderbaren Meerblick – einfach herrlich. Auch das Dinner war ausgezeichnet, und das Personal hat aufmerksam auf Allergene Rücksicht genommen. Rundum ein absolut empfehlenswertes Hotel!",
-      "negative_text": "-",
-      "published_date": "2025-11-11",
-      "stay_date": "November 2025",
-      "room_name": "Double or Twin Room",
-      "traveler_type": "Couple",
-      "author_name": "Anna-lena Austria",
-      "country": "",
-      "scraped_date": "2026-03-12",
-      "topics": [
-        {
-          "topic": "commodities",
-          "sentiment": "positive",
-          "detail": "beautiful hotel facility"
-        },
-        {
-          "topic": "comfort",
-          "sentiment": "positive",
-          "detail": "nice room"
-        },
-        {
-          "topic": "meals",
-          "sentiment": "positive",
-          "detail": "good breakfast, dinner"
-        },
-        {
-          "topic": "employees",
-          "sentiment": "positive",
-          "detail": "friendly and attentive staff"
-        }
-      ],
-      "classified": true
-    },
-    {
-      "id": "3893156b8d4add4e",
-      "hotel": "Ananea Castelo Suites Hotel",
-      "source": "booking",
-      "rating": 10.0,
-      "title": "Exceptional",
-      "text": "Czyściutko, przepyszne śniadania, bardzo miła i pomocna obsługa! Miejsce warte powrotu :)",
-      "positive_text": "Czyściutko, przepyszne śniadania, bardzo miła i pomocna obsługa! Miejsce warte powrotu :)",
-      "negative_text": "",
-      "published_date": "2025-11-03",
-      "stay_date": "October 2025",
-      "room_name": "Double or Twin Room",
-      "traveler_type": "Couple",
-      "author_name": "M Marta Poland",
-      "country": "",
-      "scraped_date": "2026-03-12",
-      "topics": [
-        {
-          "topic": "cleaning",
-          "sentiment": "positive",
-          "detail": "spotless"
-        },
-        {
-          "topic": "meals",
-          "sentiment": "positive",
-          "detail": "delicious breakfast"
-        },
-        {
-          "topic": "employees",
-          "sentiment": "positive",
-          "detail": "friendly and helpful staff"
-        },
-        {
-          "topic": "return",
-          "sentiment": "positive",
-          "detail": "worth returning"
-        }
-      ],
-      "classified": true
-    },
-    {
-      "id": "9e9f26ce499b36c9",
-      "hotel": "Ananea Castelo Suites Hotel",
-      "source": "booking",
-      "rating": 9.0,
-      "title": "Excellent séjour en algarve dans un hôtel neuf",
-      "text": "Suite magnifique avec grande terrasse \nCalme \nPropreté de la chambre,  peignoirs changes tous jours \nPetit déjeuner très complet et bon \nPersonnel très agréable\nBon emplacement pour visiter l’Algarve et proche de l’animation d’albufeira\nRien de bien important mais un miroir de courtoisie dans la salle de bain serait appréciable pour les personnes comme nous qui ne voyons plus très bien",
-      "positive_text": "Suite magnifique avec grande terrasse \nCalme \nPropreté de la chambre,  peignoirs changes tous jours \nPetit déjeuner très complet et bon \nPersonnel très agréable\nBon emplacement pour visiter l’Algarve et proche de l’animation d’albufeira",
-      "negative_text": "Rien de bien important mais un miroir de courtoisie dans la salle de bain serait appréciable pour les personnes comme nous qui ne voyons plus très bien",
-      "published_date": "2025-10-22",
-      "stay_date": "October 2025",
-      "room_name": "Premium Suite",
-      "traveler_type": "Couple",
-      "author_name": "F Fabienne France",
-      "country": "",
-      "scraped_date": "2026-03-12",
-      "topics": [
-        {
-          "topic": "commodities",
-          "sentiment": "positive",
-          "detail": "large terrace"
-        },
-        {
-          "topic": "comfort",
-          "sentiment": "positive",
-          "detail": "nice suite"
-        },
-        {
-          "topic": "cleaning",
-          "sentiment": "positive",
-          "detail": "clean room"
-        },
-        {
-          "topic": "meals",
-          "sentiment": "positive",
-          "detail": "good breakfast"
-        },
-        {
-          "topic": "employees",
-          "sentiment": "positive",
-          "detail": "agreeable staff"
-        },
-        {
-          "topic": "commodities",
-          "sentiment": "negative",
-          "detail": "missing courtesy mirror in bathroom for visually impaired"
-        }
-      ],
-      "classified": true
-    },
-    {
-      "id": "0a287cbf8d1aa276",
-      "hotel": "Ananea Castelo Suites Hotel",
-      "source": "booking",
-      "rating": 10.0,
-      "title": "Super séjour",
-      "text": "Très grande chambre, excellent petit déjeuner, places de parc à disposition, service impeccable et de très bons conseils pour des activités, visites, restaurants, etc.\nIl manque d'étagères et zones de rangements pour les vêtements",
-      "positive_text": "Très grande chambre, excellent petit déjeuner, places de parc à disposition, service impeccable et de très bons conseils pour des activités, visites, restaurants, etc.",
-      "negative_text": "Il manque d'étagères et zones de rangements pour les vêtements",
-      "published_date": "2025-10-20",
-      "stay_date": "October 2025",
-      "room_name": "Double or Twin Room",
-      "traveler_type": "Solo traveller",
-      "author_name": "Cassandra Switzerland",
-      "country": "",
-      "scraped_date": "2026-03-12",
-      "topics": [
-        {
-          "topic": "commodities",
-          "sentiment": "positive",
-          "detail": "large room"
-        },
-        {
-          "topic": "meals",
-          "sentiment": "positive",
-          "detail": "good breakfast"
-        },
-        {
-          "topic": "employees",
-          "sentiment": "positive",
-          "detail": "impeccable service and good advice"
-        },
-        {
-          "topic": "commodities",
-          "sentiment": "negative",
-          "detail": "lack of wardrobe storage"
-        }
-      ],
-      "classified": true
-    },
-    {
-      "id": "8b974b2de3c11c12",
-      "hotel": "Ananea Castelo Suites Hotel",
-      "source": "booking",
-      "rating": 10.0,
-      "title": "Sehr erholsam",
-      "text": "Es war einfach alles perfekt.\nSchönes neues Hotel mit einer sehr guten Ausstattung .\nDas Personal ist sehr freundlich. \nDie Lage des Hotels ist auch sehr gut. Wenn man ein Auto hat kommt man sehr schnell überall hin.\nNichts auszusetzen",
-      "positive_text": "Es war einfach alles perfekt.\nSchönes neues Hotel mit einer sehr guten Ausstattung .\nDas Personal ist sehr freundlich. \nDie Lage des Hotels ist auch sehr gut. Wenn man ein Auto hat kommt man sehr schnell überall hin.",
-      "negative_text": "Nichts auszusetzen",
-      "published_date": "2025-10-18",
-      "stay_date": "September 2025",
-      "room_name": "Double or Twin Room",
-      "traveler_type": "Couple",
-      "author_name": "Adrian Germany",
-      "country": "",
-      "scraped_date": "2026-03-12",
-      "topics": [
-        {
-          "topic": "commodities",
-          "sentiment": "positive",
-          "detail": "good equipment"
-        },
-        {
-          "topic": "employees",
-          "sentiment": "positive",
-          "detail": "friendly staff"
+          "detail": "staff learning"
         },
         {
           "topic": "quality_price",
           "sentiment": "negative",
-          "detail": "nothing to complain"
+          "detail": "unfinished"
         }
       ],
       "classified": true
     },
     {
-      "id": "933a96170c8eb30a",
-      "hotel": "Ananea Castelo Suites Hotel",
-      "source": "booking",
-      "rating": 9.0,
-      "title": "Superb",
-      "text": "Neues stylisches Hotel, sehr gutes Frühstück und Abendbuffet. Nicht weit von zwei sehr schönen Stränden,  3 Minuten mit dem Mietwagen. Absolute Ruhe zur Poolseite. Wir haben es genossen. Dachpool mit Aussicht aufs Meer.  Man kann den Sonnenuntergang sehen. Für uns zwei wunderschöne Tage, danke dafür.\nDas Personal ist noch etwas unsicher und hat leichte Verständigungsprobleme, aber trotzdem sehr um jeden Gast bemüht.\nWirklich schade war, dass man die Bar am dachpool zum Sonnenuntergang nicht nutzt. Etwas Loungemusik und schöne Getränke würden die Dachebene zu einem beliebten Treffpunkt der Gäste machen und den Umsatz ankurbeln. Aber das soll keine Kritik sein , nur ein Vorschlag.",
-      "positive_text": "Neues stylisches Hotel, sehr gutes Frühstück und Abendbuffet. Nicht weit von zwei sehr schönen Stränden,  3 Minuten mit dem Mietwagen. Absolute Ruhe zur Poolseite. Wir haben es genossen. Dachpool mit Aussicht aufs Meer.  Man kann den Sonnenuntergang sehen. Für uns zwei wunderschöne Tage, danke dafür.",
-      "negative_text": "Das Personal ist noch etwas unsicher und hat leichte Verständigungsprobleme, aber trotzdem sehr um jeden Gast bemüht.\nWirklich schade war, dass man die Bar am dachpool zum Sonnenuntergang nicht nutzt. Etwas Loungemusik und schöne Getränke würden die Dachebene zu einem beliebten Treffpunkt der Gäste machen und den Umsatz ankurbeln. Aber das soll keine Kritik sein , nur ein Vorschlag.",
-      "published_date": "2025-10-10",
-      "stay_date": "October 2025",
-      "room_name": "Double or Twin Room",
-      "traveler_type": "Couple",
-      "author_name": "Astrid Germany",
-      "country": "",
-      "scraped_date": "2026-03-12",
-      "topics": [
-        {
-          "topic": "commodities",
-          "sentiment": "positive",
-          "detail": "roof pool"
-        },
-        {
-          "topic": "meals",
-          "sentiment": "positive",
-          "detail": "good breakfast and evening buffet"
-        },
-        {
-          "topic": "comfort",
-          "sentiment": "positive",
-          "detail": "peaceful pool side"
-        },
-        {
-          "topic": "employees",
-          "sentiment": "negative",
-          "detail": "unsure staff with communication issues"
-        },
-        {
-          "topic": "commodities",
-          "sentiment": "negative",
-          "detail": "no music at rooftop bar"
-        }
-      ],
-      "classified": true
-    },
-    {
-      "id": "e17f2e920ccbf0c8",
-      "hotel": "Ananea Castelo Suites Hotel",
-      "source": "booking",
-      "rating": 9.0,
-      "title": "Superb",
-      "text": "Struttura nuova con camere molto accoglienti\nAcqua delle piscina troppo fredda",
-      "positive_text": "Struttura nuova con camere molto accoglienti",
-      "negative_text": "Acqua delle piscina troppo fredda",
-      "published_date": "2025-10-08",
-      "stay_date": "October 2025",
-      "room_name": "One-Bedroom Suite",
-      "traveler_type": "Couple",
-      "author_name": "Riccardo Italy",
-      "country": "",
-      "scraped_date": "2026-03-12",
-      "topics": [
-        {
-          "topic": "commodities",
-          "sentiment": "positive",
-          "detail": "new structure"
-        },
-        {
-          "topic": "comfort",
-          "sentiment": "positive",
-          "detail": "welcoming rooms"
-        },
-        {
-          "topic": "commodities",
-          "sentiment": "negative",
-          "detail": "cold pool water"
-        }
-      ],
-      "classified": true
-    },
-    {
-      "id": "f1ff2859d79d6b58",
-      "hotel": "Ananea Castelo Suites Hotel",
-      "source": "booking",
-      "rating": 9.0,
-      "title": "Traumhaftes Hotel, wir kommen auf jeden Fall wieder!",
-      "text": "Ganz neues, sehr gepflegtes & sauberes Hotel. Tolle Dachterasse zum sonnen mit Infinity Pool, junges sehr freundliches und zuvorkommendes Personal, wunderschöne Zimmer mit Rituals-Pflegeprodukten & gemütlichem Bett :)\nLeider kein deutsches Fernsehen oder streamen möglich (was ich mir von einem Hotel dieser Art auf jeden Fall erwarte).Frühstück könnte abwechslungsreicher gestaltet werden & mehrere Tische draußen zum Essen wären wünschenswert. Da das Hotel noch nicht ganz fertig ist, waren noch kleine Bauarbeiten. Ein Auto ist empfehlenswert.",
-      "positive_text": "Ganz neues, sehr gepflegtes & sauberes Hotel. Tolle Dachterasse zum sonnen mit Infinity Pool, junges sehr freundliches und zuvorkommendes Personal, wunderschöne Zimmer mit Rituals-Pflegeprodukten & gemütlichem Bett :)",
-      "negative_text": "Leider kein deutsches Fernsehen oder streamen möglich (was ich mir von einem Hotel dieser Art auf jeden Fall erwarte).Frühstück könnte abwechslungsreicher gestaltet werden & mehrere Tische draußen zum Essen wären wünschenswert. Da das Hotel noch nicht ganz fertig ist, waren noch kleine Bauarbeiten. Ein Auto ist empfehlenswert.",
-      "published_date": "2025-10-06",
-      "stay_date": "October 2025",
-      "room_name": "Double or Twin Room",
-      "traveler_type": "Couple",
-      "author_name": "Mirjam Germany",
-      "country": "",
-      "scraped_date": "2026-03-12",
-      "topics": [
-        {
-          "topic": "commodities",
-          "sentiment": "positive",
-          "detail": "new hotel"
-        },
-        {
-          "topic": "employees",
-          "sentiment": "positive",
-          "detail": "friendly & attentive staff"
-        },
-        {
-          "topic": "comfort",
-          "sentiment": "positive",
-          "detail": "nice room"
-        },
-        {
-          "topic": "cleaning",
-          "sentiment": "positive",
-          "detail": "clean & tidy hotel"
-        },
-        {
-          "topic": "meals",
-          "sentiment": "negative",
-          "detail": "limited breakfast variety"
-        },
-        {
-          "topic": "employees",
-          "sentiment": "negative",
-          "detail": "no German TV or streaming"
-        },
-        {
-          "topic": "commodities",
-          "sentiment": "negative",
-          "detail": "ongoing construction"
-        }
-      ],
-      "classified": true
-    },
-    {
-      "id": "ed9307299aac4848",
-      "hotel": "Ananea Castelo Suites Hotel",
-      "source": "booking",
-      "rating": 10.0,
-      "title": "Exceptional",
-      "text": "Lokalizacja obiektu świetna, na uboczu, blisko plaży. Cisza i spokój.\nTrudno wymienić rzeczy które nam nie odpowiadały. Jedyne co czego się można przyczepić to monotonne śniadania, aczkolwiek wszystko co nizbedne było podczas śniadań zapewnione.",
-      "positive_text": "Lokalizacja obiektu świetna, na uboczu, blisko plaży. Cisza i spokój.",
-      "negative_text": "Trudno wymienić rzeczy które nam nie odpowiadały. Jedyne co czego się można przyczepić to monotonne śniadania, aczkolwiek wszystko co nizbedne było podczas śniadań zapewnione.",
-      "published_date": "2025-10-05",
-      "stay_date": "October 2025",
-      "room_name": "Double or Twin Room",
-      "traveler_type": "Couple",
-      "author_name": "Marlena Poland",
-      "country": "",
-      "scraped_date": "2026-03-12",
-      "topics": [
-        {
-          "topic": "comfort",
-          "sentiment": "positive",
-          "detail": "quiet and peaceful"
-        },
-        {
-          "topic": "meals",
-          "sentiment": "negative",
-          "detail": "monotonous breakfast"
-        }
-      ],
-      "classified": true
-    },
-    {
-      "id": "4624a71320ade4ef",
-      "hotel": "Ananea Castelo Suites Hotel",
-      "source": "booking",
-      "rating": 8.0,
-      "title": "Reposant",
-      "text": "La suite sublime, les chaises longues à la piscine super confortables, l’emplacement au calme, les repas très bons et le personnel\nLe fait de devoir payer l’eau du robinet filtrée à 4€ alors qu’on a les mêmes bouteilles incluses au petit dej, le bar du rooftop était fermé, l’eau de la piscine très froide",
-      "positive_text": "La suite sublime, les chaises longues à la piscine super confortables, l’emplacement au calme, les repas très bons et le personnel",
-      "negative_text": "Le fait de devoir payer l’eau du robinet filtrée à 4€ alors qu’on a les mêmes bouteilles incluses au petit dej, le bar du rooftop était fermé, l’eau de la piscine très froide",
-      "published_date": "2025-10-04",
-      "stay_date": "October 2025",
-      "room_name": "Double or Twin Room",
-      "traveler_type": "Solo traveller",
-      "author_name": "A Aurélie Luxembourg",
-      "country": "",
-      "scraped_date": "2026-03-12",
-      "topics": [
-        {
-          "topic": "commodities",
-          "sentiment": "positive",
-          "detail": "comfortable pool chairs"
-        },
-        {
-          "topic": "comfort",
-          "sentiment": "positive",
-          "detail": "sublime suite"
-        },
-        {
-          "topic": "meals",
-          "sentiment": "positive",
-          "detail": "good food"
-        },
-        {
-          "topic": "employees",
-          "sentiment": "positive",
-          "detail": "friendly staff"
-        },
-        {
-          "topic": "quality_price",
-          "sentiment": "negative",
-          "detail": "expensive filtered water"
-        },
-        {
-          "topic": "commodities",
-          "sentiment": "negative",
-          "detail": "closed rooftop bar"
-        }
-      ],
-      "classified": true
-    },
-    {
-      "id": "0d656973eedf2eda",
-      "hotel": "Ananea Castelo Suites Hotel",
-      "source": "booking",
-      "rating": 10.0,
-      "title": "Je recommande sans hésitation !",
-      "text": "Situation zone résidentielle calme. Proximité belles petites plages.\nSuperbe hôtel moderne très récent. Bel espace piscine et roof.\nAccueil et service très professionnels.\nChambres tres confortables et bien équipées.\nRestauration de qualité.\nRas",
-      "positive_text": "Situation zone résidentielle calme. Proximité belles petites plages.\nSuperbe hôtel moderne très récent. Bel espace piscine et roof.\nAccueil et service très professionnels.\nChambres tres confortables et bien équipées.\nRestauration de qualité.",
-      "negative_text": "Ras",
-      "published_date": "2025-09-29",
-      "stay_date": "September 2025",
-      "room_name": "Double or Twin Room",
-      "traveler_type": "Couple",
-      "author_name": "Eric France",
-      "country": "",
-      "scraped_date": "2026-03-12",
-      "topics": [
-        {
-          "topic": "commodities",
-          "sentiment": "positive",
-          "detail": "nice pool and roof"
-        },
-        {
-          "topic": "employees",
-          "sentiment": "positive",
-          "detail": "professional reception and service"
-        },
-        {
-          "topic": "comfort",
-          "sentiment": "positive",
-          "detail": "comfortable rooms well equipped"
-        },
-        {
-          "topic": "meals",
-          "sentiment": "positive",
-          "detail": "good quality food"
-        }
-      ],
-      "classified": true
-    },
-    {
-      "id": "0a3a45994aa0cf21",
-      "hotel": "Ananea Castelo Suites Hotel",
-      "source": "booking",
-      "rating": 8.0,
-      "title": "Buen desayuno, poco espacio",
-      "text": "El desayuno muy bueno. El problema es que la sala del comedor era demasiado pequeña para la capacidad del hotel...\nA parte de la capacidad del comedor, faltaba un gimnasio interior. Hay un streeworkout externo pero no siempre es practicable.\n\nNo se podía conectar la televisión al teléfono. La habitación era muy bonita pero pequeña y le faltaba un armario que se pudiera cerrar. \n\nEl precio de las bebidas del bar del hotel eran demasiado caras. Muy por encima del precio del mercado. Sale más a cuenta salir al bar justo al lado del hotel.",
-      "positive_text": "El desayuno muy bueno. El problema es que la sala del comedor era demasiado pequeña para la capacidad del hotel...",
-      "negative_text": "A parte de la capacidad del comedor, faltaba un gimnasio interior. Hay un streeworkout externo pero no siempre es practicable.\n\nNo se podía conectar la televisión al teléfono. La habitación era muy bonita pero pequeña y le faltaba un armario que se pudiera cerrar. \n\nEl precio de las bebidas del bar del hotel eran demasiado caras. Muy por encima del precio del mercado. Sale más a cuenta salir al bar justo al lado del hotel.",
-      "published_date": "2025-09-22",
-      "stay_date": "September 2025",
-      "room_name": "Double or Twin Room",
-      "traveler_type": "Couple",
-      "author_name": "V Vasili Spain",
-      "country": "",
-      "scraped_date": "2026-03-12",
-      "topics": [
-        {
-          "topic": "meals",
-          "sentiment": "positive",
-          "detail": "good breakfast"
-        },
-        {
-          "topic": "commodities",
-          "sentiment": "negative",
-          "detail": "small dining room"
-        },
-        {
-          "topic": "quality_price",
-          "sentiment": "negative",
-          "detail": "expensive bar drinks"
-        }
-      ],
-      "classified": true
-    },
-    {
-      "id": "b2b5c3fc79d374f7",
-      "hotel": "Ananea Castelo Suites Hotel",
-      "source": "booking",
-      "rating": 8.0,
-      "title": "Hotel muy lindo! Aun muy nuevo con algunas cosas a solucionar",
-      "text": "Muy nueva\nTodavia muchas cosas a organizar",
-      "positive_text": "Muy nueva",
-      "negative_text": "Todavia muchas cosas a organizar",
-      "published_date": "2025-09-22",
-      "stay_date": "September 2025",
-      "room_name": "Premium Suite",
-      "traveler_type": "Couple",
-      "author_name": "Paola Argentina",
-      "country": "",
-      "scraped_date": "2026-03-12",
-      "topics": [
-        {
-          "topic": "commodities",
-          "sentiment": "positive",
-          "detail": "new facilities"
-        },
-        {
-          "topic": "cleaning",
-          "sentiment": "negative",
-          "detail": "still many things to organize"
-        }
-      ],
-      "classified": true
-    },
-    {
-      "id": "d59da7364c2a2b04",
-      "hotel": "Ananea Castelo Suites Hotel",
-      "source": "booking",
-      "rating": 8.0,
-      "title": "Very good",
-      "text": "Nous avons séjourné dans ce magnifique hôtel pendant 9j avec un ami et c’était une aventure tout simplement exceptionnel, l’hôtel était splendide la piscine était très belle et le petit déjeuner était copieux pour le coup. Le personnel était très chaleureux et a l’écoute tout particulièrement Mélissa avec qui nous avons beaucoup échanges car elle parlait français. C’était une très belle expérience et nous avons beaucoup apprécié cet hôtel. Je recommande.\nLe spa et la salle de sport étaient fermés.",
-      "positive_text": "Nous avons séjourné dans ce magnifique hôtel pendant 9j avec un ami et c’était une aventure tout simplement exceptionnel, l’hôtel était splendide la piscine était très belle et le petit déjeuner était copieux pour le coup. Le personnel était très chaleureux et a l’écoute tout particulièrement Mélissa avec qui nous avons beaucoup échanges car elle parlait français. C’était une très belle expérience et nous avons beaucoup apprécié cet hôtel. Je recommande.",
-      "negative_text": "Le spa et la salle de sport étaient fermés.",
-      "published_date": "2025-09-22",
-      "stay_date": "September 2025",
-      "room_name": "Double or Twin Room",
-      "traveler_type": "Group",
-      "author_name": "Moussa France",
-      "country": "",
-      "scraped_date": "2026-03-12",
-      "topics": [
-        {
-          "topic": "employees",
-          "sentiment": "positive",
-          "detail": "friendly Melissa"
-        },
-        {
-          "topic": "commodities",
-          "sentiment": "positive",
-          "detail": "beautiful pool"
-        },
-        {
-          "topic": "meals",
-          "sentiment": "positive",
-          "detail": "generous breakfast"
-        },
-        {
-          "topic": "comfort",
-          "sentiment": "positive",
-          "detail": "magnificent hotel"
-        },
-        {
-          "topic": "cleaning",
-          "sentiment": "positive",
-          "detail": "copious breakfast"
-        },
-        {
-          "topic": "commodities",
-          "sentiment": "negative",
-          "detail": "closed spa"
-        }
-      ],
-      "classified": true
-    },
-    {
-      "id": "e6eb3f697e94febd",
-      "hotel": "Ananea Castelo Suites Hotel",
-      "source": "booking",
-      "rating": 8.0,
-      "title": "Very good",
-      "text": "snidane byly super, pokoje nove moderni\nje to hotel, ktery je jeste trochu ne v top stavu, jak tam stale neco dodelavaji. u nas nefungovali zasuvky pod umyvadlem",
-      "positive_text": "snidane byly super, pokoje nove moderni",
-      "negative_text": "je to hotel, ktery je jeste trochu ne v top stavu, jak tam stale neco dodelavaji. u nas nefungovali zasuvky pod umyvadlem",
-      "published_date": "2025-09-20",
-      "stay_date": "September 2025",
-      "room_name": "Double or Twin Room",
-      "traveler_type": "Group",
-      "author_name": "I Iveta Czech Republic",
-      "country": "",
-      "scraped_date": "2026-03-12",
-      "topics": [
-        {
-          "topic": "commodities",
-          "sentiment": "positive",
-          "detail": "new modern rooms"
-        },
-        {
-          "topic": "meals",
-          "sentiment": "positive",
-          "detail": "good breakfast"
-        },
-        {
-          "topic": "quality_price",
-          "sentiment": "negative",
-          "detail": "hotel needs maintenance"
-        },
-        {
-          "topic": "employees",
-          "sentiment": "negative",
-          "detail": "broken sink switches"
-        }
-      ],
-      "classified": true
-    },
-    {
-      "id": "0eaa5bb51de5b4bd",
-      "hotel": "Ananea Castelo Suites Hotel",
-      "source": "booking",
-      "rating": 9.0,
-      "title": "Pause balnéaire après 2 semaines de circuit.",
-      "text": "La chambre vaste et bien équipée, le petit déjeuner très varié.\nLa salle de bain non séparée de la chambre.",
-      "positive_text": "La chambre vaste et bien équipée, le petit déjeuner très varié.",
-      "negative_text": "La salle de bain non séparée de la chambre.",
-      "published_date": "2025-09-18",
-      "stay_date": "September 2025",
-      "room_name": "One-Bedroom Suite",
-      "traveler_type": "Couple",
-      "author_name": "Fanny France",
-      "country": "",
-      "scraped_date": "2026-03-12",
-      "topics": [
-        {
-          "topic": "commodities",
-          "sentiment": "positive",
-          "detail": "spacious and well-equipped room"
-        },
-        {
-          "topic": "meals",
-          "sentiment": "positive",
-          "detail": "varied breakfast"
-        },
-        {
-          "topic": "cleaning",
-          "sentiment": "negative",
-          "detail": "non-separated bathroom from the room"
-        }
-      ],
-      "classified": true
-    },
-    {
-      "id": "38cb07d13cdf0e11",
-      "hotel": "Ananea Castelo Suites Hotel",
-      "source": "booking",
-      "rating": 10.0,
-      "title": "Incroyable séjour dans un cadre magnifique",
-      "text": "La qualité du service et l’esthétique",
-      "positive_text": "La qualité du service et l’esthétique",
-      "negative_text": "",
-      "published_date": "2025-09-12",
-      "stay_date": "September 2025",
-      "room_name": "Double or Twin Room",
-      "traveler_type": "Family",
-      "author_name": "Olivia France",
-      "country": "",
-      "scraped_date": "2026-03-12",
-      "topics": [
-        {
-          "topic": "employees",
-          "sentiment": "positive",
-          "detail": "quality of service"
-        },
-        {
-          "topic": "comfort",
-          "sentiment": "positive",
-          "detail": "aesthetic"
-        }
-      ],
-      "classified": true
-    },
-    {
-      "id": "2bd9019db0e98058",
-      "hotel": "Ananea Castelo Suites Hotel",
-      "source": "booking",
-      "rating": 9.0,
-      "title": "Superb",
-      "text": "Piscina\nMuita confusão no pequeno almoço",
-      "positive_text": "Piscina",
-      "negative_text": "Muita confusão no pequeno almoço",
-      "published_date": "2025-09-08",
-      "stay_date": "September 2025",
-      "room_name": "Double or Twin Room",
-      "traveler_type": "Couple",
-      "author_name": "Diogo Portugal",
-      "country": "",
-      "scraped_date": "2026-03-12",
-      "topics": [
-        {
-          "topic": "commodities",
-          "sentiment": "positive",
-          "detail": "pool"
-        },
-        {
-          "topic": "meals",
-          "sentiment": "negative",
-          "detail": "confusion in small breakfast"
-        }
-      ],
-      "classified": true
-    },
-    {
-      "id": "70a810e7fbd36ba9",
-      "hotel": "Ananea Castelo Suites Hotel",
-      "source": "booking",
-      "rating": 9.0,
-      "title": "Magnifique séjour, nous ne voulions plus partir !",
-      "text": "La gentillesse du staff, la décoration soignée de l’hôtel et l’emplacement au calme.\nLa piscine est un peu froide.",
-      "positive_text": "La gentillesse du staff, la décoration soignée de l’hôtel et l’emplacement au calme.",
-      "negative_text": "La piscine est un peu froide.",
-      "published_date": "2025-09-07",
-      "stay_date": "September 2025",
-      "room_name": "Double or Twin Room",
-      "traveler_type": "Couple",
-      "author_name": "Marion France",
-      "country": "",
-      "scraped_date": "2026-03-12",
-      "topics": [
-        {
-          "topic": "employees",
-          "sentiment": "positive",
-          "detail": "friendly staff"
-        },
-        {
-          "topic": "comfort",
-          "sentiment": "positive",
-          "detail": "elegant hotel decor"
-        },
-        {
-          "topic": "commodities",
-          "sentiment": "negative",
-          "detail": "cold pool"
-        }
-      ],
-      "classified": true
-    },
-    {
-      "id": "9a1ad76d1fab027a",
-      "hotel": "Ananea Castelo Suites Hotel",
-      "source": "booking",
-      "rating": 8.0,
-      "title": "agradavel",
-      "text": "das almofadas , não tinham almofadas baixas e de penas",
-      "positive_text": "",
-      "negative_text": "das almofadas , não tinham almofadas baixas e de penas",
-      "published_date": "2025-09-04",
-      "stay_date": "September 2025",
-      "room_name": "Double or Twin Room",
-      "traveler_type": "Solo traveller",
-      "author_name": "D Dina Portugal",
-      "country": "",
-      "scraped_date": "2026-03-12",
-      "topics": [
-        {
-          "topic": "comfort",
-          "sentiment": "negative",
-          "detail": "no low pillows"
-        }
-      ],
-      "classified": true
-    },
-    {
-      "id": "e257cad24fb3d5b8",
-      "hotel": "Ananea Castelo Suites Hotel",
-      "source": "booking",
-      "rating": 8.0,
-      "title": "Boa",
-      "text": "O repouso dá para estar muito descansado e sem confusão\nA faltar muitos acabamentos para o preço que estão a pedir",
-      "positive_text": "O repouso dá para estar muito descansado e sem confusão",
-      "negative_text": "A faltar muitos acabamentos para o preço que estão a pedir",
-      "published_date": "2025-09-03",
-      "stay_date": "August 2025",
-      "room_name": "Family Suite",
-      "traveler_type": "Family",
-      "author_name": "J Joao Portugal",
-      "country": "",
-      "scraped_date": "2026-03-12",
-      "topics": [
-        {
-          "topic": "comfort",
-          "sentiment": "positive",
-          "detail": "comfortable rest"
-        },
-        {
-          "topic": "quality_price",
-          "sentiment": "negative",
-          "detail": "lack of finishes for the price asked"
-        }
-      ],
-      "classified": true
-    },
-    {
-      "id": "f9040747906712ce",
-      "hotel": "Ananea Castelo Suites Hotel",
-      "source": "booking",
-      "rating": 10.0,
-      "title": "Exceptional",
-      "text": "L'emplacement est paradisiaque, avec une vue 360 degrés sur l'algarve.",
-      "positive_text": "L'emplacement est paradisiaque, avec une vue 360 degrés sur l'algarve.",
-      "negative_text": "",
-      "published_date": "2025-09-03",
-      "stay_date": "September 2025",
-      "room_name": "Double or Twin Room",
-      "traveler_type": "Solo traveller",
-      "author_name": "A Anaïs Switzerland",
-      "country": "",
-      "scraped_date": "2026-03-12",
-      "topics": [
-        {
-          "topic": "commodities",
-          "sentiment": "positive",
-          "detail": "great location"
-        }
-      ],
-      "classified": true
-    },
-    {
-      "id": "be376e707b5c0705",
-      "hotel": "Ananea Castelo Suites Hotel",
-      "source": "booking",
-      "rating": 9.0,
-      "title": "Super !!",
-      "text": "Das Hotel war sehr sauber es hatte eine super Ausstattung. Am besten ist man mit einem gemieteten Auto da, ansonsten ist man ein bisschen abgelegen. Wir waren ca. 10 Min. von Albufeira entfernt also ist es eine super Lage! Wir haben es sehr sehr genossen und würden wieder kommen.\nDas einzige was hätte besser sein können war ein abwechslungsreicher Frühstück aber die Auswahl war super mit gesundem Essen!",
-      "positive_text": "Das Hotel war sehr sauber es hatte eine super Ausstattung. Am besten ist man mit einem gemieteten Auto da, ansonsten ist man ein bisschen abgelegen. Wir waren ca. 10 Min. von Albufeira entfernt also ist es eine super Lage! Wir haben es sehr sehr genossen und würden wieder kommen.",
-      "negative_text": "Das einzige was hätte besser sein können war ein abwechslungsreicher Frühstück aber die Auswahl war super mit gesundem Essen!",
-      "published_date": "2025-08-25",
-      "stay_date": "August 2025",
-      "room_name": "Double or Twin Room",
-      "traveler_type": "Group",
-      "author_name": "Klaudia Switzerland",
-      "country": "",
-      "scraped_date": "2026-03-12",
-      "topics": [
-        {
-          "topic": "cleaning",
-          "sentiment": "positive",
-          "detail": "very clean hotel"
-        },
-        {
-          "topic": "commodities",
-          "sentiment": "positive",
-          "detail": "super equipment"
-        },
-        {
-          "topic": "meals",
-          "sentiment": "negative",
-          "detail": "limited breakfast variety"
-        },
-        {
-          "topic": "meals",
-          "sentiment": "positive",
-          "detail": "healthy food selection"
-        }
-      ],
-      "classified": true
-    },
-    {
-      "id": "93a9765ccd5562f1",
-      "hotel": "Ananea Castelo Suites Hotel",
-      "source": "booking",
-      "rating": 10.0,
-      "title": "Fantástico hotel, recomendo.",
-      "text": "A suite Benagil foi especial, com pormenores muito originais e interessantes. A decoração também de muito bom gosto. Os funcionários foram fantásticos, sentimos-nos super bem recebidos.",
-      "positive_text": "A suite Benagil foi especial, com pormenores muito originais e interessantes. A decoração também de muito bom gosto. Os funcionários foram fantásticos, sentimos-nos super bem recebidos.",
-      "negative_text": "",
-      "published_date": "2025-08-24",
-      "stay_date": "August 2025",
-      "room_name": "Double or Twin Room",
-      "traveler_type": "Couple",
-      "author_name": "Lourenço Portugal",
-      "country": "",
-      "scraped_date": "2026-03-12",
-      "topics": [
-        {
-          "topic": "commodities",
-          "sentiment": "positive",
-          "detail": "original details"
-        },
-        {
-          "topic": "comfort",
-          "sentiment": "positive",
-          "detail": "nice decoration"
-        },
-        {
-          "topic": "employees",
-          "sentiment": "positive",
-          "detail": "fantastic staff"
-        }
-      ],
-      "classified": true
-    },
-    {
-      "id": "88cf99da439a1aba",
-      "hotel": "Ananea Castelo Suites Hotel",
-      "source": "booking",
-      "rating": 10.0,
-      "title": "Exceptional",
-      "text": "Le personnel, les piscines, les vues et les chambres.\nLa direction est très sympathique et a l'écoute.",
-      "positive_text": "Le personnel, les piscines, les vues et les chambres.\nLa direction est très sympathique et a l'écoute.",
-      "negative_text": "",
-      "published_date": "2025-08-15",
-      "stay_date": "August 2025",
-      "room_name": "Double or Twin Room",
-      "traveler_type": "Family",
-      "author_name": "Sergio France",
-      "country": "",
-      "scraped_date": "2026-03-12",
-      "topics": [
-        {
-          "topic": "employees",
-          "sentiment": "positive",
-          "detail": "friendly staff"
-        },
-        {
-          "topic": "commodities",
-          "sentiment": "positive",
-          "detail": "pools"
-        }
-      ],
-      "classified": true
-    },
-    {
-      "id": "cf15307ee2a829e8",
-      "hotel": "Ananea Castelo Suites Hotel",
-      "source": "booking",
-      "rating": 9.0,
-      "title": "Superb",
-      "text": "Tout était top\nLa piscine et les transats sont bien, le petit déjeuner très complet, les produits rituals un plus, la chambre et le lit très confortables\nPlage proche ( environ 10 minutes a pied)\nEncore quelques petits ajustements doivent être faits car c'est un nouvel hôtel (portes automatiques qui fonctionnent 1x sur 2)\n\nDommage que notre expérience ait été gâchée par une coupure de courant dans le quartier a 00h00 qui a duré jusque 10h environ. Plus de climatisation, une lumière de secours qui est restée allumée toute la nuit. A 2h du matin, n'en pouvant plus ils ont réussi a venir couper le fil afin de pouvoir au moins dormir.",
-      "positive_text": "Tout était top\nLa piscine et les transats sont bien, le petit déjeuner très complet, les produits rituals un plus, la chambre et le lit très confortables\nPlage proche ( environ 10 minutes a pied)",
-      "negative_text": "Encore quelques petits ajustements doivent être faits car c'est un nouvel hôtel (portes automatiques qui fonctionnent 1x sur 2)\n\nDommage que notre expérience ait été gâchée par une coupure de courant dans le quartier a 00h00 qui a duré jusque 10h environ. Plus de climatisation, une lumière de secours qui est restée allumée toute la nuit. A 2h du matin, n'en pouvant plus ils ont réussi a venir couper le fil afin de pouvoir au moins dormir.",
-      "published_date": "2025-08-14",
-      "stay_date": "August 2025",
-      "room_name": "Double or Twin Room",
-      "traveler_type": "Couple",
-      "author_name": "T Tatiana Switzerland",
-      "country": "",
-      "scraped_date": "2026-03-12",
-      "topics": [
-        {
-          "topic": "commodities",
-          "sentiment": "positive",
-          "detail": "nice pool and loungers"
-        },
-        {
-          "topic": "meals",
-          "sentiment": "positive",
-          "detail": "good breakfast"
-        },
-        {
-          "topic": "cleaning",
-          "sentiment": "positive",
-          "detail": "complete amenities"
-        },
-        {
-          "topic": "comfort",
-          "sentiment": "positive",
-          "detail": "comfortable room and bed"
-        },
-        {
-          "topic": "employees",
-          "sentiment": "negative",
-          "detail": "faulty automatic doors"
-        },
-        {
-          "topic": "commodities",
-          "sentiment": "negative",
-          "detail": "power outage"
-        },
-        {
-          "topic": "comfort",
-          "sentiment": "negative",
-          "detail": "no air conditioning"
-        },
-        {
-          "topic": "quality_price",
-          "sentiment": "negative",
-          "detail": "power outage issue"
-        }
-      ],
-      "classified": true
-    },
-    {
-      "id": "8574f19579da31a1",
-      "hotel": "Ananea Castelo Suites Hotel",
-      "source": "booking",
-      "rating": 10.0,
-      "title": "Parfait",
-      "text": "Super hôtel 4 étoiles rien à dire propre classe très jolie et bien situé , parking pour voiture",
-      "positive_text": "Super hôtel 4 étoiles rien à dire propre classe très jolie et bien situé , parking pour voiture",
-      "negative_text": "",
-      "published_date": "2025-08-10",
-      "stay_date": "August 2025",
-      "room_name": "Double or Twin Room",
-      "traveler_type": "Solo traveller",
-      "author_name": "M Martin France",
-      "country": "",
-      "scraped_date": "2026-03-12",
-      "topics": [
-        {
-          "topic": "commodities",
-          "sentiment": "positive",
-          "detail": "parking for car"
-        },
-        {
-          "topic": "cleaning",
-          "sentiment": "positive",
-          "detail": "clean hotel"
-        },
-        {
-          "topic": "comfort",
-          "sentiment": "positive",
-          "detail": "nice and well-located 4-star hotel"
-        }
-      ],
-      "classified": true
-    },
-    {
-      "id": "e210afdb91b5a981",
-      "hotel": "Ananea Castelo Suites Hotel",
-      "source": "booking",
-      "rating": 5.0,
-      "title": "Muito bom pequeno almoço e vistas incríveis",
-      "text": "Tem muito potencial, boa localização, muito bom pequeno almoço, os valores são dentro da zona. , razoáveis , o atendimento da recepção impecável!\nFicamos em 2 quartos e nenhum dos dois funcionava o ar condicionado, disseram que alguém de manutenção iria no período da noite e nunca foram , foi disponibilizado a opção de trocar de quarto, mas visto que era só uma noite não compensava. No quarto só tinha água e na casa de banho o básico, gel de banho gel de mãos, champú, para hotel 4 estrelas esperava mais , pelo menos um par de chinelos ! A televisão dos dois quartos , as duas em alemão, tentei mudar e não consegui",
-      "positive_text": "Tem muito potencial, boa localização, muito bom pequeno almoço, os valores são dentro da zona. , razoáveis , o atendimento da recepção impecável!",
-      "negative_text": "Ficamos em 2 quartos e nenhum dos dois funcionava o ar condicionado, disseram que alguém de manutenção iria no período da noite e nunca foram , foi disponibilizado a opção de trocar de quarto, mas visto que era só uma noite não compensava. No quarto só tinha água e na casa de banho o básico, gel de banho gel de mãos, champú, para hotel 4 estrelas esperava mais , pelo menos um par de chinelos ! A televisão dos dois quartos , as duas em alemão, tentei mudar e não consegui",
-      "published_date": "2025-10-21",
-      "stay_date": "October 2025",
-      "room_name": "Double or Twin Room",
-      "traveler_type": "Family",
-      "author_name": "L Lauren Portugal",
-      "country": "",
-      "scraped_date": "2026-03-12",
-      "topics": [
-        {
-          "topic": "commodities",
-          "sentiment": "positive",
-          "detail": "good location"
-        },
-        {
-          "topic": "meals",
-          "sentiment": "positive",
-          "detail": "good small lunch"
-        },
-        {
-          "topic": "quality_price",
-          "sentiment": "positive",
-          "detail": "reasonable prices"
-        },
-        {
-          "topic": "employees",
-          "sentiment": "positive",
-          "detail": "impeccable reception service"
-        },
-        {
-          "topic": "comfort",
-          "sentiment": "negative",
-          "detail": "malfunctioning air conditioning in both rooms"
-        },
-        {
-          "topic": "cleaning",
-          "sentiment": "negative",
-          "detail": "basic toiletries in room and bathroom"
-        },
-        {
-          "topic": "commodities",
-          "sentiment": "negative",
-          "detail": "tvs in both rooms were in German and couldn't be changed"
-        }
-      ],
-      "classified": true
-    },
-    {
-      "id": "f77a758ea70f65a2",
-      "hotel": "Ananea Castelo Suites Hotel",
-      "source": "booking",
-      "rating": 6.0,
-      "title": "Pleasant",
-      "text": "Fint hotell med vänlig personal!\nVäldigt kalla pooler & läget var väldigt off, långt ifrån stranden & väldigt få restauranger i närheten.",
-      "positive_text": "Fint hotell med vänlig personal!",
-      "negative_text": "Väldigt kalla pooler & läget var väldigt off, långt ifrån stranden & väldigt få restauranger i närheten.",
-      "published_date": "2025-10-15",
-      "stay_date": "September 2025",
-      "room_name": "Double or Twin Room",
-      "traveler_type": "Couple",
-      "author_name": "D Dennis Sweden",
-      "country": "",
-      "scraped_date": "2026-03-12",
-      "topics": [
-        {
-          "topic": "employees",
-          "sentiment": "positive",
-          "detail": "friendly hotel staff"
-        },
-        {
-          "topic": "commodities",
-          "sentiment": "negative",
-          "detail": "cold pools"
-        }
-      ],
-      "classified": true
-    },
-    {
-      "id": "623a5c42f766577f",
-      "hotel": "Ananea Castelo Suites Hotel",
-      "source": "booking",
-      "rating": 7.0,
-      "title": "Je conseille cet établissement pour un séjour en Algarve.",
-      "text": "La piscine ainsi que les petits-déjeuners en terrasse étaient sympas. La situation de l'hôtel est bonne car le quartier est calme. On peut facilement trouver quelques petits commerces ainsi qu'une station-service.\nPayer une carafe d'eau 4€ lors des repas alors que cela devrait être gratuit. Seule l'eau minérale doit être facturée pas celle en carafe ! Certains soirs, le choix était limité dans le buffet",
-      "positive_text": "La piscine ainsi que les petits-déjeuners en terrasse étaient sympas. La situation de l'hôtel est bonne car le quartier est calme. On peut facilement trouver quelques petits commerces ainsi qu'une station-service.",
-      "negative_text": "Payer une carafe d'eau 4€ lors des repas alors que cela devrait être gratuit. Seule l'eau minérale doit être facturée pas celle en carafe ! Certains soirs, le choix était limité dans le buffet",
-      "published_date": "2025-09-23",
-      "stay_date": "September 2025",
-      "room_name": "Double or Twin Room",
-      "traveler_type": "Couple",
-      "author_name": "Stephane France",
-      "country": "",
-      "scraped_date": "2026-03-12",
-      "topics": [
-        {
-          "topic": "commodities",
-          "sentiment": "positive",
-          "detail": "nice pool"
-        },
-        {
-          "topic": "meals",
-          "sentiment": "positive",
-          "detail": "good breakfast on terrace"
-        },
-        {
-          "topic": "employees",
-          "sentiment": "negative",
-          "detail": "overpriced water"
-        },
-        {
-          "topic": "meals",
-          "sentiment": "negative",
-          "detail": "limited choice in buffet some nights"
-        }
-      ],
-      "classified": true
-    },
-    {
-      "id": "871bf06defc88b76",
+      "id": "ff1d4e73902b5cd4",
       "hotel": "Ananea Castelo Suites Hotel",
       "source": "booking",
       "rating": 7.0,
@@ -2161,31 +1629,66 @@
       "published_date": "2025-09-14",
       "stay_date": "September 2025",
       "room_name": "Double or Twin Room",
-      "traveler_type": "Couple",
-      "author_name": "S Stephane France",
-      "country": "",
-      "scraped_date": "2026-03-12",
+      "trip_type": "Couple",
+      "author_name": "S",
+      "country": "Stephane",
+      "scraped_date": "2026-03-19",
       "topics": [
         {
           "topic": "commodities",
           "sentiment": "positive",
-          "detail": "sea view"
-        },
-        {
-          "topic": "employees",
-          "sentiment": "negative",
-          "detail": "unhelpful receptionist"
+          "detail": "furniture by the sea"
         },
         {
           "topic": "commodities",
           "sentiment": "negative",
-          "detail": "no coffee capsule in room"
+          "detail": "no coffee capsules in room"
+        },
+        {
+          "topic": "employees",
+          "sentiment": "negative",
+          "detail": "unfriendly reception"
         }
       ],
       "classified": true
     },
     {
-      "id": "3faf27266685981e",
+      "id": "e8f1bb1935ade008",
+      "hotel": "Ananea Castelo Suites Hotel",
+      "source": "booking",
+      "rating": 10.0,
+      "title": "Beautiful new hotel",
+      "text": "Everything!\nBeautiful new hotel lovely rooms and decor fantastic staff\nNothing to dislike about this hotel",
+      "positive_text": "Everything!\nBeautiful new hotel lovely rooms and decor fantastic staff",
+      "negative_text": "Nothing to dislike about this hotel",
+      "published_date": "2025-09-14",
+      "stay_date": "September 2025",
+      "room_name": "Double or Twin Room",
+      "trip_type": "Couple",
+      "author_name": "M",
+      "country": "Marie",
+      "scraped_date": "2026-03-19",
+      "topics": [
+        {
+          "topic": "commodities",
+          "sentiment": "positive",
+          "detail": "beautiful new hotel"
+        },
+        {
+          "topic": "comfort",
+          "sentiment": "positive",
+          "detail": "lovely rooms"
+        },
+        {
+          "topic": "employees",
+          "sentiment": "positive",
+          "detail": "fantastic staff"
+        }
+      ],
+      "classified": true
+    },
+    {
+      "id": "25fe3cc6b033f6dc",
       "hotel": "Ananea Castelo Suites Hotel",
       "source": "booking",
       "rating": 6.0,
@@ -2196,36 +1699,370 @@
       "published_date": "2025-09-13",
       "stay_date": "September 2025",
       "room_name": "Double or Twin Room",
-      "traveler_type": "Solo traveller",
-      "author_name": "João Portugal",
-      "country": "",
-      "scraped_date": "2026-03-12",
+      "trip_type": "Solo traveller",
+      "author_name": "João",
+      "country": "Portugal",
+      "scraped_date": "2026-03-19",
       "topics": [
         {
           "topic": "meals",
           "sentiment": "positive",
-          "detail": "exceptional small breakfast"
+          "detail": "excellent lunch"
         },
         {
-          "topic": "commodities",
+          "topic": "quality_price",
           "sentiment": "negative",
-          "detail": "rushed semi-finished accommodation"
-        },
-        {
-          "topic": "cleaning",
-          "sentiment": "negative",
-          "detail": "leaking faucet in bathroom"
-        },
-        {
-          "topic": "comfort",
-          "sentiment": "negative",
-          "detail": "poor finishes"
+          "detail": "poorly finished"
         }
       ],
       "classified": true
     },
     {
-      "id": "9d15ab09e372c044",
+      "id": "a0991a0e160e57ef",
+      "hotel": "Ananea Castelo Suites Hotel",
+      "source": "booking",
+      "rating": 10.0,
+      "title": "Incroyable séjour dans un cadre magnifique",
+      "text": "La qualité du service et l’esthétique",
+      "positive_text": "La qualité du service et l’esthétique",
+      "negative_text": "",
+      "published_date": "2025-09-12",
+      "stay_date": "September 2025",
+      "room_name": "Double or Twin Room",
+      "trip_type": "Family",
+      "author_name": "Olivia",
+      "country": "France",
+      "scraped_date": "2026-03-19",
+      "topics": [
+        {
+          "topic": "employees",
+          "sentiment": "positive",
+          "detail": "good service"
+        },
+        {
+          "topic": "commodities",
+          "sentiment": "positive",
+          "detail": "aesthetic"
+        }
+      ],
+      "classified": true
+    },
+    {
+      "id": "6542e49f33d44048",
+      "hotel": "Ananea Castelo Suites Hotel",
+      "source": "booking",
+      "rating": 10.0,
+      "title": "A lovely, relaxing atmosphere provided by the excellent hardworking staff.",
+      "text": "The excellent staff and overall ambience was exceptional. The beds were extremely comfortable and the rooms were kept in tip top condition. There was always plenty of thickly padded sunbeds available with lots of options for sun or shade. Would definitely stay here again.\nVery expensive gin and tonics!",
+      "positive_text": "The excellent staff and overall ambience was exceptional. The beds were extremely comfortable and the rooms were kept in tip top condition. There was always plenty of thickly padded sunbeds available with lots of options for sun or shade. Would definitely stay here again.",
+      "negative_text": "Very expensive gin and tonics!",
+      "published_date": "2025-09-11",
+      "stay_date": "September 2025",
+      "room_name": "One-Bedroom Suite",
+      "trip_type": "Couple",
+      "author_name": "J",
+      "country": "Jennifer",
+      "scraped_date": "2026-03-19",
+      "topics": [
+        {
+          "topic": "employees",
+          "sentiment": "positive",
+          "detail": "excellent staff"
+        },
+        {
+          "topic": "comfort",
+          "sentiment": "positive",
+          "detail": "comfortable beds"
+        },
+        {
+          "topic": "cleaning",
+          "sentiment": "positive",
+          "detail": "kept in tip top condition"
+        },
+        {
+          "topic": "commodities",
+          "sentiment": "positive",
+          "detail": "plenty of sunbeds"
+        },
+        {
+          "topic": "return",
+          "sentiment": "positive",
+          "detail": "definitely stay again"
+        },
+        {
+          "topic": "quality_price",
+          "sentiment": "negative",
+          "detail": "expensive gin and tonics"
+        }
+      ],
+      "classified": true
+    },
+    {
+      "id": "6db58c94211cd1a6",
+      "hotel": "Ananea Castelo Suites Hotel",
+      "source": "booking",
+      "rating": 9.0,
+      "title": "Superb",
+      "text": "Piscina\nMuita confusão no pequeno almoço",
+      "positive_text": "Piscina",
+      "negative_text": "Muita confusão no pequeno almoço",
+      "published_date": "2025-09-08",
+      "stay_date": "September 2025",
+      "room_name": "Double or Twin Room",
+      "trip_type": "Couple",
+      "author_name": "Diogo",
+      "country": "Portugal",
+      "scraped_date": "2026-03-19",
+      "topics": [
+        {
+          "topic": "commodities",
+          "sentiment": "positive",
+          "detail": "pool"
+        },
+        {
+          "topic": "meals",
+          "sentiment": "negative",
+          "detail": "confused breakfast"
+        }
+      ],
+      "classified": true
+    },
+    {
+      "id": "23e80c4ffe0f93e3",
+      "hotel": "Ananea Castelo Suites Hotel",
+      "source": "booking",
+      "rating": 9.0,
+      "title": "Magnifique séjour, nous ne voulions plus partir !",
+      "text": "La gentillesse du staff, la décoration soignée de l’hôtel et l’emplacement au calme.\nLa piscine est un peu froide.",
+      "positive_text": "La gentillesse du staff, la décoration soignée de l’hôtel et l’emplacement au calme.",
+      "negative_text": "La piscine est un peu froide.",
+      "published_date": "2025-09-07",
+      "stay_date": "September 2025",
+      "room_name": "Double or Twin Room",
+      "trip_type": "Couple",
+      "author_name": "Marion",
+      "country": "France",
+      "scraped_date": "2026-03-19",
+      "topics": [
+        {
+          "topic": "employees",
+          "sentiment": "positive",
+          "detail": "gentleman staff"
+        },
+        {
+          "topic": "commodities",
+          "sentiment": "positive",
+          "detail": "decorated hotel"
+        },
+        {
+          "topic": "comfort",
+          "sentiment": "positive",
+          "detail": "quiet location"
+        },
+        {
+          "topic": "commodities",
+          "sentiment": "negative",
+          "detail": "cold pool"
+        }
+      ],
+      "classified": true
+    },
+    {
+      "id": "85f3d4b571f6b221",
+      "hotel": "Ananea Castelo Suites Hotel",
+      "source": "booking",
+      "rating": 8.0,
+      "title": "Great stay and relaxing",
+      "text": "Very nice pool area and breakfast was really varied and good quality. Bedroom are really nice and confortable\nThere is no fitness gym yet it is still under construction and one evening we did not get hot water for the shower",
+      "positive_text": "Very nice pool area and breakfast was really varied and good quality. Bedroom are really nice and confortable",
+      "negative_text": "There is no fitness gym yet it is still under construction and one evening we did not get hot water for the shower",
+      "published_date": "2025-09-07",
+      "stay_date": "September 2025",
+      "room_name": "Family Suite",
+      "trip_type": "Group",
+      "author_name": "Magali",
+      "country": "France",
+      "scraped_date": "2026-03-19",
+      "topics": [
+        {
+          "topic": "commodities",
+          "sentiment": "positive",
+          "detail": "nice pool area"
+        },
+        {
+          "topic": "meals",
+          "sentiment": "positive",
+          "detail": "good quality breakfast"
+        },
+        {
+          "topic": "comfort",
+          "sentiment": "positive",
+          "detail": "confortable bedroom"
+        },
+        {
+          "topic": "commodities",
+          "sentiment": "negative",
+          "detail": "no fitness gym"
+        },
+        {
+          "topic": "cleaning",
+          "sentiment": "negative",
+          "detail": "no hot water for shower"
+        }
+      ],
+      "classified": true
+    },
+    {
+      "id": "6ac1a42e3434b720",
+      "hotel": "Ananea Castelo Suites Hotel",
+      "source": "booking",
+      "rating": 8.0,
+      "title": "agradavel",
+      "text": "das almofadas , não tinham almofadas baixas e de penas",
+      "positive_text": "",
+      "negative_text": "das almofadas , não tinham almofadas baixas e de penas",
+      "published_date": "2025-09-04",
+      "stay_date": "September 2025",
+      "room_name": "Double or Twin Room",
+      "trip_type": "Solo traveller",
+      "author_name": "D",
+      "country": "Dina",
+      "scraped_date": "2026-03-19",
+      "topics": [
+        {
+          "topic": "comfort",
+          "sentiment": "negative",
+          "detail": "lack of feather pillows"
+        }
+      ],
+      "classified": true
+    },
+    {
+      "id": "b9333e9e84aa9e54",
+      "hotel": "Ananea Castelo Suites Hotel",
+      "source": "booking",
+      "rating": 8.0,
+      "title": "Boa",
+      "text": "O repouso dá para estar muito descansado e sem confusão\nA faltar muitos acabamentos para o preço que estão a pedir",
+      "positive_text": "O repouso dá para estar muito descansado e sem confusão",
+      "negative_text": "A faltar muitos acabamentos para o preço que estão a pedir",
+      "published_date": "2025-09-03",
+      "stay_date": "August 2025",
+      "room_name": "Family Suite",
+      "trip_type": "Family",
+      "author_name": "J",
+      "country": "Joao",
+      "scraped_date": "2026-03-19",
+      "topics": [
+        {
+          "topic": "comfort",
+          "sentiment": "positive",
+          "detail": "peaceful rest"
+        },
+        {
+          "topic": "quality_price",
+          "sentiment": "negative",
+          "detail": "poor finish"
+        }
+      ],
+      "classified": true
+    },
+    {
+      "id": "58b934bde2f6866a",
+      "hotel": "Ananea Castelo Suites Hotel",
+      "source": "booking",
+      "rating": 10.0,
+      "title": "Exceptional",
+      "text": "L'emplacement est paradisiaque, avec une vue 360 degrés sur l'algarve.",
+      "positive_text": "L'emplacement est paradisiaque, avec une vue 360 degrés sur l'algarve.",
+      "negative_text": "",
+      "published_date": "2025-09-03",
+      "stay_date": "September 2025",
+      "room_name": "Double or Twin Room",
+      "trip_type": "Solo traveller",
+      "author_name": "A",
+      "country": "Anaïs",
+      "scraped_date": "2026-03-19",
+      "topics": [],
+      "classified": true
+    },
+    {
+      "id": "5097e94966e4169b",
+      "hotel": "Ananea Castelo Suites Hotel",
+      "source": "booking",
+      "rating": 9.0,
+      "title": "Super !!",
+      "text": "Das Hotel war sehr sauber es hatte eine super Ausstattung. Am besten ist man mit einem gemieteten Auto da, ansonsten ist man ein bisschen abgelegen. Wir waren ca. 10 Min. von Albufeira entfernt also ist es eine super Lage! Wir haben es sehr sehr genossen und würden wieder kommen.\nDas einzige was hätte besser sein können war ein abwechslungsreicher Frühstück aber die Auswahl war super mit gesundem Essen!",
+      "positive_text": "Das Hotel war sehr sauber es hatte eine super Ausstattung. Am besten ist man mit einem gemieteten Auto da, ansonsten ist man ein bisschen abgelegen. Wir waren ca. 10 Min. von Albufeira entfernt also ist es eine super Lage! Wir haben es sehr sehr genossen und würden wieder kommen.",
+      "negative_text": "Das einzige was hätte besser sein können war ein abwechslungsreicher Frühstück aber die Auswahl war super mit gesundem Essen!",
+      "published_date": "2025-08-25",
+      "stay_date": "August 2025",
+      "room_name": "Double or Twin Room",
+      "trip_type": "Group",
+      "author_name": "Klaudia",
+      "country": "Switzerland",
+      "scraped_date": "2026-03-19",
+      "topics": [
+        {
+          "topic": "cleaning",
+          "sentiment": "positive",
+          "detail": "very clean"
+        },
+        {
+          "topic": "commodities",
+          "sentiment": "positive",
+          "detail": "super equipment"
+        },
+        {
+          "topic": "comfort",
+          "sentiment": "positive",
+          "detail": "nice location"
+        },
+        {
+          "topic": "meals",
+          "sentiment": "negative",
+          "detail": "limited breakfast variety"
+        }
+      ],
+      "classified": true
+    },
+    {
+      "id": "77a19a59e4d86945",
+      "hotel": "Ananea Castelo Suites Hotel",
+      "source": "booking",
+      "rating": 10.0,
+      "title": "Fantástico hotel, recomendo.",
+      "text": "A suite Benagil foi especial, com pormenores muito originais e interessantes. A decoração também de muito bom gosto. Os funcionários foram fantásticos, sentimos-nos super bem recebidos.",
+      "positive_text": "A suite Benagil foi especial, com pormenores muito originais e interessantes. A decoração também de muito bom gosto. Os funcionários foram fantásticos, sentimos-nos super bem recebidos.",
+      "negative_text": "",
+      "published_date": "2025-08-24",
+      "stay_date": "August 2025",
+      "room_name": "Double or Twin Room",
+      "trip_type": "Couple",
+      "author_name": "Lourenço",
+      "country": "Portugal",
+      "scraped_date": "2026-03-19",
+      "topics": [
+        {
+          "topic": "commodities",
+          "sentiment": "positive",
+          "detail": "original decor"
+        },
+        {
+          "topic": "comfort",
+          "sentiment": "positive",
+          "detail": "nice suite reception"
+        },
+        {
+          "topic": "employees",
+          "sentiment": "positive",
+          "detail": "fantastic staff"
+        }
+      ],
+      "classified": true
+    },
+    {
+      "id": "af867b8e9c4a406e",
       "hotel": "Ananea Castelo Suites Hotel",
       "source": "booking",
       "rating": 6.0,
@@ -2236,20 +2073,178 @@
       "published_date": "2025-08-21",
       "stay_date": "August 2025",
       "room_name": "Double or Twin Room",
-      "traveler_type": "Solo traveller",
-      "author_name": "T Thomas France",
-      "country": "",
-      "scraped_date": "2026-03-12",
+      "trip_type": "Solo traveller",
+      "author_name": "T",
+      "country": "Thomas",
+      "scraped_date": "2026-03-19",
       "topics": [
         {
           "topic": "commodities",
           "sentiment": "positive",
-          "detail": "modernism"
+          "detail": "modern hotel"
         },
         {
           "topic": "employees",
           "sentiment": "negative",
-          "detail": "unresponsive staff except for Melissa at reception who was excellent"
+          "detail": "unattentive staff"
+        }
+      ],
+      "classified": true
+    },
+    {
+      "id": "24bfd3f25c89a16f",
+      "hotel": "Ananea Castelo Suites Hotel",
+      "source": "booking",
+      "rating": 10.0,
+      "title": "Exceptional",
+      "text": "Le personnel, les piscines, les vues et les chambres.\nLa direction est très sympathique et a l'écoute.",
+      "positive_text": "Le personnel, les piscines, les vues et les chambres.\nLa direction est très sympathique et a l'écoute.",
+      "negative_text": "",
+      "published_date": "2025-08-15",
+      "stay_date": "August 2025",
+      "room_name": "Double or Twin Room",
+      "trip_type": "Family",
+      "author_name": "Sergio",
+      "country": "France",
+      "scraped_date": "2026-03-19",
+      "topics": [
+        {
+          "topic": "employees",
+          "sentiment": "positive",
+          "detail": "sympathique staff"
+        },
+        {
+          "topic": "commodities",
+          "sentiment": "positive",
+          "detail": "nice pools"
+        },
+        {
+          "topic": "comfort",
+          "sentiment": "positive",
+          "detail": "nice views"
+        }
+      ],
+      "classified": true
+    },
+    {
+      "id": "932aff97ce5305fe",
+      "hotel": "Ananea Castelo Suites Hotel",
+      "source": "booking",
+      "rating": 7.0,
+      "title": "We still do not know the hotel",
+      "text": "We did not get to know the place because it was not finish so we were sent to another hotel.\nWe did not get to know the place because it was not finish so we were sent to another hotel.",
+      "positive_text": "We did not get to know the place because it was not finish so we were sent to another hotel.",
+      "negative_text": "We did not get to know the place because it was not finish so we were sent to another hotel.",
+      "published_date": "2025-08-15",
+      "stay_date": "July 2025",
+      "room_name": "Double or Twin Room",
+      "trip_type": "Group",
+      "author_name": "Camilo",
+      "country": "Colombia",
+      "scraped_date": "2026-03-19",
+      "topics": [],
+      "classified": true
+    },
+    {
+      "id": "f528ffcf2fc09c6f",
+      "hotel": "Ananea Castelo Suites Hotel",
+      "source": "booking",
+      "rating": 7.0,
+      "title": "Still do not know the hotel",
+      "text": "We did not get to know the place because it was not finish so we were sent to another hotel.\nWe did not get to know the place because it was not finish so we were sent to another hotel.",
+      "positive_text": "We did not get to know the place because it was not finish so we were sent to another hotel.",
+      "negative_text": "We did not get to know the place because it was not finish so we were sent to another hotel.",
+      "published_date": "2025-08-15",
+      "stay_date": "July 2025",
+      "room_name": "Double or Twin Room",
+      "trip_type": "Group",
+      "author_name": "Camilo",
+      "country": "Colombia",
+      "scraped_date": "2026-03-19",
+      "topics": [],
+      "classified": true
+    },
+    {
+      "id": "1cd09d7cf98edac8",
+      "hotel": "Ananea Castelo Suites Hotel",
+      "source": "booking",
+      "rating": 9.0,
+      "title": "Superb",
+      "text": "Tout était top\nLa piscine et les transats sont bien, le petit déjeuner très complet, les produits rituals un plus, la chambre et le lit très confortables\nPlage proche ( environ 10 minutes a pied)\nEncore quelques petits ajustements doivent être faits car c'est un nouvel hôtel (portes automatiques qui fonctionnent 1x sur 2)\n\nDommage que notre expérience ait été gâchée par une coupure de courant dans le quartier a 00h00 qui a duré jusque 10h environ. Plus de climatisation, une lumière de secours qui est restée allumée toute la nuit. A 2h du matin, n'en pouvant plus ils ont réussi a venir couper le fil afin de pouvoir au moins dormir.",
+      "positive_text": "Tout était top\nLa piscine et les transats sont bien, le petit déjeuner très complet, les produits rituals un plus, la chambre et le lit très confortables\nPlage proche ( environ 10 minutes a pied)",
+      "negative_text": "Encore quelques petits ajustements doivent être faits car c'est un nouvel hôtel (portes automatiques qui fonctionnent 1x sur 2)\n\nDommage que notre expérience ait été gâchée par une coupure de courant dans le quartier a 00h00 qui a duré jusque 10h environ. Plus de climatisation, une lumière de secours qui est restée allumée toute la nuit. A 2h du matin, n'en pouvant plus ils ont réussi a venir couper le fil afin de pouvoir au moins dormir.",
+      "published_date": "2025-08-14",
+      "stay_date": "August 2025",
+      "room_name": "Double or Twin Room",
+      "trip_type": "Couple",
+      "author_name": "T",
+      "country": "Tatiana",
+      "scraped_date": "2026-03-19",
+      "topics": [
+        {
+          "topic": "commodities",
+          "sentiment": "positive",
+          "detail": "pool well"
+        },
+        {
+          "topic": "meals",
+          "sentiment": "positive",
+          "detail": "good breakfast"
+        },
+        {
+          "topic": "comfort",
+          "sentiment": "positive",
+          "detail": "comfortable bed"
+        },
+        {
+          "topic": "cleaning",
+          "sentiment": "negative",
+          "detail": "power outage"
+        },
+        {
+          "topic": "employees",
+          "sentiment": "negative",
+          "detail": "no power"
+        }
+      ],
+      "classified": true
+    },
+    {
+      "id": "884eb18169e39754",
+      "hotel": "Ananea Castelo Suites Hotel",
+      "source": "booking",
+      "rating": 10.0,
+      "title": "Parfait",
+      "text": "Super hôtel 4 étoiles rien à dire propre classe très jolie et bien situé , parking pour voiture",
+      "positive_text": "Super hôtel 4 étoiles rien à dire propre classe très jolie et bien situé , parking pour voiture",
+      "negative_text": "",
+      "published_date": "2025-08-10",
+      "stay_date": "August 2025",
+      "room_name": "Double or Twin Room",
+      "trip_type": "Solo traveller",
+      "author_name": "M",
+      "country": "Martin",
+      "scraped_date": "2026-03-19",
+      "topics": [
+        {
+          "topic": "cleaning",
+          "sentiment": "positive",
+          "detail": "spotless"
+        },
+        {
+          "topic": "commodities",
+          "sentiment": "positive",
+          "detail": "parking"
+        },
+        {
+          "topic": "comfort",
+          "sentiment": "positive",
+          "detail": "nice location"
+        },
+        {
+          "topic": "quality_price",
+          "sentiment": "positive",
+          "detail": "affordable"
         }
       ],
       "classified": true
